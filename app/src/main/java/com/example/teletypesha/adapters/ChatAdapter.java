@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.teletypesha.itemClass.Chat;
 import com.example.teletypesha.R;
+import com.example.teletypesha.itemClass.Messange;
 
 import java.util.List;
 
@@ -52,18 +53,23 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     public class ChatViewHolder extends RecyclerView.ViewHolder {
 
         private LinearLayout buttonLayoutView;
-        private TextView textView;
+        private TextView labelView, lastMsgView;
 
         public ChatViewHolder(@NonNull View itemView) {
             super(itemView);
             buttonLayoutView = itemView.findViewById(R.id.chat_button);
-            textView = itemView.findViewById(R.id.chat_label);
+            labelView = itemView.findViewById(R.id.chat_label);
+            lastMsgView = itemView.findViewById(R.id.chat_last_msg);
         }
 
         public void bind(Chat item) {
             // Устанавливаем данные в элементы макета
             Log.i("Debug Adp", "S Create Maket");
-            textView.setText(item.getName());
+            labelView.setText(item.getName());
+            Messange msg = item.getLastMsg();
+            if(msg != null){
+                lastMsgView.setText(msg.text);
+            }
 
 
             buttonLayoutView.getLayoutParams().width = (int) (width * 1);

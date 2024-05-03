@@ -1,31 +1,33 @@
 package com.example.teletypesha.activitys;
 
+import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.teletypesha.R;
-import com.example.teletypesha.adapters.ChatAdapter;
-import com.example.teletypesha.itemClass.Chat;
-import com.example.teletypesha.itemClass.Messange;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Random;
+import com.example.teletypesha.fragments.ChatsFragment;
+import com.example.teletypesha.fragments.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity {
-
-    ArrayList<Chat> chatList = new ArrayList<>();
-    ChatAdapter adapter;
+    FragmentManager fragmentManager = getSupportFragmentManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,40 +40,50 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-
-
-        Log.i("Debug", "Started");
-
-        GetFictChats();
-
-        CreateItemList();
-
-        Log.i("Debug", "Start Ok");
+        OpenChatsFragment();
     }
 
-    private void GetFictChats(){
-        for (int i = 0; i < 10; i++){
-            ArrayList<Messange> messages = new ArrayList<>();
-            messages.add(new Messange("Anton", "hi"));
-            messages.add(new Messange("Victor", "hi"));
-            chatList.add(new Chat(messages, "Anton", 14142421));
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.upper_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_setting_profile) {
+            Toast.makeText(MainActivity.this, "Профиль", Toast.LENGTH_LONG).show();
+            return true;
+        } else if (id == R.id.action_setting_theme) {
+            Toast.makeText(MainActivity.this, "Тема", Toast.LENGTH_LONG).show();
+            OpenSettingsFragment();
+            return true;
+        } else if (id == R.id.action_setting_chats) {
+            Toast.makeText(MainActivity.this, "Чаты", Toast.LENGTH_LONG).show();
+            OpenChatsFragment();
+            return true;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
-    private void CreateItemList(){
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        adapter = new ChatAdapter(chatList, displayMetrics.widthPixels);
+    private void OpenChatsFragment(){
+        // Ниже код для создания фрагмента ресайклера
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                RecyclerView recyclerView = findViewById(R.id.recycler);
-                recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this)); // Добавлено
-                Log.i("Debug", recyclerView.toString());
-                recyclerView.setAdapter(adapter);
-                Log.i("Debug", "adapter set");
-            }
-        });
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        ChatsFragment chatFragment = new ChatsFragment();
+        fragmentTransaction.add(R.id.main_fragment, chatFragment);
+        fragmentTransaction.commit();
+    }
+
+    public void OpenSettingsFragment(){
+        // Ниже код для создания фрагмента ресайклера
+
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        SettingsFragment settingsFragment = new SettingsFragment();
+        fragmentTransaction.add(R.id.main_fragment, settingsFragment);
+        fragmentTransaction.commit();
     }
 }

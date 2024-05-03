@@ -1,9 +1,26 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.TeletypeSHA" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.TeletypeSHA" parent="Theme.Material3.DayNight">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
     <style name="Theme.TeletypeSHA" parent="Base.Theme.TeletypeSHA" />
+
+
+    <style name="comic_sans" parent="Theme.Material3.DayNight">
+        <item name="android:fontFamily">@font/comic_sans</item>
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+    <style name="inky_thin_pixels" parent="Theme.Material3.DayNight">
+        <item name="android:fontFamily">@font/inky_thin_pixels</item>
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+    <style name="swampy" parent="Theme.Material3.DayNight">
+        <item name="android:fontFamily">@font/swampy</item>
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
 </resources>

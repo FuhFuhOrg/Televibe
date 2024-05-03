@@ -18,4 +18,13 @@ public class Chat {
     public String getName(){
         return secondUserName;
     }
+
+    public Messange getLastMsg(){
+        if(messanges.size() > 0){
+            return messanges.get(messanges.size() - 1);
+        }
+        else{
+            return null;
+        }
+    }
 }
