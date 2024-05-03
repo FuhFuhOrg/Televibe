@@ -1,0 +1,25 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.SettingsFragment"
+    android:background="@color/design_default_color_secondary_variant"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <Spinner
+            android:id="@+id/set_font_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="@string/set_font"
+            android:background="@color/design_default_color_primary"
+            />
+
+    </LinearLayout>
+
+</FrameLayout>

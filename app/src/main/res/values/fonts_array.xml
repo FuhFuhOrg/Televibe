@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="fonts_array">
+        <item>@string/comic_sans</item>
+        <item>@string/inky_thin_pixels</item>
+        <item>@string/swampy</item>
+    </string-array>
+</resources>
