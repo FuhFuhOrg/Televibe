@@ -29,6 +29,9 @@ android {
 }
 
 dependencies {
+
+    implementation("tech.gusavila92:java-android-websocket-client:1.2.2")
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

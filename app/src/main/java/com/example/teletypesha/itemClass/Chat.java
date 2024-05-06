@@ -5,18 +5,24 @@ import android.widget.ImageButton;
 import java.util.ArrayList;
 
 public class Chat {
+    Integer yourId;
     ArrayList<Messange> messanges;
-    String secondUserName;
+    ArrayList<Integer> anotherUsers;
     Integer secondUserHashId;
 
-    public Chat(ArrayList<Messange> messanges, String secondUserName, Integer secondUserHashId){
+    public Chat(Integer yourId, ArrayList<Messange> messanges, ArrayList<Integer> anotherUsers, Integer secondUserHashId){
+        this.yourId = yourId;
         this.messanges = messanges;
-        this.secondUserName = secondUserName;
+        this.anotherUsers = anotherUsers;
         this.secondUserHashId = secondUserHashId;
     }
 
-    public String getName(){
-        return secondUserName;
+    public Integer GetYourId(){
+        return yourId;
+    }
+
+    public ArrayList<Integer> getName(){
+        return anotherUsers;
     }
 
     public Messange getLastMsg(){
@@ -26,5 +32,9 @@ public class Chat {
         else{
             return null;
         }
+    }
+
+    public ArrayList<Messange> GetMessanges(){
+        return messanges;
     }
 }
