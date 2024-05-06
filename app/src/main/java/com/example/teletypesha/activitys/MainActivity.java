@@ -25,9 +25,12 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.teletypesha.R;
 import com.example.teletypesha.fragments.ChatsFragment;
 import com.example.teletypesha.fragments.SettingsFragment;
+import com.example.teletypesha.fragments.SingleChatFragment;
+import com.example.teletypesha.itemClass.Chat;
 
 public class MainActivity extends AppCompatActivity {
     FragmentManager fragmentManager = getSupportFragmentManager();
+    Chat settedChat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,20 +73,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void OpenChatsFragment(){
-        // Ниже код для создания фрагмента ресайклера
-
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         ChatsFragment chatFragment = new ChatsFragment();
-        fragmentTransaction.add(R.id.main_fragment, chatFragment);
+        fragmentTransaction.replace(R.id.main_fragment, chatFragment);
         fragmentTransaction.commit();
     }
 
     public void OpenSettingsFragment(){
-        // Ниже код для создания фрагмента ресайклера
-
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         SettingsFragment settingsFragment = new SettingsFragment();
-        fragmentTransaction.add(R.id.main_fragment, settingsFragment);
+        fragmentTransaction.replace(R.id.main_fragment, settingsFragment);
         fragmentTransaction.commit();
+    }
+
+    public void OpenChat(Chat chat){
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        SingleChatFragment singleChatFragment = new SingleChatFragment();
+        singleChatFragment.SetChat(chat);
+        settedChat = chat;
+        fragmentTransaction.replace(R.id.main_fragment, singleChatFragment);
+        fragmentTransaction.commit();
+    }
+
+    public void SendMessage(View view){
+        String messange = String.valueOf(((EditText) findViewById(R.id.message_edit_text)).getText());
+        FictiveSendMessange(messange, settedChat, settedChat.GetYourId());
+    }
+
+    public void FictiveSendMessange(String messange, Chat chat, Integer senderId){
+        // Код
     }
 }

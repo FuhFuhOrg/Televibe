@@ -7,8 +7,7 @@
     android:orientation="horizontal"
     android:background="@color/design_default_color_primary"
     android:layout_marginTop="1px"
-    android:layout_marginBottom="1px"
-    android:onClick="SelectItem">
+    android:layout_marginBottom="1px">
 
     <ImageView
         android:id="@+id/chat_image"
