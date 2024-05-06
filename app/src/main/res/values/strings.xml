@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">TeletypeSHA</string>
+    <string name="setting_chats">chats</string>
+    <string name="setting_profile">profile</string>
+    <string name="setting_theme">theme</string>
+    <string name="set_font">font</string>
+
+    <string name="comic_sans">comic_sans</string>
+    <string name="inky_thin_pixels">inky_thin_pixels</string>
+    <string name="swampy">swampy</string>
+</resources>
