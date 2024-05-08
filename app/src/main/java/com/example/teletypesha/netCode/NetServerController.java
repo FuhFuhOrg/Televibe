@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+import android.util.Pair;
 
 import androidx.annotation.Nullable;
 
@@ -26,12 +27,13 @@ import javax.crypto.*;
 
 import tech.gusavila92.websocketclient.WebSocketClient;
 
+import com.example.teletypesha.crypt.Crypt;
+import com.example.teletypesha.itemClass.Chat;
+import com.example.teletypesha.itemClass.Messange;
+
 public class NetServerController extends Service implements Serializable {
     private int k = 0;
     public static String s = "95.165.27.159";
-
-    private PublicKey publicKey;
-    private PrivateKey privateKey;
 
     public static WebSocketClient webSocketClient;
     private Map<Integer, OnMessageReceived> listeners = new HashMap<>();
@@ -151,36 +153,6 @@ public class NetServerController extends Service implements Serializable {
         return k;
     }
 
-    private void PublicPrivateKeyGeneration(String msg) throws Exception {
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(2048);
-        KeyPair keyPair = keyPairGenerator.generateKeyPair();
-        publicKey = keyPair.getPublic();
-        privateKey = keyPair.getPrivate();
-    }
-
-    private byte[] Encryption(String msg) throws Exception {
-        Cipher cipher = Cipher.getInstance("RSA");
-        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-
-        return cipher.doFinal(msg.getBytes());
-    }
-
-    public String decrypt(String encryptedMsg) throws Exception {
-        Cipher cipher = Cipher.getInstance("RSA");
-        cipher.init(Cipher.DECRYPT_MODE, privateKey);
-        byte[] decodedMsg = Base64.getDecoder().decode(encryptedMsg);
-        byte[] decryptedMsg = cipher.doFinal(decodedMsg);
-        return new String(decryptedMsg);
-    }
-
-    public String getPublicKey() {
-        return Base64.getEncoder().encodeToString(publicKey.getEncoded());
-    }
-
-    public String gertPrivateKey() {
-        return Base64.getEncoder().encodeToString(privateKey.getEncoded());
-    }
 
 
 
@@ -189,7 +161,15 @@ public class NetServerController extends Service implements Serializable {
 
 
 
-//-------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
 
 
 

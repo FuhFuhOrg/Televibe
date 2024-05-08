@@ -1,8 +1,13 @@
 package com.example.teletypesha.activitys;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,10 +32,30 @@ import com.example.teletypesha.fragments.ChatsFragment;
 import com.example.teletypesha.fragments.SettingsFragment;
 import com.example.teletypesha.fragments.SingleChatFragment;
 import com.example.teletypesha.itemClass.Chat;
+import com.example.teletypesha.netCode.NetServerController;
 
 public class MainActivity extends AppCompatActivity {
     FragmentManager fragmentManager = getSupportFragmentManager();
     Chat settedChat;
+
+    NetServerController netServerController;
+    boolean isBound = false;
+
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            Log.i("WebSocket", "Session is starting");
+            NetServerController.LocalBinder binder = (NetServerController.LocalBinder) service;
+            netServerController = binder.getService();
+            isBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            Log.i("WebSocket", "Session is closed");
+            isBound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +68,14 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Реализация создания сервера
+        Log.i("WebSocket", "Try bindService");
+        Intent intent = new Intent(this, NetServerController.class);
+        //startService(intent);
+        startService(intent);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+
+        //Все для чего нужен сервер
         OpenChatsFragment();
     }
 
