@@ -153,32 +153,7 @@ public class NetServerController extends Service implements Serializable {
         return k;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public CompletableFuture<String> CreateNewChat() {
+    public CompletableFuture<String> CreateNewChat(String chatPassword, boolean isPrivacy) {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
 
@@ -196,7 +171,7 @@ public class NetServerController extends Service implements Serializable {
         });
 
         Log.i("WebSocket", "SendMessage");
-        SendRequest(requestId, "ChatCreate", "");
+        SendRequest(requestId, "ChatCreate", chatPassword + " " + isPrivacy);
 
         return future;
     }
