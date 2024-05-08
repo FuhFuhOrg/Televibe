@@ -136,4 +136,5 @@ public class MainActivity extends AppCompatActivity {
     public void FictiveSendMessange(String messange, Chat chat, Integer senderId){
         // Код
     }
+
 }
