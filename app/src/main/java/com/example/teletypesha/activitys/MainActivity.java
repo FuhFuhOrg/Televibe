@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
             NetServerController.LocalBinder binder = (NetServerController.LocalBinder) service;
             netServerController = binder.getService();
             isBound = true;
+
+            OnCreateNet();
         }
 
         @Override
@@ -77,6 +79,10 @@ public class MainActivity extends AppCompatActivity {
 
         //Все для чего нужен сервер
         OpenChatsFragment();
+    }
+
+    protected void OnCreateNet(){
+        netServerController.CreateNewChat("", false);
     }
 
     @Override

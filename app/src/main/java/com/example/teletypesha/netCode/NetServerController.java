@@ -9,6 +9,9 @@ import android.util.Pair;
 
 import androidx.annotation.Nullable;
 
+import com.example.teletypesha.itemClass.Chat;
+import com.example.teletypesha.itemClass.Messange;
+
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -148,5 +151,73 @@ public class NetServerController extends Service implements Serializable {
             k = 0;
         }
         return k;
+    }
+
+    public CompletableFuture<String> CreateNewChat(String chatPassword, boolean isPrivacy) {
+        CompletableFuture<String> future = new CompletableFuture<>();
+        int requestId = GetK();
+
+        setOnMessageReceivedListener(requestId , new OnMessageReceived() {
+            @Override
+            public void onMessage(String[] parts) {
+                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
+                    if (parts.length > 1) {
+                        future.complete(parts[1]);
+                    } else {
+                        future.complete(null);
+                    }
+                }
+            }
+        });
+
+        Log.i("WebSocket", "SendMessage");
+        SendRequest(requestId, "ChatCreate", chatPassword + " " + isPrivacy);
+
+        return future;
+    }
+
+    public CompletableFuture<ArrayList<Messange>> SendMessage() {
+        CompletableFuture<ArrayList<Messange>> future = new CompletableFuture<>();
+        int requestId = GetK();
+
+        setOnMessageReceivedListener(requestId , new OnMessageReceived() {
+            @Override
+            public void onMessage(String[] parts) throws Exception {
+                Log.i("WebSocket", Arrays.toString(parts));
+
+                ArrayList arrayList = new ArrayList(Arrays.asList(parts));
+                arrayList.remove(0);
+                arrayList.remove(0);
+
+                Log.i("WebSocket", "message has been sent");
+            }
+        });
+
+        Log.i("WebSocket", "SendMessage");
+        SendRequest(requestId, "GetRecomendsRecepts", "");
+
+        return future;
+    }
+
+    public CompletableFuture<Boolean> Login(String login, String password) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        int requestId = GetK();
+
+        setOnMessageReceivedListener(requestId, new OnMessageReceived() {
+            @Override
+            public void onMessage(String[] parts) {
+                Log.i("WebSocket", "Return login");
+                if (Objects.equals(parts[1], "true")) {
+                    future.complete(true);
+                } else {
+                    future.complete(false);
+                }
+            }
+        });
+
+        Log.i("WebSocket", "Try login");
+        SendRequest(requestId, "Login", login + " " + password);
+
+        return future;
     }
 }
