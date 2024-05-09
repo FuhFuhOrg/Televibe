@@ -31,6 +31,9 @@ android {
 dependencies {
 
     implementation("tech.gusavila92:java-android-websocket-client:1.2.2")
+    implementation("com.google.code.gson:gson:2.8.9")
+    implementation("androidx.benchmark:benchmark-junit4:1.2.4")
+
 
     implementation(libs.appcompat)
     implementation(libs.material)

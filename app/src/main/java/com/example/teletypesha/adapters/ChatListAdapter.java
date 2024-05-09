@@ -67,7 +67,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatVi
         public void bind(Chat chat) {
             // Устанавливаем данные в элементы макета
             Log.i("Debug Adp", "S Create Maket");
-            labelView.setText(chat.getName().get(0).toString());
+            labelView.setText(chat.GetLabel());
             Messange msg = chat.getLastMsg();
             if(msg != null){
                 lastMsgView.setText(msg.text);

@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -32,6 +33,7 @@ import com.example.teletypesha.fragments.ChatsFragment;
 import com.example.teletypesha.fragments.SettingsFragment;
 import com.example.teletypesha.fragments.SingleChatFragment;
 import com.example.teletypesha.itemClass.Chat;
+import com.example.teletypesha.jsons.JsonDataSaver;
 import com.example.teletypesha.netCode.NetServerController;
 
 public class MainActivity extends AppCompatActivity {
@@ -40,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
     NetServerController netServerController;
     boolean isBound = false;
+
+    JsonDataSaver jsonDataSaver = new JsonDataSaver();
 
     private ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -60,6 +64,21 @@ public class MainActivity extends AppCompatActivity {
     };
 
     @Override
+    public void onBackPressed() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment currentFragment = fragmentManager.findFragmentById(R.id.main_fragment);
+
+        if (currentFragment instanceof SingleChatFragment) {
+            OpenChatsFragment();
+        } else if (currentFragment instanceof SettingsFragment) {
+            OpenChatsFragment();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
@@ -70,12 +89,15 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+
+
         // Реализация создания сервера
         Log.i("WebSocket", "Try bindService");
         Intent intent = new Intent(this, NetServerController.class);
-        //startService(intent);
         startService(intent);
         bindService(intent, connection, Context.BIND_AUTO_CREATE);
+
+
 
         //Все для чего нужен сервер
         OpenChatsFragment();
