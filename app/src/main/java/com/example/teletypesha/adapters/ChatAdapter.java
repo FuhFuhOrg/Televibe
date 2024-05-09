@@ -71,7 +71,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
             // Устанавливаем данные в элементы макета
             Log.i("Debug Adp", "S Create Maket");
             msgAuthor.setText(chat.GetUser(messange.author).GetName());
-            messangeText.setText(messange.text);
+            messangeText.setText(chat.GetUser(messange.author).Decrypt(messange.text));
 
             ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) buttonLayoutView.getLayoutParams();
             if (Objects.equals(chat.GetYourId(), messange.author)){

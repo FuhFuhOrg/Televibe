@@ -40,6 +40,7 @@ public class ChatsFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler);
 
 
+        // Это комментировать
         //CreateFictChats();
 
 
@@ -68,7 +69,7 @@ public class ChatsFragment extends Fragment {
             ArrayList<Messange> messages = new ArrayList<>();
             for (int j = 0; j < 5 + Math.abs(random.nextInt() % 25); j++){
                 Integer randomUserId = keys.get(random.nextInt(keys.size()));
-                messages.add(new Messange(randomUserId, "hi", LocalDateTime.now()));
+                messages.add(new Messange(randomUserId, users.get(randomUserId).Encrypt("hi"), LocalDateTime.now()));
             }
 
             chatList.add(new Chat(yourId, messages, users, String.valueOf(random.nextInt())));

@@ -70,7 +70,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatVi
             labelView.setText(chat.GetLabel());
             Messange msg = chat.getLastMsg();
             if(msg != null){
-                lastMsgView.setText(msg.text);
+                lastMsgView.setText(chat.GetUser(msg.author).Decrypt(msg.text));
             }
 
             buttonLayoutView.setOnClickListener(new View.OnClickListener() {

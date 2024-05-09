@@ -91,6 +91,11 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+        //Создание Json
+        JsonDataSaver.AwakeJson();
+
+
+
         // Реализация создания сервера
         Log.i("WebSocket", "Try bindService");
         Intent intent = new Intent(this, NetServerController.class);

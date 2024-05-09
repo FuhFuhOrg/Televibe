@@ -3,9 +3,12 @@ package com.example.teletypesha.jsons;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.teletypesha.crypt.KeySerializer;
 import com.example.teletypesha.itemClass.Chat;
 import com.example.teletypesha.itemClass.User;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
@@ -18,12 +21,23 @@ import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class JsonDataSaver implements Serializable  {
     private static JSONObject data = new JSONObject();
     static String filename = "SavedChats.json";
+    static Gson gson;
+
+    public static void AwakeJson(){
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(PrivateKey.class, new KeySerializer());
+        gsonBuilder.registerTypeAdapter(PublicKey.class, new KeySerializer());
+        gson = gsonBuilder.create();
+    }
+
 
     public static ArrayList<Chat> TryLoadChats(Context context) {
         JSONObject jsonObject = TryLoadJson(context);
@@ -34,14 +48,13 @@ public class JsonDataSaver implements Serializable  {
             throw new RuntimeException(e);
         }
         Type listType = new TypeToken<ArrayList<Chat>>(){}.getType();
-        ArrayList<Chat> chats = new Gson().fromJson(jsonChats, listType);
+        ArrayList<Chat> chats = gson.fromJson(jsonChats, listType);
 
         Log.i("JsonDataSaver", "Данные успешно загружены");
 
         return chats;
     }
     public static void SaveChats(ArrayList<Chat> chats, Context context){
-        Gson gson = new Gson();
         Object json = gson.toJson(chats);
         try {
             Add("chats", json);
