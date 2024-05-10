@@ -1,23 +1,20 @@
 package com.example.teletypesha.activitys;
 
+import static com.example.teletypesha.fragments.ChatsFragment.CreateFictChats;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -29,6 +26,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.teletypesha.R;
 import com.example.teletypesha.fragments.AddChatFragment;
@@ -37,21 +35,54 @@ import com.example.teletypesha.fragments.CreateChatFragment;
 import com.example.teletypesha.fragments.SettingsFragment;
 import com.example.teletypesha.fragments.SingleChatFragment;
 import com.example.teletypesha.itemClass.Chat;
+import com.example.teletypesha.itemClass.Messange;
+import com.example.teletypesha.itemClass.SharedViewByChats;
 import com.example.teletypesha.itemClass.User;
 import com.example.teletypesha.jsons.JsonDataSaver;
 import com.example.teletypesha.netCode.NetServerController;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class MainActivity extends AppCompatActivity {
     FragmentManager fragmentManager = getSupportFragmentManager();
-    Chat settedChat;
-
     NetServerController netServerController;
     boolean isBound = false;
+    private SharedViewByChats sharedViewByChats;
+
+
+
+    /// Перенести эту гадость в воркер
+    private Handler handler = new Handler();
+    private static final long DELAY_MINUTES = 1 * 60 * 1000; // 1 минута в миллисекундах
+    private Runnable periodicTask = new Runnable() {
+        @Override
+        public void run() {
+            GetMessages();
+            handler.postDelayed(this, DELAY_MINUTES);
+        }
+    };
+    @Override
+    protected void onResume() {
+        super.onResume();
+        handler.postDelayed(periodicTask, DELAY_MINUTES); // Запуск первой задачи при возобновлении активности
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        handler.removeCallbacks(periodicTask); // Остановка задачи при приостановке активности
+    }
+    ///
+
+
+
+
+
 
     private ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -101,10 +132,10 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-
-
         //Создание Json
         JsonDataSaver.AwakeJson();
+
+        sharedViewByChats = new ViewModelProvider(this).get(SharedViewByChats.class);
 
 
 
@@ -114,14 +145,12 @@ public class MainActivity extends AppCompatActivity {
         startService(intent);
         bindService(intent, connection, Context.BIND_AUTO_CREATE);
 
-
-
-        //Все для чего нужен сервер
-        OpenChatsFragment();
     }
 
     protected void OnCreateNet(){
         //netServerController.CreateNewChat("", false);
+        //Все для чего нужен сервер
+        OpenChatsFragment();
     }
 
     @Override
@@ -158,9 +187,25 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
     private void OpenChatsFragment(){
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         ChatsFragment chatFragment = new ChatsFragment();
+
+        GetMessages();
+
         fragmentTransaction.replace(R.id.main_fragment, chatFragment);
         fragmentTransaction.commit();
     }
@@ -168,6 +213,8 @@ public class MainActivity extends AppCompatActivity {
     public void OpenSettingsFragment(){
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         SettingsFragment settingsFragment = new SettingsFragment();
+
+
         fragmentTransaction.replace(R.id.main_fragment, settingsFragment);
         fragmentTransaction.commit();
     }
@@ -175,8 +222,10 @@ public class MainActivity extends AppCompatActivity {
     public void OpenChat(Chat chat){
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         SingleChatFragment singleChatFragment = new SingleChatFragment();
-        singleChatFragment.SetChat(chat);
-        settedChat = chat;
+
+        GetMessages();
+        sharedViewByChats.setSelectChat(chat);
+
         fragmentTransaction.replace(R.id.main_fragment, singleChatFragment);
         fragmentTransaction.commit();
     }
@@ -184,6 +233,8 @@ public class MainActivity extends AppCompatActivity {
     public void OpenAddChatFragment(){
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         AddChatFragment addChatFragment = new AddChatFragment();
+
+
         fragmentTransaction.replace(R.id.main_fragment, addChatFragment);
         fragmentTransaction.commit();
     }
@@ -191,9 +242,19 @@ public class MainActivity extends AppCompatActivity {
     public void OpenCreateChatFragment(){
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         CreateChatFragment createChatFragment = new CreateChatFragment();
+
+
         fragmentTransaction.replace(R.id.main_fragment, createChatFragment);
         fragmentTransaction.commit();
     }
+
+
+
+
+
+
+
+
 
     public void CreateChat(View view) {
         String chatPassword = String.valueOf(((EditText) findViewById(R.id.create_chat_password)).getText());
@@ -214,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
         String chatId = String.valueOf(((EditText) findViewById(R.id.add_chat_login)).getText());
         String chatPassword = String.valueOf(((EditText) findViewById(R.id.add_chat_password)).getText());
 
-        //netServerController.AddNewChat(chatId, chatPassword);
+        netServerController.AddNewChat(chatId, chatPassword);
     }
 
     private void LocalAddChat(String idChat, String idUserStr){
@@ -234,10 +295,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void SendMessage(View view) {
         EditText editText = ((EditText) findViewById(R.id.message_edit_text));
-        byte[] messange = settedChat.GetUser(settedChat.GetYourId()).Encrypt(String.valueOf(editText.getText()));
+        byte[] messange = sharedViewByChats.getSelectChat().getValue().GetUser(
+                sharedViewByChats.getSelectChat().getValue().GetYourId()).Encrypt(String.valueOf(editText.getText()));
         Timestamp ts = new Timestamp(System.currentTimeMillis());
 
-        CompletableFuture<String> future = NetServerController.SendMessage(messange, settedChat.GetYourId(), ts);
+        CompletableFuture<String> future = NetServerController.SendMessage(messange, sharedViewByChats.getSelectChat().getValue().GetYourId(), ts);
         future.thenAccept(goin -> {
             if (goin != null) {
                 editText.setText("");
@@ -246,5 +308,99 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("WebSocket", "Get send msg unsuccessful");
             }
         });
+    }
+
+    private void CheckSavedChats(){
+        sharedViewByChats.setChatList((JsonDataSaver.TryLoadChats(this)));
+        if (sharedViewByChats.getChatList().getValue() == null){
+            sharedViewByChats.setChatList(new ArrayList<>());
+            // Это комментировать
+            CreateFictChats(sharedViewByChats.getChatList().getValue());
+            JsonDataSaver.SaveChats(sharedViewByChats.getChatList().getValue(), this);
+        }
+    }
+
+    private String CreateGetMessagesStr(){
+        StringBuilder str = new StringBuilder();
+
+        str.append(sharedViewByChats.getChatList().getValue().size());
+
+        for (int i = 0; i < sharedViewByChats.getChatList().getValue().size(); i++){
+            Chat chat = sharedViewByChats.getChatList().getValue().get(i);
+            HashMap<Integer, ArrayList<Integer>> missMsg = chat.GetMissingIdsForAllAuthors();
+            if(missMsg == null || missMsg.isEmpty()){
+                continue;
+            }
+            str.append(chat.GetChatId() + " " + missMsg.size());
+
+            for(Map.Entry<Integer, ArrayList<Integer>> entry : missMsg.entrySet()){
+                int authorId = entry.getKey();
+                ArrayList<Integer> messages = entry.getValue();
+                int messageCount = messages.size();
+
+                str.append(" " + authorId + " " + messageCount);
+
+                for(Integer msg : messages){
+                    str.append(" " + msg);
+                }
+            }
+        }
+
+        return str.toString();
+    }
+
+    private void GetMessages(){
+        CheckSavedChats();
+
+        String str = CreateGetMessagesStr();
+
+        CompletableFuture<String> future = NetServerController.GetMessages(str.toString());
+        future.thenAccept(goin -> {
+            if (goin != null) {
+                UpdateMessages(goin);
+                Log.i("WebSocket", goin);
+            } else {
+                Log.e("WebSocket", "Get send msg unsuccessful");
+            }
+        });
+    }
+
+    public void UpdateMessages(String str){
+        ArrayList<Chat> chatList = new ArrayList<>();
+        chatList.addAll(sharedViewByChats.getChatList().getValue());
+        String[] parts = str.split(" ");
+        int chatCount = Integer.parseInt(parts[0]);
+        int index = 1;
+
+        for(int i = 0; i < chatCount; i++){
+            String chatId = parts[index++];
+            int authorCount = Integer.parseInt(parts[index++]);
+
+            for(Chat chat : chatList){
+                if(chat.GetChatId().equals(chatId)){
+                    if(chat != null){
+                        for(int j = 0; j < authorCount; j++){
+                            int authorId = Integer.parseInt(parts[index++]);
+                            int messageCount = Integer.parseInt(parts[index++]);
+
+                            for(int k = 0; k < messageCount; k++){
+                                int messageId = Integer.parseInt(parts[index++]);
+                                byte[] messageText = Base64.getDecoder().decode(parts[index++]);
+                                LocalDateTime messageTime = LocalDateTime.parse(parts[index++]);
+                                Messange message = new Messange(authorId, messageId, messageText, messageTime);
+                                chat.AddChangeMessage(message);
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        JsonDataSaver.SaveChats(chatList, this);
+        sharedViewByChats.setChatList(chatList);
+    }
+
+    public SharedViewByChats GetSharedViewByChats() {
+        return sharedViewByChats;
     }
 }

@@ -29,6 +29,18 @@ public class Chat {
         }
     }
 
+    public void AddChangeMessage(Messange msg){
+        Messange getMsg = GetMessangeForId(msg.messageId, msg.author);
+        if(getMsg != null){
+            messages.remove(getMsg);
+        }
+        messages.add(msg);
+    }
+
+    public String GetChatId(){
+        return chatId;
+    }
+
     public void SetLabel(String label){
         this.label = label;
     }
@@ -42,7 +54,7 @@ public class Chat {
     }
 
     public Messange getLastMsg(){
-        if(messages.size() > 0){
+        if(messages != null && messages.size() > 0){
             return messages.get(messages.size() - 1);
         }
         else{
@@ -54,15 +66,47 @@ public class Chat {
         return messages;
     }
 
-    public Messange getLastMsgByAuthor(int authorId){
-        Messange lastMsg = null;
-        for(Messange msg : messages){
-            if(msg.messageId == authorId){
-                if(lastMsg == null || msg.messageId > lastMsg.messageId){
-                    lastMsg = msg;
-                }
+    public Messange GetMessangeForId(Integer id, Integer authorId){
+        for (int i = 0; i < messages.size(); i++) {
+            if (messages.get(i).messageId == id && messages.get(i).author == authorId){
+                return messages.get(i);
             }
         }
-        return lastMsg;
+        return null;
     }
+
+    public HashMap<Integer, ArrayList<Integer>> GetMissingIdsForAllAuthors(){
+        HashMap<Integer, ArrayList<Integer>> allMessageIdsForAllAuthors = new HashMap<>();
+        HashMap<Integer, Integer> lastMsgIdForAllAuthors = new HashMap<>();
+        HashMap<Integer, ArrayList<Integer>> missingMessageIdsForAllAuthors = new HashMap<>();
+
+        if (messages == null)
+            return null;
+        for(Messange msg : messages){
+            if(users.containsKey(msg.author)){
+                allMessageIdsForAllAuthors.putIfAbsent(msg.author, new ArrayList<>());
+                allMessageIdsForAllAuthors.get(msg.author).add(msg.messageId);
+                lastMsgIdForAllAuthors.put(msg.author, Math.max(lastMsgIdForAllAuthors.getOrDefault(msg.author, 0), msg.messageId));
+            }
+        }
+
+        for(Integer authorId : allMessageIdsForAllAuthors.keySet()){
+            ArrayList<Integer> allMessageIds = allMessageIdsForAllAuthors.get(authorId);
+            ArrayList<Integer> missingMessageIds = new ArrayList<>();
+            for(int i = 1; i <= lastMsgIdForAllAuthors.get(authorId); i++){
+                if(!allMessageIds.contains(i)){
+                    missingMessageIds.add(i);
+                }
+            }
+
+            System.out.println("Missing message IDs for author " + authorId + ": " + missingMessageIds);
+            System.out.println("Last message ID for author " + authorId + ": " + lastMsgIdForAllAuthors.get(authorId));
+
+            missingMessageIds.add(lastMsgIdForAllAuthors.get(authorId));
+            missingMessageIdsForAllAuthors.put(authorId, missingMessageIds);
+        }
+
+        return missingMessageIdsForAllAuthors;
+    }
+
 }

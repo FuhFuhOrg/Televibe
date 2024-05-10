@@ -39,6 +39,9 @@ public class NetServerController extends Service implements Serializable {
     public static WebSocketClient webSocketClient;
     private static Map<Integer, OnMessageReceived> listeners = new HashMap<>();
 
+    public void AddNewChat(String chatId, String chatPassword) {
+    }
+
     public interface OnMessageReceived {
         void onMessage(String[] parts) throws Exception;
     }
@@ -139,7 +142,8 @@ public class NetServerController extends Service implements Serializable {
     }
 
     private static void SendRequest(int id, String requestWord, String string){
-        webSocketClient.send("/sql " + requestWord + " " + String.valueOf(id) + " " + string);
+        if(webSocketClient != null)
+            webSocketClient.send("/sql " + requestWord + " " + String.valueOf(id) + " " + string);
     }
 
     private static void SendUnregistredRequest(String string){
@@ -204,16 +208,16 @@ public class NetServerController extends Service implements Serializable {
     }
 
     // Вернуть сообщения, которые больше idMsg
-    public static CompletableFuture<String> GetMessages(int idSender, int idMsg) throws Exception {
+    public static CompletableFuture<String> GetMessages(String str) {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
 
         setOnMessageReceivedListener(requestId, new OnMessageReceived() {
             @Override
             public void onMessage(String[] parts) {
-                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
+                if (parts.length > 0) {
                     if (parts.length > 1) {
-                        future.complete(parts[1]);
+                        future.complete(parts[0]);
                     } else {
                         future.complete(null);
                     }
@@ -222,7 +226,7 @@ public class NetServerController extends Service implements Serializable {
         });
 
         Log.i("WebSocket", "GetMessages");
-        SendRequest(requestId, "GetMessages", String.valueOf(idSender) + " " + String.valueOf(idMsg));
+        SendRequest(requestId, "GetMessages", str);
 
         return future;
     }

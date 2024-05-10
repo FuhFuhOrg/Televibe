@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,6 +28,7 @@ import com.example.teletypesha.netCode.NetServerController;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -33,6 +36,12 @@ public class ChatsFragment extends Fragment {
     private RecyclerView recyclerView;
     ArrayList<Chat> chatList = new ArrayList<>();
     ChatListAdapter adapter;
+    private LiveData<ArrayList<Chat>> chatListLiveData;
+
+    public void setChatListLiveData(LiveData<ArrayList<Chat>> chatListLiveData) {
+        this.chatListLiveData = chatListLiveData;
+    }
+
 
     @Nullable
     @Override
@@ -40,25 +49,29 @@ public class ChatsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_chats, container, false);
         recyclerView = view.findViewById(R.id.recycler);
 
-
-
-
-        chatList = JsonDataSaver.TryLoadChats(getContext());
-        if (chatList == null){
-            chatList = new ArrayList<>();
-            // Это комментировать
-            CreateFictChats();
+        if (getActivity() instanceof MainActivity) {
+            MainActivity mainActivity = (MainActivity) getActivity();
+            setChatListLiveData(mainActivity.GetSharedViewByChats().getChatList());
         }
-
-        //Тут штучки для получения из сервера бдшки
-        GetMessages();
-
-        CreateItemList();
 
         return view;
     }
 
-    private void CreateFictChats(){
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        chatListLiveData.observe(getViewLifecycleOwner(), new Observer<ArrayList<Chat>>() {
+            @Override
+            public void onChanged(ArrayList<Chat> newChatList) {
+                chatList.clear();
+                chatList.addAll(newChatList);
+                CreateItemList();
+            }
+        });
+    }
+
+    public static void CreateFictChats(ArrayList<Chat> chatList){
         Random random = new Random();
         for (int i = 0; i < 10; i++){
             Integer yourId = random.nextInt();
@@ -81,7 +94,6 @@ public class ChatsFragment extends Fragment {
                 chatList.get(chatList.size() - 1).SetLabel("Amogus");
             }
         }
-        JsonDataSaver.SaveChats(chatList, getContext());
     }
 
     private void CreateItemList(){
@@ -98,14 +110,5 @@ public class ChatsFragment extends Fragment {
                 Log.i("Debug", "adapter set");
             }
         });
-    }
-
-    private void GetMessages(){
-        for (int i = 0; i < chatList.size(); i++){
-            Chat chat = chatList.get(i);
-            HashMap<Integer, User> users = chat.GetUsers();
-        }
-
-        NetServerController.GetMessages();
     }
 }
