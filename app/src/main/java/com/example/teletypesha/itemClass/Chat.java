@@ -3,26 +3,44 @@ package com.example.teletypesha.itemClass;
 import android.widget.ImageButton;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Chat {
     Integer yourId;
     ArrayList<Messange> messanges;
-    ArrayList<Integer> anotherUsers;
-    Integer secondUserHashId;
+    HashMap<Integer, User> users;
+    String label, chatId;
 
-    public Chat(Integer yourId, ArrayList<Messange> messanges, ArrayList<Integer> anotherUsers, Integer secondUserHashId){
+    public Chat(Integer yourId, ArrayList<Messange> messanges, HashMap<Integer, User> users, String chatId){
         this.yourId = yourId;
         this.messanges = messanges;
-        this.anotherUsers = anotherUsers;
-        this.secondUserHashId = secondUserHashId;
+        this.users = users;
+        this.chatId = chatId;
     }
 
     public Integer GetYourId(){
         return yourId;
     }
 
-    public ArrayList<Integer> getName(){
-        return anotherUsers;
+    public String GetLabel(){
+        if(label != null){
+            return label;
+        }
+        else{
+            return chatId;
+        }
+    }
+
+    public void SetLabel(String label){
+        this.label = label;
+    }
+
+    public HashMap<Integer, User> GetUsers(){
+        return users;
+    }
+
+    public User GetUser(int id){
+        return users.get(id);
     }
 
     public Messange getLastMsg(){

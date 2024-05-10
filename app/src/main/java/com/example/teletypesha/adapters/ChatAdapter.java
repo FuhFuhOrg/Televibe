@@ -18,6 +18,8 @@ import com.example.teletypesha.activitys.MainActivity;
 import com.example.teletypesha.itemClass.Chat;
 import com.example.teletypesha.itemClass.Messange;
 
+import java.util.Objects;
+
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder> {
 
     private Chat chat;
@@ -68,11 +70,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         public void bind(Messange messange) {
             // Устанавливаем данные в элементы макета
             Log.i("Debug Adp", "S Create Maket");
-            msgAuthor.setText(String.valueOf(messange.author));
-            messangeText.setText(messange.text);
+            msgAuthor.setText(chat.GetUser(messange.author).GetName());
+            messangeText.setText(chat.GetUser(messange.author).Decrypt(messange.text));
 
             ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) buttonLayoutView.getLayoutParams();
-            if (messange.author == chat.GetYourId()){
+            if (Objects.equals(chat.GetYourId(), messange.author)){
                 layoutParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
                 layoutParams.startToStart = ConstraintLayout.LayoutParams.UNSET;
                 layoutParams.setMarginEnd(2);
