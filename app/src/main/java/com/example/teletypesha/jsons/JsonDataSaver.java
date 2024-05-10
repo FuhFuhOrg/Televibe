@@ -42,11 +42,18 @@ public class JsonDataSaver implements Serializable  {
     public static ArrayList<Chat> TryLoadChats(Context context) {
         JSONObject jsonObject = TryLoadJson(context);
         String jsonChats = null;
-        try {
-            jsonChats = jsonObject.getString("chats");
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
+        if(jsonObject != null) {
+            try {
+                jsonChats = jsonObject.getString("chats");
+            } catch (JSONException e) {
+                Log.e("JsonDataSaver", e.toString());
+                return null;
+            }
+        } else {
+            Log.e("JsonDataSaver", "jsonObject is null");
+            return null;
         }
+
         Type listType = new TypeToken<ArrayList<Chat>>(){}.getType();
         ArrayList<Chat> chats = gson.fromJson(jsonChats, listType);
 

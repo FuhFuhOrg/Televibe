@@ -40,13 +40,13 @@ public class ChatsFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler);
 
 
-        // Это комментировать
-        // CreateFictChats();
 
 
         chatList = JsonDataSaver.TryLoadChats(getContext());
         if (chatList == null){
             chatList = new ArrayList<>();
+            // Это комментировать
+            CreateFictChats();
         }
 
         CreateItemList();

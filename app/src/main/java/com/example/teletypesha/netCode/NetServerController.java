@@ -206,4 +206,19 @@ public class NetServerController extends Service implements Serializable {
 
         return future;
     }
+
+    public CompletableFuture<String> FictiveCreateChat(String chatId, String password, boolean isPrivacy){
+        CompletableFuture<String> future = new CompletableFuture<>();
+        // Код
+
+
+
+
+
+
+
+
+
+        return future;
+    }
 }

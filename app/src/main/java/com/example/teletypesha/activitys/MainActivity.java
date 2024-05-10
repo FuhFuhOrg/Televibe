@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,7 +30,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.teletypesha.R;
+import com.example.teletypesha.fragments.AddChatFragment;
 import com.example.teletypesha.fragments.ChatsFragment;
+import com.example.teletypesha.fragments.CreateChatFragment;
 import com.example.teletypesha.fragments.SettingsFragment;
 import com.example.teletypesha.fragments.SingleChatFragment;
 import com.example.teletypesha.itemClass.Chat;
@@ -69,6 +72,10 @@ public class MainActivity extends AppCompatActivity {
         if (currentFragment instanceof SingleChatFragment) {
             OpenChatsFragment();
         } else if (currentFragment instanceof SettingsFragment) {
+            OpenChatsFragment();
+        } else if (currentFragment instanceof AddChatFragment) {
+            OpenChatsFragment();
+        } else if (currentFragment instanceof CreateChatFragment) {
             OpenChatsFragment();
         } else {
             super.onBackPressed();
@@ -133,11 +140,11 @@ public class MainActivity extends AppCompatActivity {
             return true;
         } else if (id == R.id.action_setting_add_chat) {
             Toast.makeText(MainActivity.this, "Добавить чат", Toast.LENGTH_LONG).show();
-            //OpenAddChatFragment();
+            OpenAddChatFragment();
             return true;
         } else if (id == R.id.action_setting_create_chat) {
             Toast.makeText(MainActivity.this, "Создать чат", Toast.LENGTH_LONG).show();
-            //OpenCreateChatFragment();
+            OpenCreateChatFragment();
             return true;
         }
 
@@ -167,11 +174,26 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    public void CreateChat(View view) {
-        String chatId = String.valueOf(((EditText) findViewById(R.id.add_chat_login)).getText());
-        String chatPassword = String.valueOf(((EditText) findViewById(R.id.add_chat_password)).getText());
+    public void OpenAddChatFragment(){
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        AddChatFragment addChatFragment = new AddChatFragment();
+        fragmentTransaction.replace(R.id.main_fragment, addChatFragment);
+        fragmentTransaction.commit();
+    }
 
-        netServerController.FictiveAddChat(chatId, chatPassword);
+    public void OpenCreateChatFragment(){
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        CreateChatFragment createChatFragment = new CreateChatFragment();
+        fragmentTransaction.replace(R.id.main_fragment, createChatFragment);
+        fragmentTransaction.commit();
+    }
+
+    public void CreateChat(View view) {
+        String chatId = String.valueOf(((EditText) findViewById(R.id.create_chat_login)).getText());
+        String chatPassword = String.valueOf(((EditText) findViewById(R.id.create_chat_password)).getText());
+        ToggleButton toggleButton = (ToggleButton) findViewById(R.id.create_chat_is_privacy);
+
+        netServerController.FictiveCreateChat(chatId, chatPassword, toggleButton.isChecked());
     }
 
     public void AddChat(View view) {
