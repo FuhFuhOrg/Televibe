@@ -15,6 +15,7 @@ import com.example.teletypesha.itemClass.Messange;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -153,6 +154,9 @@ public class NetServerController extends Service implements Serializable {
         return k;
     }
 
+    // -------------------------------------------------------------------------------------------
+
+    // Создание нового чата
     public CompletableFuture<String> CreateNewChat(String chatPassword, boolean isPrivacy) {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
@@ -170,54 +174,179 @@ public class NetServerController extends Service implements Serializable {
             }
         });
 
-        Log.i("WebSocket", "SendMessage");
+        Log.i("WebSocket", "CreateNewChat");
         SendRequest(requestId, "ChatCreate", chatPassword + " " + isPrivacy);
 
         return future;
     }
 
-    public CompletableFuture<ArrayList<Messange>> SendMessage() {
-        CompletableFuture<ArrayList<Messange>> future = new CompletableFuture<>();
+    // Отправить сообщение
+    public CompletableFuture<String> SendMessage(int idMsg, int idSender, Timestamp timeMsg, String msg, PublicKey publicKey) throws Exception {
+        CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
 
+        String encryptionMsg = Arrays.toString(Crypt.Encryption(msg, publicKey));
         setOnMessageReceivedListener(requestId , new OnMessageReceived() {
-            @Override
-            public void onMessage(String[] parts) throws Exception {
-                Log.i("WebSocket", Arrays.toString(parts));
-
-                ArrayList arrayList = new ArrayList(Arrays.asList(parts));
-                arrayList.remove(0);
-                arrayList.remove(0);
-
-                Log.i("WebSocket", "message has been sent");
+            public void onMessage(String[] parts) {
+                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
+                    if (parts.length > 1) {
+                        future.complete(parts[1]);
+                    } else {
+                        future.complete(null);
+                    }
+                }
             }
         });
 
         Log.i("WebSocket", "SendMessage");
-        SendRequest(requestId, "GetRecomendsRecepts", "");
+        SendRequest(requestId, "SendMessage", String.valueOf(requestId) + " " + String.valueOf(idMsg) + " " + String.valueOf(idSender) + " " + String.valueOf(timeMsg) + " " + encryptionMsg);
 
         return future;
     }
 
-    public CompletableFuture<Boolean> Login(String login, String password) {
-        CompletableFuture<Boolean> future = new CompletableFuture<>();
+    // Вернуть сообщения, которые больше idMsg
+    public CompletableFuture<String> GetMessages(int idSender, int idMsg) throws Exception {
+        CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
 
         setOnMessageReceivedListener(requestId, new OnMessageReceived() {
             @Override
             public void onMessage(String[] parts) {
-                Log.i("WebSocket", "Return login");
-                if (Objects.equals(parts[1], "true")) {
-                    future.complete(true);
-                } else {
-                    future.complete(false);
+                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
+                    if (parts.length > 1) {
+                        future.complete(parts[1]);
+                    } else {
+                        future.complete(null);
+                    }
                 }
             }
         });
 
-        Log.i("WebSocket", "Try login");
-        SendRequest(requestId, "Login", login + " " + password);
+        Log.i("WebSocket", "GetMessages");
+        SendRequest(requestId, "GetMessages", String.valueOf(idSender) + " " + String.valueOf(idMsg));
 
         return future;
     }
+
+    // Удаление сообщения
+    public CompletableFuture<String> DeleteMessage(int idSender, int idMsg) throws Exception {
+        CompletableFuture<String> future = new CompletableFuture<>();
+        int requestId = GetK();
+
+        setOnMessageReceivedListener(requestId, new OnMessageReceived() {
+            @Override
+            public void onMessage(String[] parts) {
+                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
+                    if (parts.length > 1) {
+                        future.complete(parts[1]);
+                    } else {
+                        future.complete(null);
+                    }
+                }
+            }
+        });
+
+        Log.i("WebSocket", "DeleteMessage");
+        SendRequest(requestId, "DeleteMessage", String.valueOf(idSender) + " " + String.valueOf(idMsg));
+
+        return future;
+    }
+
+    // Изменение сообщения
+    public CompletableFuture<String> RefactorMessage(int idMsg, String msg, PublicKey publicKey) throws Exception {
+        CompletableFuture<String> future = new CompletableFuture<>();
+        int requestId = GetK();
+
+        String encryptionMsg = Arrays.toString(Crypt.Encryption(msg, publicKey));
+        setOnMessageReceivedListener(requestId, new OnMessageReceived() {
+            @Override
+            public void onMessage(String[] parts) {
+                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
+                    if (parts.length > 1) {
+                        future.complete(parts[1]);
+                    } else {
+                        future.complete(null);
+                    }
+                }
+            }
+        });
+
+        Log.i("WebSocket", "RefactorMessage");
+        SendRequest(requestId, "RefactorMessage", String.valueOf(idMsg) + " " + encryptionMsg);
+
+        return future;
+    }
+
+    // Поиск сообщения по ключу в msg
+    public CompletableFuture<String> ReturnMessageByKeyWord(int idSender, String msg, PublicKey publicKey) throws Exception {
+        CompletableFuture<String> future = new CompletableFuture<>();
+        int requestId = GetK();
+
+        String encryptionMsg = Arrays.toString(Crypt.Encryption(msg, publicKey));
+        setOnMessageReceivedListener(requestId, new OnMessageReceived() {
+            @Override
+            public void onMessage(String[] parts) {
+                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
+                    if (parts.length > 1) {
+                        future.complete(parts[1]);
+                    } else {
+                        future.complete(null);
+                    }
+                }
+            }
+        });
+
+        Log.i("WebSocket", "ReturnMessageByKeyWord");
+        SendRequest(requestId, "ReturnMessageByKeyWord", String.valueOf(idSender) + " " + encryptionMsg);
+
+        return future;
+    }
+
+    // Возврат сообщения по idMsg
+    public CompletableFuture<String> ReturnMessageByIdMsg(int idMsg) throws Exception {
+        CompletableFuture<String> future = new CompletableFuture<>();
+        int requestId = GetK();
+        setOnMessageReceivedListener(requestId, new OnMessageReceived() {
+            @Override
+            public void onMessage(String[] parts) {
+                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
+                    if (parts.length > 1) {
+                        future.complete(parts[1]);
+                    } else {
+                        future.complete(null);
+                    }
+                }
+            }
+        });
+
+        Log.i("WebSocket", "ReturnMessageByIdMsg");
+        SendRequest(requestId, "ReturnMessageByIdMsg", String.valueOf(idMsg));
+
+        return future;
+    }
+
+    // Возврат k сообщений, отсортированных по времени
+    public CompletableFuture<String> ReturnLastKMessages(int idSender, int kMessages) throws Exception {
+        CompletableFuture<String> future = new CompletableFuture<>();
+        int requestId = GetK();
+
+        setOnMessageReceivedListener(requestId, new OnMessageReceived() {
+            @Override
+            public void onMessage(String[] parts) {
+                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
+                    if (parts.length > 1) {
+                        future.complete(parts[1]);
+                    } else {
+                        future.complete(null);
+                    }
+                }
+            }
+        });
+
+        Log.i("WebSocket", "ReturnLastKMessages");
+        SendRequest(requestId, "ReturnLastKMessages", String.valueOf(idSender) + " " + String.valueOf(kMessages));
+
+        return future;
+    }
+
 }
