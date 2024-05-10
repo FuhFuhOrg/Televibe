@@ -185,7 +185,6 @@ public class NetServerController extends Service implements Serializable {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
 
-        String encryptionMsg = Arrays.toString(Crypt.Encryption(msg, publicKey));
         setOnMessageReceivedListener(requestId , new OnMessageReceived() {
             public void onMessage(String[] parts) {
                 if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
@@ -199,7 +198,7 @@ public class NetServerController extends Service implements Serializable {
         });
 
         Log.i("WebSocket", "SendMessage");
-        SendRequest(requestId, "SendMessage", String.valueOf(requestId) + " " + String.valueOf(idMsg) + " " + String.valueOf(idSender) + " " + String.valueOf(timeMsg) + " " + encryptionMsg);
+        SendRequest(requestId, "SendMessage", String.valueOf(requestId) + " " + String.valueOf(idMsg) + " " + String.valueOf(idSender) + " " + String.valueOf(timeMsg));
 
         return future;
     }
@@ -212,7 +211,7 @@ public class NetServerController extends Service implements Serializable {
         setOnMessageReceivedListener(requestId, new OnMessageReceived() {
             @Override
             public void onMessage(String[] parts) {
-                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
+                if (parts.length > 0) {
                     if (parts.length > 1) {
                         future.complete(parts[1]);
                     } else {
@@ -257,7 +256,6 @@ public class NetServerController extends Service implements Serializable {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
 
-        String encryptionMsg = Arrays.toString(Crypt.Encryption(msg, publicKey));
         setOnMessageReceivedListener(requestId, new OnMessageReceived() {
             @Override
             public void onMessage(String[] parts) {
@@ -272,7 +270,7 @@ public class NetServerController extends Service implements Serializable {
         });
 
         Log.i("WebSocket", "RefactorMessage");
-        SendRequest(requestId, "RefactorMessage", String.valueOf(idMsg) + " " + encryptionMsg);
+        SendRequest(requestId, "RefactorMessage", String.valueOf(idMsg));
 
         return future;
     }
@@ -282,7 +280,6 @@ public class NetServerController extends Service implements Serializable {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
 
-        String encryptionMsg = Arrays.toString(Crypt.Encryption(msg, publicKey));
         setOnMessageReceivedListener(requestId, new OnMessageReceived() {
             @Override
             public void onMessage(String[] parts) {
@@ -297,7 +294,7 @@ public class NetServerController extends Service implements Serializable {
         });
 
         Log.i("WebSocket", "ReturnMessageByKeyWord");
-        SendRequest(requestId, "ReturnMessageByKeyWord", String.valueOf(idSender) + " " + encryptionMsg);
+        SendRequest(requestId, "ReturnMessageByKeyWord", String.valueOf(idSender));
 
         return future;
     }
