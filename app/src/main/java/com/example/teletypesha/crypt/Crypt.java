@@ -12,7 +12,7 @@ import javax.crypto.Cipher;
 
 public final class Crypt {
 
-    public static Pair<PrivateKey, PublicKey> PublicPrivateKeyGeneration(String msg) throws Exception {
+    public static Pair<PrivateKey, PublicKey> PublicPrivateKeyGeneration() throws Exception {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(2048);
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
@@ -22,18 +22,17 @@ public final class Crypt {
         return pk;
     }
 
-    public static byte[] Encryption(String msg, PublicKey privateKey) throws Exception {
+    public static byte[] Encryption(String msg, PrivateKey privateKey) throws Exception {
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.ENCRYPT_MODE, privateKey);
 
         return cipher.doFinal(msg.getBytes());
     }
 
-    public static String Decrypt(String encryptedMsg, PrivateKey publicKey) throws Exception {
+    public static String Decrypt(byte[] encryptedMsg, PublicKey publicKey) throws Exception {
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.DECRYPT_MODE, publicKey);
-        byte[] decodedMsg = Base64.getDecoder().decode(encryptedMsg);
-        byte[] decryptedMsg = cipher.doFinal(decodedMsg);
+        byte[] decryptedMsg = cipher.doFinal(encryptedMsg);
         return new String(decryptedMsg);
     }
 }

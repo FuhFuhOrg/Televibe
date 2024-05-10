@@ -18,20 +18,25 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.teletypesha.R;
+import com.example.teletypesha.fragments.AddChatFragment;
 import com.example.teletypesha.fragments.ChatsFragment;
+import com.example.teletypesha.fragments.CreateChatFragment;
 import com.example.teletypesha.fragments.SettingsFragment;
 import com.example.teletypesha.fragments.SingleChatFragment;
 import com.example.teletypesha.itemClass.Chat;
+import com.example.teletypesha.jsons.JsonDataSaver;
 import com.example.teletypesha.netCode.NetServerController;
 
 public class MainActivity extends AppCompatActivity {
@@ -60,6 +65,25 @@ public class MainActivity extends AppCompatActivity {
     };
 
     @Override
+    public void onBackPressed() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment currentFragment = fragmentManager.findFragmentById(R.id.main_fragment);
+
+        if (currentFragment instanceof SingleChatFragment) {
+            OpenChatsFragment();
+        } else if (currentFragment instanceof SettingsFragment) {
+            OpenChatsFragment();
+        } else if (currentFragment instanceof AddChatFragment) {
+            OpenChatsFragment();
+        } else if (currentFragment instanceof CreateChatFragment) {
+            OpenChatsFragment();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
@@ -70,12 +94,20 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+
+
+        //Создание Json
+        JsonDataSaver.AwakeJson();
+
+
+
         // Реализация создания сервера
         Log.i("WebSocket", "Try bindService");
         Intent intent = new Intent(this, NetServerController.class);
-        //startService(intent);
         startService(intent);
         bindService(intent, connection, Context.BIND_AUTO_CREATE);
+
+
 
         //Все для чего нужен сервер
         OpenChatsFragment();
@@ -106,6 +138,14 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "Чаты", Toast.LENGTH_LONG).show();
             OpenChatsFragment();
             return true;
+        } else if (id == R.id.action_setting_add_chat) {
+            Toast.makeText(MainActivity.this, "Добавить чат", Toast.LENGTH_LONG).show();
+            OpenAddChatFragment();
+            return true;
+        } else if (id == R.id.action_setting_create_chat) {
+            Toast.makeText(MainActivity.this, "Создать чат", Toast.LENGTH_LONG).show();
+            OpenCreateChatFragment();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -134,12 +174,38 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    public void SendMessage(View view){
-        String messange = String.valueOf(((EditText) findViewById(R.id.message_edit_text)).getText());
-        FictiveSendMessange(messange, settedChat, settedChat.GetYourId());
+    public void OpenAddChatFragment(){
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        AddChatFragment addChatFragment = new AddChatFragment();
+        fragmentTransaction.replace(R.id.main_fragment, addChatFragment);
+        fragmentTransaction.commit();
     }
 
-    public void FictiveSendMessange(String messange, Chat chat, Integer senderId){
-        // Код
+    public void OpenCreateChatFragment(){
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        CreateChatFragment createChatFragment = new CreateChatFragment();
+        fragmentTransaction.replace(R.id.main_fragment, createChatFragment);
+        fragmentTransaction.commit();
+    }
+
+    public void CreateChat(View view) {
+        String chatId = String.valueOf(((EditText) findViewById(R.id.create_chat_login)).getText());
+        String chatPassword = String.valueOf(((EditText) findViewById(R.id.create_chat_password)).getText());
+        ToggleButton toggleButton = (ToggleButton) findViewById(R.id.create_chat_is_privacy);
+
+        netServerController.FictiveCreateChat(chatId, chatPassword, toggleButton.isChecked());
+    }
+
+    public void AddChat(View view) {
+        String chatId = String.valueOf(((EditText) findViewById(R.id.add_chat_login)).getText());
+        String chatPassword = String.valueOf(((EditText) findViewById(R.id.add_chat_password)).getText());
+
+        netServerController.FictiveAddChat(chatId, chatPassword);
+    }
+
+    public void SendMessage(View view) {
+        byte[] messange = settedChat.GetUser(settedChat.GetYourId()).Encrypt(String.valueOf(((EditText) findViewById(R.id.message_edit_text)).getText()));
+
+        netServerController.FictiveSendMessange(messange, settedChat, settedChat.GetYourId());
     }
 }

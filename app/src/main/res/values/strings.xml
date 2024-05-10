@@ -3,7 +3,10 @@
     <string name="setting_chats">chats</string>
     <string name="setting_profile">profile</string>
     <string name="setting_theme">theme</string>
+    <string name="setting_create_chat">create chat</string>
+    <string name="setting_add_chat">add chat</string>
     <string name="set_font">font</string>
+
 
     <string name="comic_sans">comic_sans</string>
     <string name="inky_thin_pixels">inky_thin_pixels</string>
