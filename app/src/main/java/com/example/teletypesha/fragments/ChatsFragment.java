@@ -41,7 +41,7 @@ public class ChatsFragment extends Fragment {
 
 
         // Это комментировать
-        //CreateFictChats();
+        // CreateFictChats();
 
 
         chatList = JsonDataSaver.TryLoadChats(getContext());

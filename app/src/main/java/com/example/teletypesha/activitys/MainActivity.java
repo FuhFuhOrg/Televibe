@@ -43,8 +43,6 @@ public class MainActivity extends AppCompatActivity {
     NetServerController netServerController;
     boolean isBound = false;
 
-    JsonDataSaver jsonDataSaver = new JsonDataSaver();
-
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -133,6 +131,14 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "Чаты", Toast.LENGTH_LONG).show();
             OpenChatsFragment();
             return true;
+        } else if (id == R.id.action_setting_add_chat) {
+            Toast.makeText(MainActivity.this, "Добавить чат", Toast.LENGTH_LONG).show();
+            //OpenAddChatFragment();
+            return true;
+        } else if (id == R.id.action_setting_create_chat) {
+            Toast.makeText(MainActivity.this, "Создать чат", Toast.LENGTH_LONG).show();
+            //OpenCreateChatFragment();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -161,13 +167,23 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    public void SendMessage(View view){
-        String messange = String.valueOf(((EditText) findViewById(R.id.message_edit_text)).getText());
-        FictiveSendMessange(messange, settedChat, settedChat.GetYourId());
+    public void CreateChat(View view) {
+        String chatId = String.valueOf(((EditText) findViewById(R.id.add_chat_login)).getText());
+        String chatPassword = String.valueOf(((EditText) findViewById(R.id.add_chat_password)).getText());
+
+        netServerController.FictiveAddChat(chatId, chatPassword);
     }
 
-    public void FictiveSendMessange(String messange, Chat chat, Integer senderId){
-        // Код
+    public void AddChat(View view) {
+        String chatId = String.valueOf(((EditText) findViewById(R.id.add_chat_login)).getText());
+        String chatPassword = String.valueOf(((EditText) findViewById(R.id.add_chat_password)).getText());
+
+        netServerController.FictiveAddChat(chatId, chatPassword);
     }
 
+    public void SendMessage(View view) {
+        byte[] messange = settedChat.GetUser(settedChat.GetYourId()).Encrypt(String.valueOf(((EditText) findViewById(R.id.message_edit_text)).getText()));
+
+        netServerController.FictiveSendMessange(messange, settedChat, settedChat.GetYourId());
+    }
 }

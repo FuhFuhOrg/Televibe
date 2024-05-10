@@ -176,47 +176,33 @@ public class NetServerController extends Service implements Serializable {
         return future;
     }
 
-    public CompletableFuture<ArrayList<Messange>> SendMessage() {
-        CompletableFuture<ArrayList<Messange>> future = new CompletableFuture<>();
-        int requestId = GetK();
 
-        setOnMessageReceivedListener(requestId , new OnMessageReceived() {
-            @Override
-            public void onMessage(String[] parts) throws Exception {
-                Log.i("WebSocket", Arrays.toString(parts));
+    public CompletableFuture<String> FictiveSendMessange(byte[] messange, Chat chat, Integer senderId){
+        CompletableFuture<String> future = new CompletableFuture<>();
+        // Код
 
-                ArrayList arrayList = new ArrayList(Arrays.asList(parts));
-                arrayList.remove(0);
-                arrayList.remove(0);
 
-                Log.i("WebSocket", "message has been sent");
-            }
-        });
 
-        Log.i("WebSocket", "SendMessage");
-        SendRequest(requestId, "GetRecomendsRecepts", "");
+
+
+
+
+
 
         return future;
     }
 
-    public CompletableFuture<Boolean> Login(String login, String password) {
-        CompletableFuture<Boolean> future = new CompletableFuture<>();
-        int requestId = GetK();
+    public CompletableFuture<String> FictiveAddChat(String chatId, String password){
+        CompletableFuture<String> future = new CompletableFuture<>();
+        // Код
 
-        setOnMessageReceivedListener(requestId, new OnMessageReceived() {
-            @Override
-            public void onMessage(String[] parts) {
-                Log.i("WebSocket", "Return login");
-                if (Objects.equals(parts[1], "true")) {
-                    future.complete(true);
-                } else {
-                    future.complete(false);
-                }
-            }
-        });
 
-        Log.i("WebSocket", "Try login");
-        SendRequest(requestId, "Login", login + " " + password);
+
+
+
+
+
+
 
         return future;
     }
