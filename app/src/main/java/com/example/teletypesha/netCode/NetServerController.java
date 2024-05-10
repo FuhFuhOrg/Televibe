@@ -33,11 +33,11 @@ import com.example.teletypesha.itemClass.Chat;
 import com.example.teletypesha.itemClass.Messange;
 
 public class NetServerController extends Service implements Serializable {
-    private int k = 0;
+    private static int k = 0;
     public static String s = "95.165.27.159";
 
     public static WebSocketClient webSocketClient;
-    private Map<Integer, OnMessageReceived> listeners = new HashMap<>();
+    private static Map<Integer, OnMessageReceived> listeners = new HashMap<>();
 
     public interface OnMessageReceived {
         void onMessage(String[] parts) throws Exception;
@@ -55,7 +55,7 @@ public class NetServerController extends Service implements Serializable {
         }
     }
 
-    public void setOnMessageReceivedListener(int id, OnMessageReceived listener) {
+    public static void setOnMessageReceivedListener(int id, OnMessageReceived listener) {
         listeners.put(id, listener);
     }
 
@@ -138,15 +138,15 @@ public class NetServerController extends Service implements Serializable {
         return binder;
     }
 
-    private void SendRequest(int id, String requestWord, String string){
+    private static void SendRequest(int id, String requestWord, String string){
         webSocketClient.send("/sql " + requestWord + " " + String.valueOf(id) + " " + string);
     }
 
-    private void SendUnregistredRequest(String string){
+    private static void SendUnregistredRequest(String string){
         webSocketClient.send(string);
     }
 
-    private int GetK(){
+    private static int GetK(){
         k++;
         if(k >= 1000000){
             k = 0;
@@ -157,16 +157,16 @@ public class NetServerController extends Service implements Serializable {
     // -------------------------------------------------------------------------------------------
 
     // Создание нового чата
-    public CompletableFuture<String> CreateNewChat(String chatPassword, boolean isPrivacy) {
-        CompletableFuture<String> future = new CompletableFuture<>();
+    public static CompletableFuture<Pair<String, String>> CreateNewChat(String chatPassword, boolean isPrivacy) {
+        CompletableFuture<Pair<String, String>> future = new CompletableFuture<>();
         int requestId = GetK();
 
         setOnMessageReceivedListener(requestId , new OnMessageReceived() {
             @Override
             public void onMessage(String[] parts) {
-                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
+                if (parts.length > 0) {
                     if (parts.length > 1) {
-                        future.complete(parts[1]);
+                        future.complete(new Pair<>(parts[0], parts[1]));
                     } else {
                         future.complete(null);
                     }
@@ -181,15 +181,15 @@ public class NetServerController extends Service implements Serializable {
     }
 
     // Отправить сообщение
-    public CompletableFuture<String> SendMessage(byte[] msg, int idSender, Timestamp timeMsg) {
+    public static CompletableFuture<String> SendMessage(byte[] msg, int idSender, Timestamp timeMsg) {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
 
         setOnMessageReceivedListener(requestId , new OnMessageReceived() {
             public void onMessage(String[] parts) {
-                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
+                if (parts.length > 0) {
                     if (parts.length > 1) {
-                        future.complete(parts[1]);
+                        future.complete(parts[0]);
                     } else {
                         future.complete(null);
                     }
@@ -204,7 +204,7 @@ public class NetServerController extends Service implements Serializable {
     }
 
     // Вернуть сообщения, которые больше idMsg
-    public CompletableFuture<String> GetMessages(int idSender, int idMsg) throws Exception {
+    public static CompletableFuture<String> GetMessages(int idSender, int idMsg) throws Exception {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
 
@@ -228,7 +228,7 @@ public class NetServerController extends Service implements Serializable {
     }
 
     // Удаление сообщения
-    public CompletableFuture<String> DeleteMessage(int idSender, int idMsg) throws Exception {
+    public static CompletableFuture<String> DeleteMessage(int idSender, int idMsg) throws Exception {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
 
@@ -252,7 +252,7 @@ public class NetServerController extends Service implements Serializable {
     }
 
     // Изменение сообщения
-    public CompletableFuture<String> RefactorMessage(int idMsg, byte[] msg) throws Exception {
+    public static CompletableFuture<String> RefactorMessage(int idMsg, byte[] msg) throws Exception {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
         setOnMessageReceivedListener(requestId, new OnMessageReceived() {
@@ -275,7 +275,7 @@ public class NetServerController extends Service implements Serializable {
     }
 
     // Поиск сообщения по ключу в msg
-    public CompletableFuture<String> ReturnMessageByKeyWord(int idSender, byte[] msg) throws Exception {
+    public static CompletableFuture<String> ReturnMessageByKeyWord(int idSender, byte[] msg) throws Exception {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
         setOnMessageReceivedListener(requestId, new OnMessageReceived() {
@@ -298,7 +298,7 @@ public class NetServerController extends Service implements Serializable {
     }
 
     // Возврат сообщения по idMsg
-    public CompletableFuture<String> ReturnMessageByIdMsg(int idMsg) throws Exception {
+    public static CompletableFuture<String> ReturnMessageByIdMsg(int idMsg) throws Exception {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
         setOnMessageReceivedListener(requestId, new OnMessageReceived() {
@@ -321,7 +321,7 @@ public class NetServerController extends Service implements Serializable {
     }
 
     // Возврат k сообщений, отсортированных по времени
-    public CompletableFuture<String> ReturnLastKMessages(int idSender, int kMessages) throws Exception {
+    public static CompletableFuture<String> ReturnLastKMessages(int idSender, int kMessages) throws Exception {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
 

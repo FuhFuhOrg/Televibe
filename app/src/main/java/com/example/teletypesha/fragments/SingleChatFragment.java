@@ -19,8 +19,11 @@ import com.example.teletypesha.activitys.MainActivity;
 import com.example.teletypesha.adapters.ChatAdapter;
 import com.example.teletypesha.adapters.ChatListAdapter;
 import com.example.teletypesha.itemClass.Chat;
+import com.example.teletypesha.netCode.NetServerController;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
 
 public class SingleChatFragment extends Fragment {
     Chat chat;

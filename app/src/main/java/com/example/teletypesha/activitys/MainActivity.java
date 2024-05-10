@@ -8,6 +8,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,10 +37,13 @@ import com.example.teletypesha.fragments.CreateChatFragment;
 import com.example.teletypesha.fragments.SettingsFragment;
 import com.example.teletypesha.fragments.SingleChatFragment;
 import com.example.teletypesha.itemClass.Chat;
+import com.example.teletypesha.itemClass.User;
 import com.example.teletypesha.jsons.JsonDataSaver;
 import com.example.teletypesha.netCode.NetServerController;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 
 public class MainActivity extends AppCompatActivity {
@@ -117,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void OnCreateNet(){
-        netServerController.CreateNewChat("", false);
+        //netServerController.CreateNewChat("", false);
     }
 
     @Override
@@ -195,7 +199,15 @@ public class MainActivity extends AppCompatActivity {
         String chatPassword = String.valueOf(((EditText) findViewById(R.id.create_chat_password)).getText());
         ToggleButton toggleButton = (ToggleButton) findViewById(R.id.create_chat_is_privacy);
 
-        netServerController.CreateNewChat(chatPassword, toggleButton.isChecked());
+        CompletableFuture<Pair<String, String>> future = netServerController.CreateNewChat(chatPassword, toggleButton.isChecked());
+        future.thenAccept(goin -> {
+            if (goin != null) {
+                LocalAddChat(goin.first, goin.second);
+                Log.i("WebSocket", goin.first + " " + goin.second);
+            } else {
+                Log.e("WebSocket", "Get send msg unsuccessful");
+            }
+        });
     }
 
     public void AddChat(View view) {
@@ -205,13 +217,30 @@ public class MainActivity extends AppCompatActivity {
         //netServerController.AddNewChat(chatId, chatPassword);
     }
 
+    private void LocalAddChat(String idChat, String idUserStr){
+        ArrayList<Chat> chatList = JsonDataSaver.TryLoadChats(this);
+        if (chatList == null){
+            chatList = new ArrayList<>();
+        }
+
+        int idUser = Integer.parseInt(idUserStr);
+
+        HashMap<Integer, User> users = new HashMap<>();
+        users.put(idUser, new User());
+        chatList.add(new Chat(idUser, new ArrayList<>(), users, idChat));
+
+        JsonDataSaver.SaveChats(chatList, this);
+    }
+
     public void SendMessage(View view) {
-        byte[] messange = settedChat.GetUser(settedChat.GetYourId()).Encrypt(String.valueOf(((EditText) findViewById(R.id.message_edit_text)).getText()));
+        EditText editText = ((EditText) findViewById(R.id.message_edit_text));
+        byte[] messange = settedChat.GetUser(settedChat.GetYourId()).Encrypt(String.valueOf(editText.getText()));
         Timestamp ts = new Timestamp(System.currentTimeMillis());
 
-        CompletableFuture<String> future = netServerController.SendMessage(messange, settedChat.GetYourId(), ts);
+        CompletableFuture<String> future = NetServerController.SendMessage(messange, settedChat.GetYourId(), ts);
         future.thenAccept(goin -> {
-            if (goin != "-" && goin != null) {
+            if (goin != null) {
+                editText.setText("");
                 Log.i("WebSocket", goin);
             } else {
                 Log.e("WebSocket", "Get send msg unsuccessful");
