@@ -1,19 +1,17 @@
 package com.example.teletypesha.itemClass;
 
-import android.widget.ImageButton;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Chat {
     Integer yourId;
-    ArrayList<Messange> messanges;
+    ArrayList<Messange> messages;
     HashMap<Integer, User> users;
     String label, chatId;
 
-    public Chat(Integer yourId, ArrayList<Messange> messanges, HashMap<Integer, User> users, String chatId){
+    public Chat(Integer yourId, ArrayList<Messange> messages, HashMap<Integer, User> users, String chatId){
         this.yourId = yourId;
-        this.messanges = messanges;
+        this.messages = messages;
         this.users = users;
         this.chatId = chatId;
     }
@@ -44,8 +42,8 @@ public class Chat {
     }
 
     public Messange getLastMsg(){
-        if(messanges.size() > 0){
-            return messanges.get(messanges.size() - 1);
+        if(messages.size() > 0){
+            return messages.get(messages.size() - 1);
         }
         else{
             return null;
@@ -53,6 +51,6 @@ public class Chat {
     }
 
     public ArrayList<Messange> GetMessanges(){
-        return messanges;
+        return messages;
     }
 }

@@ -39,6 +39,9 @@ import com.example.teletypesha.itemClass.Chat;
 import com.example.teletypesha.jsons.JsonDataSaver;
 import com.example.teletypesha.netCode.NetServerController;
 
+import java.sql.Timestamp;
+import java.util.concurrent.CompletableFuture;
+
 public class MainActivity extends AppCompatActivity {
     FragmentManager fragmentManager = getSupportFragmentManager();
     Chat settedChat;
@@ -189,23 +192,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void CreateChat(View view) {
-        String chatId = String.valueOf(((EditText) findViewById(R.id.create_chat_login)).getText());
         String chatPassword = String.valueOf(((EditText) findViewById(R.id.create_chat_password)).getText());
         ToggleButton toggleButton = (ToggleButton) findViewById(R.id.create_chat_is_privacy);
 
-        netServerController.FictiveCreateChat(chatId, chatPassword, toggleButton.isChecked());
+        netServerController.CreateNewChat(chatPassword, toggleButton.isChecked());
     }
 
     public void AddChat(View view) {
         String chatId = String.valueOf(((EditText) findViewById(R.id.add_chat_login)).getText());
         String chatPassword = String.valueOf(((EditText) findViewById(R.id.add_chat_password)).getText());
 
-        netServerController.FictiveAddChat(chatId, chatPassword);
+        //netServerController.AddNewChat(chatId, chatPassword);
     }
 
     public void SendMessage(View view) {
         byte[] messange = settedChat.GetUser(settedChat.GetYourId()).Encrypt(String.valueOf(((EditText) findViewById(R.id.message_edit_text)).getText()));
+        Timestamp ts = new Timestamp(System.currentTimeMillis());
 
-        netServerController.FictiveSendMessange(messange, settedChat, settedChat.GetYourId());
+        CompletableFuture<String> future = netServerController.SendMessage(messange, settedChat.GetYourId(), ts);
+        future.thenAccept(goin -> {
+            if (goin != "-" && goin != null) {
+                Log.i("WebSocket", goin);
+            } else {
+                Log.e("WebSocket", "Get send msg unsuccessful");
+            }
+        });
     }
 }
