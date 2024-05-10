@@ -21,16 +21,17 @@ import com.example.teletypesha.itemClass.Chat;
 import com.example.teletypesha.itemClass.Messange;
 import com.example.teletypesha.itemClass.User;
 import com.example.teletypesha.jsons.JsonDataSaver;
+import com.example.teletypesha.netCode.NetServerController;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Set;
 
 public class ChatsFragment extends Fragment {
     private RecyclerView recyclerView;
     ArrayList<Chat> chatList = new ArrayList<>();
-    HashMap<Integer, User> users = new HashMap<>();
     ChatListAdapter adapter;
 
     @Nullable
@@ -48,6 +49,9 @@ public class ChatsFragment extends Fragment {
             // Это комментировать
             CreateFictChats();
         }
+
+        //Тут штучки для получения из сервера бдшки
+        GetMessages();
 
         CreateItemList();
 
@@ -69,7 +73,7 @@ public class ChatsFragment extends Fragment {
             ArrayList<Messange> messages = new ArrayList<>();
             for (int j = 0; j < 5 + Math.abs(random.nextInt() % 25); j++){
                 Integer randomUserId = keys.get(random.nextInt(keys.size()));
-                messages.add(new Messange(randomUserId, users.get(randomUserId).Encrypt("hi"), LocalDateTime.now()));
+                messages.add(new Messange(randomUserId, -1, users.get(randomUserId).Encrypt("hi"), LocalDateTime.now()));
             }
 
             chatList.add(new Chat(yourId, messages, users, String.valueOf(random.nextInt())));
@@ -94,5 +98,14 @@ public class ChatsFragment extends Fragment {
                 Log.i("Debug", "adapter set");
             }
         });
+    }
+
+    private void GetMessages(){
+        for (int i = 0; i < chatList.size(); i++){
+            Chat chat = chatList.get(i);
+            HashMap<Integer, User> users = chat.GetUsers();
+        }
+
+        NetServerController.GetMessages();
     }
 }

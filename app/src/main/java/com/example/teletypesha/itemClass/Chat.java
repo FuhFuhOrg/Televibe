@@ -53,4 +53,16 @@ public class Chat {
     public ArrayList<Messange> GetMessanges(){
         return messages;
     }
+
+    public Messange getLastMsgByAuthor(int authorId){
+        Messange lastMsg = null;
+        for(Messange msg : messages){
+            if(msg.messageId == authorId){
+                if(lastMsg == null || msg.messageId > lastMsg.messageId){
+                    lastMsg = msg;
+                }
+            }
+        }
+        return lastMsg;
+    }
 }
