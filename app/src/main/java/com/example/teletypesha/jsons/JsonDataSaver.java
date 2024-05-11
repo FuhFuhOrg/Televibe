@@ -40,6 +40,9 @@ public class JsonDataSaver implements Serializable  {
 
 
     public static ArrayList<Chat> TryLoadChats(Context context) {
+
+        Log.i("Chats", "Данные начали загрузку");
+
         JSONObject jsonObject = TryLoadJson(context);
         String jsonChats = null;
         if(jsonObject != null) {
@@ -54,10 +57,12 @@ public class JsonDataSaver implements Serializable  {
             return null;
         }
 
+        Log.i("Chats", "Данные начали переработку");
+
         Type listType = new TypeToken<ArrayList<Chat>>(){}.getType();
         ArrayList<Chat> chats = gson.fromJson(jsonChats, listType);
 
-        Log.i("JsonDataSaver", "Данные успешно загружены");
+        Log.i("Chats", "Данные успешно загружены");
 
         return chats;
     }

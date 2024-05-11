@@ -21,6 +21,8 @@ import com.example.teletypesha.activitys.MainActivity;
 import com.example.teletypesha.adapters.ChatListAdapter;
 import com.example.teletypesha.itemClass.Chat;
 import com.example.teletypesha.itemClass.Messange;
+import com.example.teletypesha.itemClass.SharedViewByChats;
+import com.example.teletypesha.itemClass.SharedViewByChatsListener;
 import com.example.teletypesha.itemClass.User;
 import com.example.teletypesha.jsons.JsonDataSaver;
 import com.example.teletypesha.netCode.NetServerController;
@@ -33,15 +35,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-public class ChatsFragment extends Fragment {
+public class ChatsFragment extends Fragment implements SharedViewByChatsListener {
     private RecyclerView recyclerView;
-    ArrayList<Chat> chatList = new ArrayList<>();
     ChatListAdapter adapter;
-    private LiveData<ArrayList<Chat>> chatListLiveData;
-
-    public void setChatListLiveData(LiveData<ArrayList<Chat>> chatListLiveData) {
-        this.chatListLiveData = chatListLiveData;
-    }
 
 
     @Nullable
@@ -49,29 +45,13 @@ public class ChatsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chats, container, false);
         recyclerView = view.findViewById(R.id.recycler);
-
-        if (getActivity() instanceof MainActivity) {
-            MainActivity mainActivity = (MainActivity) getActivity();
-            setChatListLiveData(mainActivity.GetSharedViewByChats().getChatList());
-        }
-
+        SharedViewByChats.setListener(this);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        chatListLiveData.observe(getViewLifecycleOwner(), new Observer<ArrayList<Chat>>() {
-            @Override
-            public void onChanged(ArrayList<Chat> newChatList) {
-                chatList.clear();
-                if(newChatList != null) {
-                    chatList.addAll(newChatList);
-                }
-                CreateItemList();
-            }
-        });
     }
 
     public static void CreateFictChats(ArrayList<Chat> chatList){
@@ -99,10 +79,10 @@ public class ChatsFragment extends Fragment {
         }
     }
 
-    private void CreateItemList(){
+    private void CreateItemList(ArrayList<Chat> chats){
         DisplayMetrics displayMetrics = new DisplayMetrics();
         requireActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        adapter = new ChatListAdapter(chatList, displayMetrics.widthPixels, (MainActivity) requireActivity());
+        adapter = new ChatListAdapter(chats, displayMetrics.widthPixels, (MainActivity) requireActivity());
 
         requireActivity().runOnUiThread(new Runnable() {
             @Override
@@ -113,5 +93,22 @@ public class ChatsFragment extends Fragment {
                 Log.i("Debug", "adapter set");
             }
         });
+    }
+
+
+
+
+
+
+
+    // Подписки
+    @Override
+    public void onChatListChanged(ArrayList<Chat> newChatList) {
+        CreateItemList(newChatList);
+    }
+
+    @Override
+    public void onSelectChatChanged(Chat newSelectChat) {
+        //
     }
 }

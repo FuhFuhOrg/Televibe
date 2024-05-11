@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -215,17 +216,16 @@ public class NetServerController extends Service implements Serializable {
         setOnMessageReceivedListener(requestId , new OnMessageReceived() {
             public void onMessage(String[] parts) {
                 if (parts.length > 0) {
-                    if (parts.length > 1) {
-                        future.complete(parts[0]);
-                    } else {
-                        future.complete(null);
-                    }
+                    future.complete(parts[0]);
+                } else {
+                    future.complete(null);
                 }
             }
         });
 
         Log.i("WebSocket", "SendMessage");
-        SendRequest(requestId, "SendMessage", String.valueOf(idSender) + " " + String.valueOf(timeMsg) + " " + Base64.getEncoder().encodeToString(msg));
+        String timeWithoutMilliseconds = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(timeMsg);
+        SendRequest(requestId, "SendMessage", String.valueOf(idSender) + " " + String.valueOf(timeWithoutMilliseconds) + " " + Base64.getEncoder().encodeToString(msg));
 
         return future;
     }

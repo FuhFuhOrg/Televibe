@@ -26,6 +26,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.teletypesha.R;
@@ -57,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
     FragmentManager fragmentManager = getSupportFragmentManager();
     NetServerController netServerController;
     boolean isBound = false;
-    private SharedViewByChats sharedViewByChats;
 
 
 
@@ -138,8 +138,6 @@ public class MainActivity extends AppCompatActivity {
 
         //Создание Json
         JsonDataSaver.AwakeJson();
-
-        sharedViewByChats = new ViewModelProvider(this).get(SharedViewByChats.class);
 
 
 
@@ -228,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
         SingleChatFragment singleChatFragment = new SingleChatFragment();
 
         GetMessages();
-        sharedViewByChats.setSelectChat(chat);
+        SharedViewByChats.setSelectChat(chat);
 
         fragmentTransaction.replace(R.id.main_fragment, singleChatFragment);
         fragmentTransaction.commit();
@@ -307,14 +305,19 @@ public class MainActivity extends AppCompatActivity {
 
     public void SendMessage(View view) {
         EditText editText = ((EditText) findViewById(R.id.message_edit_text));
-        byte[] messange = sharedViewByChats.getSelectChat().getValue().GetUser(
-                sharedViewByChats.getSelectChat().getValue().GetYourId()).Encrypt(String.valueOf(editText.getText()));
+        byte[] messange = SharedViewByChats.getSelectChat().GetUser(
+                SharedViewByChats.getSelectChat().GetYourId()).Encrypt(String.valueOf(editText.getText()));
         Timestamp ts = new Timestamp(System.currentTimeMillis());
 
-        CompletableFuture<String> future = NetServerController.SendMessage(messange, sharedViewByChats.getSelectChat().getValue().GetYourId(), ts);
+        CompletableFuture<String> future = NetServerController.SendMessage(messange, SharedViewByChats.getSelectChat().GetYourId(), ts);
         future.thenAccept(goin -> {
             if (goin != null) {
                 editText.setText("");
+
+                if(goin.equals("true")){
+                    GetMessages();
+                }
+
                 Log.i("WebSocket", goin);
             } else {
                 Log.e("WebSocket", "Get send msg unsuccessful");
@@ -332,22 +335,29 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void CheckSavedChats(){
-        sharedViewByChats.setChatList((JsonDataSaver.TryLoadChats(this)));
-        if (sharedViewByChats.getChatList().getValue() == null){
-            sharedViewByChats.setChatList(new ArrayList<>());
-            // Это комментировать
-            CreateFictChats(sharedViewByChats.getChatList().getValue());
-            JsonDataSaver.SaveChats(sharedViewByChats.getChatList().getValue(), this);
+        if (SharedViewByChats.getChatList() == null){
+            Log.i("Chats", "Start Check Save");
+            ArrayList<Chat> chats = (JsonDataSaver.TryLoadChats(this));
+            Log.i("Chats", "End Check Save");
+            if(chats == null){
+                chats = new ArrayList<>();
+                // Это комментировать
+                CreateFictChats(chats);
+                JsonDataSaver.SaveChats(chats, this);
+            }
+            Log.i("Chats", "Start sharedViewByChats");
+            SharedViewByChats.setChatList(chats);
+            Log.i("Chats", "End sharedViewByChats");
         }
     }
 
     private String CreateGetMessagesStr(){
         StringBuilder str = new StringBuilder();
 
-        str.append(sharedViewByChats.getChatList().getValue().size());
+        str.append(SharedViewByChats.getChatList().size());
 
-        for (int i = 0; i < sharedViewByChats.getChatList().getValue().size(); i++){
-            Chat chat = sharedViewByChats.getChatList().getValue().get(i);
+        for (int i = 0; i < SharedViewByChats.getChatList().size(); i++){
+            Chat chat = SharedViewByChats.getChatList().get(i);
             HashMap<Integer, ArrayList<Integer>> missMsg = chat.GetMissingIdsForAllAuthors();
             if(missMsg == null || missMsg.isEmpty()){
                 continue;
@@ -388,8 +398,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void UpdateMessages(String[] parts){
+        Log.i("Chats", "Start Chat Upgrade");
         ArrayList<Chat> chatList = new ArrayList<>();
-        chatList.addAll(sharedViewByChats.getChatList().getValue());
+        chatList.addAll(SharedViewByChats.getChatList());
         int index = 0;
 
         for(int i = 0; index < parts.length; i++){
@@ -414,10 +425,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         JsonDataSaver.SaveChats(chatList, this);
-        sharedViewByChats.setChatList(chatList);
-    }
 
-    public SharedViewByChats GetSharedViewByChats() {
-        return sharedViewByChats;
+
+        Log.i("Chats", "Start Chat Upd");
+        SharedViewByChats.setChatList(chatList);
+        Log.i("Chats", "End Chat Upd");
     }
 }
