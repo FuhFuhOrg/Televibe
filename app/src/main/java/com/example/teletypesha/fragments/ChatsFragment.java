@@ -25,6 +25,7 @@ import com.example.teletypesha.itemClass.User;
 import com.example.teletypesha.jsons.JsonDataSaver;
 import com.example.teletypesha.netCode.NetServerController;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,7 +66,9 @@ public class ChatsFragment extends Fragment {
             @Override
             public void onChanged(ArrayList<Chat> newChatList) {
                 chatList.clear();
-                chatList.addAll(newChatList);
+                if(newChatList != null) {
+                    chatList.addAll(newChatList);
+                }
                 CreateItemList();
             }
         });

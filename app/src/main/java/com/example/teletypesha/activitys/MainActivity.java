@@ -42,11 +42,15 @@ import com.example.teletypesha.jsons.JsonDataSaver;
 import com.example.teletypesha.netCode.NetServerController;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class MainActivity extends AppCompatActivity {
@@ -310,6 +314,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
+
+
+
+
+
+
+
+
     private void CheckSavedChats(){
         sharedViewByChats.setChatList((JsonDataSaver.TryLoadChats(this)));
         if (sharedViewByChats.getChatList().getValue() == null){
@@ -331,7 +344,8 @@ public class MainActivity extends AppCompatActivity {
             if(missMsg == null || missMsg.isEmpty()){
                 continue;
             }
-            str.append(chat.GetChatId() + " " + missMsg.size());
+
+            str.append(" " + chat.GetChatId() + " " + missMsg.size());
 
             for(Map.Entry<Integer, ArrayList<Integer>> entry : missMsg.entrySet()){
                 int authorId = entry.getKey();
@@ -354,44 +368,39 @@ public class MainActivity extends AppCompatActivity {
 
         String str = CreateGetMessagesStr();
 
-        CompletableFuture<String> future = NetServerController.GetMessages(str.toString());
+        CompletableFuture<String[]> future = NetServerController.GetMessages(str.toString());
         future.thenAccept(goin -> {
             if (goin != null) {
                 UpdateMessages(goin);
-                Log.i("WebSocket", goin);
+                Log.i("WebSocket", String.valueOf(goin.length));
             } else {
                 Log.e("WebSocket", "Get send msg unsuccessful");
             }
         });
     }
 
-    public void UpdateMessages(String str){
+    public void UpdateMessages(String[] parts){
         ArrayList<Chat> chatList = new ArrayList<>();
         chatList.addAll(sharedViewByChats.getChatList().getValue());
-        String[] parts = str.split(" ");
-        int chatCount = Integer.parseInt(parts[0]);
-        int index = 1;
+        int index = 0;
 
-        for(int i = 0; i < chatCount; i++){
+        for(int i = 0; index < parts.length; i++){
             String chatId = parts[index++];
-            int authorCount = Integer.parseInt(parts[index++]);
+            int authorId = Integer.parseInt(parts[index++]);
+            int idMsg = Integer.parseInt(parts[index++]);
+
+            String timeMillis1 = parts[index++];
+            String timeMillis2 = parts[index++];
+            String timeString = timeMillis1 + " " + timeMillis2;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+            LocalDateTime time = LocalDateTime.parse(timeString, formatter);
+
+            byte[] msg = Base64.getDecoder().decode(parts[index++]);
 
             for(Chat chat : chatList){
-                if(chat.GetChatId().equals(chatId)){
-                    if(chat != null){
-                        for(int j = 0; j < authorCount; j++){
-                            int authorId = Integer.parseInt(parts[index++]);
-                            int messageCount = Integer.parseInt(parts[index++]);
-
-                            for(int k = 0; k < messageCount; k++){
-                                int messageId = Integer.parseInt(parts[index++]);
-                                byte[] messageText = Base64.getDecoder().decode(parts[index++]);
-                                LocalDateTime messageTime = LocalDateTime.parse(parts[index++]);
-                                Messange message = new Messange(authorId, messageId, messageText, messageTime);
-                                chat.AddChangeMessage(message);
-                            }
-                        }
-                    }
+                if(Objects.equals(chat.GetChatId(), chatId)){
+                    Messange message = new Messange(authorId, idMsg, msg, time);
+                    chat.AddChangeMessage(message);
                     break;
                 }
             }

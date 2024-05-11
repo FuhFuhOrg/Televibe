@@ -202,14 +202,14 @@ public class NetServerController extends Service implements Serializable {
         });
 
         Log.i("WebSocket", "SendMessage");
-        SendRequest(requestId, "SendMessage", String.valueOf(idSender) + " " + String.valueOf(timeMsg) + " " + msg);
+        SendRequest(requestId, "SendMessage", String.valueOf(idSender) + " " + String.valueOf(timeMsg) + " " + Base64.getEncoder().encodeToString(msg));
 
         return future;
     }
 
     // Вернуть сообщения, которые больше idMsg
-    public static CompletableFuture<String> GetMessages(String str) {
-        CompletableFuture<String> future = new CompletableFuture<>();
+    public static CompletableFuture<String[]> GetMessages(String str) {
+        CompletableFuture<String[]> future = new CompletableFuture<>();
         int requestId = GetK();
 
         setOnMessageReceivedListener(requestId, new OnMessageReceived() {
@@ -217,7 +217,7 @@ public class NetServerController extends Service implements Serializable {
             public void onMessage(String[] parts) {
                 if (parts.length > 0) {
                     if (parts.length > 1) {
-                        future.complete(parts[0]);
+                        future.complete(parts);
                     } else {
                         future.complete(null);
                     }

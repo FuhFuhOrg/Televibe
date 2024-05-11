@@ -2,6 +2,7 @@ package com.example.teletypesha.itemClass;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class Chat {
     Integer yourId;
@@ -68,7 +69,7 @@ public class Chat {
 
     public Messange GetMessangeForId(Integer id, Integer authorId){
         for (int i = 0; i < messages.size(); i++) {
-            if (messages.get(i).messageId == id && messages.get(i).author == authorId){
+            if (Objects.equals(messages.get(i).messageId, id) && Objects.equals(messages.get(i).author, authorId)){
                 return messages.get(i);
             }
         }
