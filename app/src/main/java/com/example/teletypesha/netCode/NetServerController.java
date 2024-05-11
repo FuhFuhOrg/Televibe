@@ -184,6 +184,29 @@ public class NetServerController extends Service implements Serializable {
         return future;
     }
 
+    public static CompletableFuture<Pair<String, String>> addUserToChat(int idChat, String chatPassword) {
+        CompletableFuture<Pair<String, String>> future = new CompletableFuture<>();
+        int requestId = GetK();
+
+        setOnMessageReceivedListener(requestId , new OnMessageReceived() {
+            @Override
+            public void onMessage(String[] parts) {
+                if (parts.length > 0) {
+                    if (parts.length > 1) {
+                        future.complete(new Pair<>(parts[0], parts[1]));
+                    } else {
+                        future.complete(null);
+                    }
+                }
+            }
+        });
+
+        Log.i("WebSocket", "addUserToChat");
+        SendRequest(requestId, "addUserToChat", idChat + " " + chatPassword);
+
+        return future;
+    }
+
     // Отправить сообщение
     public static CompletableFuture<String> SendMessage(byte[] msg, int idSender, Timestamp timeMsg) {
         CompletableFuture<String> future = new CompletableFuture<>();
@@ -256,13 +279,13 @@ public class NetServerController extends Service implements Serializable {
     }
 
     // Изменение сообщения
-    public static CompletableFuture<String> RefactorMessage(int idMsg, byte[] msg) throws Exception {
+    public static CompletableFuture<String> RefactorMessage(int idMsg, int idSender, byte[] msg) {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
         setOnMessageReceivedListener(requestId, new OnMessageReceived() {
             @Override
             public void onMessage(String[] parts) {
-                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
+                if (parts.length > 0) {
                     if (parts.length > 1) {
                         future.complete(parts[1]);
                     } else {
@@ -273,7 +296,7 @@ public class NetServerController extends Service implements Serializable {
         });
 
         Log.i("WebSocket", "RefactorMessage");
-        SendRequest(requestId, "RefactorMessage", String.valueOf(idMsg) + " " + Arrays.toString(msg));
+        SendRequest(requestId, "RefactorMessage", String.valueOf(idMsg) + " " + String.valueOf(idSender) + " " + Arrays.toString(msg));
 
         return future;
     }
@@ -347,5 +370,4 @@ public class NetServerController extends Service implements Serializable {
 
         return future;
     }
-
 }

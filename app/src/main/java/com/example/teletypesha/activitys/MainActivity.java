@@ -279,7 +279,15 @@ public class MainActivity extends AppCompatActivity {
         String chatId = String.valueOf(((EditText) findViewById(R.id.add_chat_login)).getText());
         String chatPassword = String.valueOf(((EditText) findViewById(R.id.add_chat_password)).getText());
 
-        netServerController.AddNewChat(chatId, chatPassword);
+        CompletableFuture<Pair<String, String>> future = NetServerController.addUserToChat(Integer.parseInt(chatId), chatPassword);
+        future.thenAccept(goin -> {
+            if (goin != null) {
+                LocalAddChat(goin.first, goin.second);
+                Log.i("WebSocket", goin.first + " " + goin.second);
+            } else {
+                Log.e("WebSocket", "Get send msg unsuccessful");
+            }
+        });
     }
 
     private void LocalAddChat(String idChat, String idUserStr){
