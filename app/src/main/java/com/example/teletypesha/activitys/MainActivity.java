@@ -80,6 +80,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         handler.removeCallbacks(periodicTask); // Остановка задачи при приостановке активности
+        JsonDataSaver.SaveChats(SharedViewByChats.getChatList(), this);
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacks(periodicTask); // Остановка задачи при приостановке активности
+        JsonDataSaver.SaveChats(SharedViewByChats.getChatList(), this);
     }
     ///
 
@@ -203,6 +210,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void OpenChatsFragment(){
+        SharedViewByChats.setListener(null);
+
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         ChatsFragment chatFragment = new ChatsFragment();
 
@@ -213,6 +222,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void OpenSettingsFragment(){
+        SharedViewByChats.setListener(null);
+
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         SettingsFragment settingsFragment = new SettingsFragment();
 
@@ -222,6 +233,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void OpenChat(Chat chat){
+        SharedViewByChats.setListener(null);
+
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         SingleChatFragment singleChatFragment = new SingleChatFragment();
 
@@ -233,6 +246,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void OpenAddChatFragment(){
+        SharedViewByChats.setListener(null);
+
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         AddChatFragment addChatFragment = new AddChatFragment();
 
@@ -242,6 +257,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void OpenCreateChatFragment(){
+        SharedViewByChats.setListener(null);
+
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         CreateChatFragment createChatFragment = new CreateChatFragment();
 
@@ -289,7 +306,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void LocalAddChat(String idChat, String idUserStr){
-        ArrayList<Chat> chatList = JsonDataSaver.TryLoadChats(this);
+        ArrayList<Chat> chatList = SharedViewByChats.getChatList();
         if (chatList == null){
             chatList = new ArrayList<>();
         }
@@ -297,10 +314,10 @@ public class MainActivity extends AppCompatActivity {
         int idUser = Integer.parseInt(idUserStr);
 
         HashMap<Integer, User> users = new HashMap<>();
-        users.put(idUser, new User());
+        users.put(idUser, new User(true));
         chatList.add(new Chat(idUser, new ArrayList<>(), users, idChat));
 
-        JsonDataSaver.SaveChats(chatList, this);
+        SharedViewByChats.setChatList(chatList);
     }
 
     public void SendMessage(View view) {

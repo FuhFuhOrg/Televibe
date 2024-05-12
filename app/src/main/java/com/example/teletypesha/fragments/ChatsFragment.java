@@ -46,6 +46,7 @@ public class ChatsFragment extends Fragment implements SharedViewByChatsListener
         View view = inflater.inflate(R.layout.fragment_chats, container, false);
         recyclerView = view.findViewById(R.id.recycler);
         SharedViewByChats.setListener(this);
+        CreateItemList(SharedViewByChats.getChatList());
         return view;
     }
 

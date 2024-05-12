@@ -17,8 +17,10 @@ public class User {
         GenerateCrypt();
     }
 
-    public User(){
-
+    public User(boolean isGenerateCrypt){
+        if (isGenerateCrypt){
+            GenerateCrypt();
+        }
     }
 
     public void GenerateCrypt(){
@@ -53,6 +55,9 @@ public class User {
     }
 
     public String Decrypt(byte[] msg){
+        if (publicKey == null){
+            return "KEY NOT FOUND";
+        }
         try {
             return Crypt.Decrypt(msg, publicKey);
         } catch (Exception e) {

@@ -57,6 +57,8 @@ public class SharedViewByChats {
     }
 
     private static void changeListener() {
+        if(listener == null)
+            return;
         // Обработка всех ожидающих изменений
         while (!pendingChanges.isEmpty()) {
             Object change = pendingChanges.poll();

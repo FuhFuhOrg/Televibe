@@ -91,23 +91,33 @@ public class Chat {
             }
         }
 
+        for(Integer authorId : users.keySet()){
+            allMessageIdsForAllAuthors.putIfAbsent(authorId, new ArrayList<>());
+            lastMsgIdForAllAuthors.putIfAbsent(authorId, 0);
+        }
+
         for(Integer authorId : allMessageIdsForAllAuthors.keySet()){
             ArrayList<Integer> allMessageIds = allMessageIdsForAllAuthors.get(authorId);
             ArrayList<Integer> missingMessageIds = new ArrayList<>();
-            for(int i = 1; i <= lastMsgIdForAllAuthors.get(authorId); i++){
+            int lastMsgId = lastMsgIdForAllAuthors.get(authorId);
+            for(int i = 1; i <= lastMsgId; i++){
                 if(!allMessageIds.contains(i)){
                     missingMessageIds.add(i);
                 }
             }
 
             System.out.println("Missing message IDs for author " + authorId + ": " + missingMessageIds);
-            System.out.println("Last message ID for author " + authorId + ": " + lastMsgIdForAllAuthors.get(authorId));
+            System.out.println("Last message ID for author " + authorId + ": " + lastMsgId);
 
-            missingMessageIds.add(lastMsgIdForAllAuthors.get(authorId));
+            // Добавляем 0 в список отсутствующих ID, если у автора нет сообщений
+            if(lastMsgId == 0) {
+                missingMessageIds.add(0);
+            } else {
+                missingMessageIds.add(lastMsgId);
+            }
             missingMessageIdsForAllAuthors.put(authorId, missingMessageIds);
         }
 
         return missingMessageIdsForAllAuthors;
     }
-
 }
