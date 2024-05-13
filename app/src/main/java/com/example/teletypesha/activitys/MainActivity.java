@@ -436,6 +436,9 @@ public class MainActivity extends AppCompatActivity {
             for(Chat chat : chatList){
                 if(Objects.equals(chat.GetChatId(), chatId)){
                     Messange message = new Messange(authorId, idMsg, msg, time);
+                    if(chat.GetUser(authorId) == null){
+                        chat.AddUser(authorId, new User(false));
+                    }
                     chat.AddChangeMessage(message);
                     break;
                 }

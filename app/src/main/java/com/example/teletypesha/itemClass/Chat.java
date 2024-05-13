@@ -76,6 +76,10 @@ public class Chat {
         return null;
     }
 
+    public void AddUser(Integer id, User user){
+        users.put(id, user);
+    }
+
     public HashMap<Integer, ArrayList<Integer>> GetMissingIdsForAllAuthors(){
         HashMap<Integer, ArrayList<Integer>> allMessageIdsForAllAuthors = new HashMap<>();
         HashMap<Integer, Integer> lastMsgIdForAllAuthors = new HashMap<>();
