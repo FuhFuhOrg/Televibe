@@ -420,27 +420,37 @@ public class MainActivity extends AppCompatActivity {
         chatList.addAll(SharedViewByChats.getChatList());
         int index = 0;
 
-        for(int i = 0; index < parts.length; i++){
+        int chatCount = Integer.valueOf(parts[index++]);
+        for(int i = 0; i < chatCount; i++){
             String chatId = parts[index++];
-            int authorId = Integer.parseInt(parts[index++]);
-            int idMsg = Integer.parseInt(parts[index++]);
+            int authorCount = Integer.valueOf(parts[index++]);
 
-            String timeMillis1 = parts[index++];
-            String timeMillis2 = parts[index++];
-            String timeString = timeMillis1 + " " + timeMillis2;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
-            LocalDateTime time = LocalDateTime.parse(timeString, formatter);
+            for(int j = 0; j < authorCount; j++) {
+                int authorId = Integer.parseInt(parts[index++]);
+                int msgCount = Integer.valueOf(parts[index++]);
 
-            byte[] msg = Base64.getDecoder().decode(parts[index++]);
+                for(int k = 0; k < msgCount; k++) {
 
-            for(Chat chat : chatList){
-                if(Objects.equals(chat.GetChatId(), chatId)){
-                    Messange message = new Messange(authorId, idMsg, msg, time);
-                    if(chat.GetUser(authorId) == null){
-                        chat.AddUser(authorId, new User(false));
+                    int idMsg = Integer.parseInt(parts[index++]);
+
+                    String timeMillis1 = parts[index++];
+                    String timeMillis2 = parts[index++];
+                    String timeString = timeMillis1 + " " + timeMillis2;
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+                    LocalDateTime time = LocalDateTime.parse(timeString, formatter);
+
+                    byte[] msg = Base64.getDecoder().decode(parts[index++]);
+
+                    for (Chat chat : chatList) {
+                        if (Objects.equals(chat.GetChatId(), chatId)) {
+                            Messange message = new Messange(authorId, idMsg, msg, time);
+                            if (chat.GetUser(authorId) == null) {
+                                chat.AddUser(authorId, new User(false));
+                            }
+                            chat.AddChangeMessage(message);
+                            break;
+                        }
                     }
-                    chat.AddChangeMessage(message);
-                    break;
                 }
             }
         }
