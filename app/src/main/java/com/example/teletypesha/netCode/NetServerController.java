@@ -185,6 +185,13 @@ public class NetServerController extends Service implements Serializable {
         return future;
     }
 
+    public static void UserCreate(int idUser, String idChat, byte[] publicKey) {
+        int requestId = GetK();
+
+        Log.i("WebSocket", "UserCreate");
+        SendRequest(requestId, "UserCreate", idUser + " " + idChat + " " + Base64.getEncoder().encodeToString(publicKey));
+    }
+
     public static CompletableFuture<Pair<String, String>> addUserToChat(int idChat, String chatPassword) {
         CompletableFuture<Pair<String, String>> future = new CompletableFuture<>();
         int requestId = GetK();
