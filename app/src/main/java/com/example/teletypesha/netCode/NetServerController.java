@@ -192,27 +192,42 @@ public class NetServerController extends Service implements Serializable {
         SendRequest(requestId, "UserCreate", idUser + " " + idChat + " " + Base64.getEncoder().encodeToString(publicKey));
     }
 
-    public static CompletableFuture<Pair<String, String>> addUserToChat(int idChat, String chatPassword) {
-        CompletableFuture<Pair<String, String>> future = new CompletableFuture<>();
+    // ---------------------------------------------------
+
+    // Проверка, существует ли такой чат
+
+    // ---------------------------------------------------
+    public static CompletableFuture<String> ExistChat(int idChat, String chatPassword)
+    {
+        CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
 
         setOnMessageReceivedListener(requestId , new OnMessageReceived() {
-            @Override
             public void onMessage(String[] parts) {
                 if (parts.length > 0) {
-                    if (parts.length > 1) {
-                        future.complete(new Pair<>(parts[0], parts[1]));
-                    } else {
-                        future.complete(null);
-                    }
+                    future.complete(parts[0]);
+                } else {
+                    future.complete(null);
                 }
             }
         });
 
-        Log.i("WebSocket", "addUserToChat");
-        SendRequest(requestId, "addUserToChat", idChat + " " + chatPassword);
+        Log.i("WebSocket", "ExistChat");
+        SendRequest(requestId, "ExistChat", idChat + " " + chatPassword);
 
         return future;
+    }
+
+    // ---------------------------------------------------
+
+    // Добавление пользователя в чат
+
+    // ---------------------------------------------------
+    public static void addUserToChat(byte[] publicKey, int idChat, String chatPassword) {
+        int requestId = GetK();
+
+        Log.i("WebSocket", "addUserToChat");
+        SendRequest(requestId, "addUserToChat", Base64.getEncoder().encodeToString(publicKey) + " " + idChat + " " + chatPassword);
     }
 
     // Отправить сообщение
