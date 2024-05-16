@@ -1,5 +1,9 @@
 package com.example.teletypesha.itemClass;
 
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -147,11 +151,38 @@ public class Chat {
     }
 
     public void SortToTime(){
-        Collections.sort(messages, new Comparator<Messange>() {
-            @Override
-            public int compare(Messange m1, Messange m2) {
-                return m1.sendTime.compareTo(m2.sendTime);
+        int n = messages.size();
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if(messages.get(j).messageId == -1){
+                    continue;
+                }
+                long sendTime1 = toSeconds(messages.get(j).sendTime);
+                long sendTime2 = toSeconds(messages.get(j + 1).sendTime);
+
+                if (sendTime1 != -1 && sendTime2 != -1) {
+                    // Compare timestamps in seconds
+                    if (sendTime1 > sendTime2) {
+                        // Swap messages[j] and messages[j + 1]
+                        Messange temp = messages.get(j);
+                        messages.set(j, messages.get(j + 1));
+                        messages.set(j + 1, temp);
+                    }
+                } else if (sendTime1 == -1 && sendTime2 != -1) {
+                    // Null is considered smaller than any non-null value
+                    // Swap messages[j] and messages[j + 1]
+                    Messange temp = messages.get(j);
+                    messages.set(j, messages.get(j + 1));
+                    messages.set(j + 1, temp);
+                }
             }
-        });
+        }
+    }
+
+    private long toSeconds(LocalDateTime dateTime) {
+        if (dateTime != null) {
+            return dateTime.truncatedTo(ChronoUnit.SECONDS).toEpochSecond(ZoneOffset.UTC);
+        }
+        return -1; // Return -1 for null values
     }
 }
