@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
     /// Перенести эту гадость в воркер
     private Handler handler = new Handler();
-    private static final long DELAY_MINUTES = 1 * 100; // 1 минута в миллисекундах
+    private static final long DELAY_MINUTES = 1 * 10 * 1000; // 1 минута * сек * миллисекундах
     private Runnable periodicTask = new Runnable() {
         @Override
         public void run() {
