@@ -43,6 +43,7 @@ import com.example.teletypesha.itemClass.User;
 import com.example.teletypesha.jsons.JsonDataSaver;
 import com.example.teletypesha.netCode.NetServerController;
 
+import java.security.PublicKey;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -300,8 +301,8 @@ public class MainActivity extends AppCompatActivity {
         String chatId = String.valueOf(((EditText) findViewById(R.id.add_chat_login)).getText());
         String chatPassword = String.valueOf(((EditText) findViewById(R.id.add_chat_password)).getText());
 
-        User user = new User(true, "You");
-        byte[] pk = Crypt.CriptPublicKey(chatId, chatPassword, user.GetPublicKey());
+        User user = new User("You");
+        String pk = Crypt.CriptPublicKey(chatId, chatPassword, user.GetPublicKey());
 
         CompletableFuture<String> future = NetServerController.AddUserToChat(pk, chatId, chatPassword);
         future.thenAccept(goin -> {
@@ -316,8 +317,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void AddChat(String chatId, String chatPassword) throws Exception {
 
-        User user = new User(true, "You");
-        byte[] pk = Crypt.CriptPublicKey(chatId, chatPassword, user.GetPublicKey());
+        User user = new User("You");
+        String pk = Crypt.CriptPublicKey(chatId, chatPassword, user.GetPublicKey());
 
         CompletableFuture<String> future = NetServerController.AddUserToChat(pk, chatId, chatPassword);
         future.thenAccept(goin -> {
@@ -456,8 +457,17 @@ public class MainActivity extends AppCompatActivity {
 
             for(int j = 0; j < authorCount; j++) {
                 int authorId = Integer.parseInt(parts[index++]);
+                PublicKey publicKey = null;
                 if (Boolean.parseBoolean(parts[index++])){
-                    Integer.parseInt(parts[index++]);
+                    for (Chat chat : chatList) {
+                        if (Objects.equals(chat.GetChatId(), chatId)) {
+                            try {
+                                publicKey = Crypt.DecryptPublicKey(chatId, chat.GetChatPass(), parts[index++]);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    }
                 }
                 int msgCount = Integer.valueOf(parts[index++]);
 
@@ -479,7 +489,7 @@ public class MainActivity extends AppCompatActivity {
                             if (Objects.equals(chat.GetChatId(), chatId)) {
                                 Messange message = new Messange(authorId, idMsg, msg, time);
                                 if (chat.GetUser(authorId) == null) {
-                                    chat.AddUser(authorId, new User(false, String.valueOf(authorId)));
+                                    chat.AddUser(authorId, new User(String.valueOf(authorId), publicKey));
                                 }
                                 chat.AddChangeMessage(message);
                                 break;

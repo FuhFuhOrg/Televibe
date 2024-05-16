@@ -219,7 +219,7 @@ public class NetServerController extends Service implements Serializable {
     // Добавление пользователя в чат
 
     // ---------------------------------------------------
-    public static CompletableFuture<String> AddUserToChat(byte[] publicKey, String idChat, String chatPassword) {
+    public static CompletableFuture<String> AddUserToChat(String publicKey, String idChat, String chatPassword) {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
 
@@ -234,7 +234,7 @@ public class NetServerController extends Service implements Serializable {
         });
 
         Log.i("WebSocket", "addUserToChat");
-        SendRequest(requestId, "addUserToChat", Base64.getEncoder().encodeToString(publicKey) + " " + idChat + " " + chatPassword);
+        SendRequest(requestId, "addUserToChat", publicKey + " " + idChat + " " + chatPassword);
 
         return future;
     }

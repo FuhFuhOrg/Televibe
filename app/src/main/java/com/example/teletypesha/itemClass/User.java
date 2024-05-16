@@ -13,15 +13,13 @@ public class User {
     private PrivateKey privateKey;
 
     public User(String name){
-        this.name = name;
         GenerateCrypt();
+        this.name = name;
     }
 
-    public User(boolean isGenerateCrypt, String name){
-        if (isGenerateCrypt){
-            GenerateCrypt();
-        }
+    public User(String name, PublicKey publicKey){
         this.name = name;
+        this.publicKey = publicKey;
     }
 
     public void GenerateCrypt(){

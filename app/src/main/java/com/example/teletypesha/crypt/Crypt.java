@@ -79,9 +79,11 @@ public final class Crypt {
         return new String(decryptedMsg);
     }
 
-    public static byte[] CriptPublicKey(String chatId, String chatPass, PublicKey publicKey) throws Exception {
-        String key = chatId + chatPass; // Объединяем два ключевых слова
+    public static String CriptPublicKey(String chatId, String chatPass, PublicKey publicKey) throws Exception {
+        // Объединяем два ключевых слова
+        String key = chatId + chatPass;
 
+        // Генерация ключа AES из строки
         MessageDigest sha = MessageDigest.getInstance("SHA-256");
         byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
         keyBytes = sha.digest(keyBytes);
@@ -89,17 +91,23 @@ public final class Crypt {
 
         SecretKeySpec secretKey = new SecretKeySpec(keyBytes, "AES");
 
+        // Инициализация шифра
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
-        byte[] encrypted = cipher.doFinal(Base64.getEncoder().encode(publicKey.getEncoded()));
+        // Шифрование и кодирование в Base64
+        byte[] encrypted = cipher.doFinal(publicKey.getEncoded());
+        String encryptedString = Base64.getEncoder().encodeToString(encrypted);
 
-        return encrypted;
+        return encryptedString;
     }
 
-    public static PublicKey DecryptPublicKey(String chatId, String chatPass, String encryptedString) throws Exception {
-        String key = chatId + chatPass; // Объединяем два ключевых слова
 
+    public static PublicKey DecryptPublicKey(String chatId, String chatPass, String encryptedString) throws Exception {
+        // Объединяем два ключевых слова
+        String key = chatId + chatPass;
+
+        // Генерация ключа AES из строки
         MessageDigest sha = MessageDigest.getInstance("SHA-256");
         byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
         keyBytes = sha.digest(keyBytes);
@@ -107,12 +115,18 @@ public final class Crypt {
 
         SecretKeySpec secretKey = new SecretKeySpec(keyBytes, "AES");
 
+        // Инициализация шифра
         Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-
         cipher.init(Cipher.DECRYPT_MODE, secretKey);
-        PublicKey decrypted = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(cipher.doFinal(Base64.getDecoder().decode(encryptedString))));
+
+        // Декодирование строки Base64 и расшифровка
+        byte[] encryptedBytes = Base64.getDecoder().decode(encryptedString);
+        byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
+
+        // Восстановление публичного ключа
+        PublicKey decrypted = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(decryptedBytes));
 
         return decrypted;
     }
+
 }
