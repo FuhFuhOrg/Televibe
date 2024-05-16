@@ -532,9 +532,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-        for (Chat chat : chatList) {
-            chat.SortToTime();
-        }
         JsonDataSaver.SaveChats(chatList, this);
 
 
