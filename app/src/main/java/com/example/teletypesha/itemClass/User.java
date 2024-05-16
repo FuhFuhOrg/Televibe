@@ -38,6 +38,10 @@ public class User {
         this.publicKey = publicKey;
     }
 
+    public PublicKey GetPublicKey(){
+        return publicKey;
+    }
+
     public String GetName(){
         return name;
     }

@@ -30,6 +30,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.teletypesha.R;
+import com.example.teletypesha.crypt.Crypt;
 import com.example.teletypesha.fragments.AddChatFragment;
 import com.example.teletypesha.fragments.ChatsFragment;
 import com.example.teletypesha.fragments.CreateChatFragment;
@@ -279,43 +280,64 @@ public class MainActivity extends AppCompatActivity {
         String chatPassword = String.valueOf(((EditText) findViewById(R.id.create_chat_password)).getText());
         ToggleButton toggleButton = (ToggleButton) findViewById(R.id.create_chat_is_privacy);
 
-        CompletableFuture<Pair<String, String>> future = netServerController.CreateNewChat(chatPassword, toggleButton.isChecked());
+        CompletableFuture<String> future = netServerController.CreateNewChat(chatPassword, toggleButton.isChecked());
         future.thenAccept(goin -> {
             if (goin != null) {
-                LocalAddChat(goin.first, goin.second);
-                Log.i("WebSocket", goin.first + " " + goin.second);
+                try {
+                    AddChat(goin, chatPassword);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                Log.i("WebSocket", goin);
             } else {
                 Log.e("WebSocket", "Get send msg unsuccessful");
             }
         });
     }
 
-    public void AddChat(View view) {
+    public void AddChat(View view) throws Exception {
         String chatId = String.valueOf(((EditText) findViewById(R.id.add_chat_login)).getText());
         String chatPassword = String.valueOf(((EditText) findViewById(R.id.add_chat_password)).getText());
 
-        CompletableFuture<Pair<String, String>> future = NetServerController.addUserToChat(Integer.parseInt(chatId), chatPassword);
+        User user = new User(true);
+        byte[] pk = Crypt.CriptPublicKey(chatId, chatPassword, user.GetPublicKey());
+
+        CompletableFuture<String> future = NetServerController.AddUserToChat(pk, chatId, chatPassword);
         future.thenAccept(goin -> {
             if (goin != null) {
-                LocalAddChat(goin.first, goin.second);
-                Log.i("WebSocket", goin.first + " " + goin.second);
+                LocalAddChat(chatId, chatPassword, user, Integer.valueOf(goin));
+                Log.i("WebSocket", goin);
             } else {
                 Log.e("WebSocket", "Get send msg unsuccessful");
             }
         });
     }
 
-    private void LocalAddChat(String idChat, String idUserStr){
+    public void AddChat(String chatId, String chatPassword) throws Exception {
+
+        User user = new User(true);
+        byte[] pk = Crypt.CriptPublicKey(chatId, chatPassword, user.GetPublicKey());
+
+        CompletableFuture<String> future = NetServerController.AddUserToChat(pk, chatId, chatPassword);
+        future.thenAccept(goin -> {
+            if (goin != null) {
+                LocalAddChat(chatId, goin, user, Integer.valueOf(goin));
+                Log.i("WebSocket", goin);
+            } else {
+                Log.e("WebSocket", "Get send msg unsuccessful");
+            }
+        });
+    }
+
+    private void LocalAddChat(String idChat, String chatPassword, User user, Integer idUser){
         ArrayList<Chat> chatList = SharedViewByChats.getChatList();
         if (chatList == null){
             chatList = new ArrayList<>();
         }
 
-        int idUser = Integer.parseInt(idUserStr);
-
         HashMap<Integer, User> users = new HashMap<>();
-        users.put(idUser, new User(true));
-        chatList.add(new Chat(idUser, new ArrayList<>(), users, idChat));
+        users.put(idUser, user);
+        chatList.add(new Chat(idUser, new ArrayList<>(), users, idChat, chatPassword));
 
         SharedViewByChats.setChatList(chatList);
     }

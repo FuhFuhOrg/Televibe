@@ -73,7 +73,7 @@ public class ChatsFragment extends Fragment implements SharedViewByChatsListener
                 messages.add(new Messange(randomUserId, -1, users.get(randomUserId).Encrypt("hi"), LocalDateTime.now()));
             }
 
-            chatList.add(new Chat(yourId, messages, users, String.valueOf(random.nextInt())));
+            chatList.add(new Chat(yourId, messages, users, String.valueOf(random.nextInt()), ""));
             if(random.nextInt() > 0){
                 chatList.get(chatList.size() - 1).SetLabel("Amogus");
             }

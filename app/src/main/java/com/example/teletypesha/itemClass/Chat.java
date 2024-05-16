@@ -8,13 +8,14 @@ public class Chat {
     Integer yourId;
     ArrayList<Messange> messages;
     HashMap<Integer, User> users;
-    String label, chatId;
+    String label, chatId, pass;
 
-    public Chat(Integer yourId, ArrayList<Messange> messages, HashMap<Integer, User> users, String chatId){
+    public Chat(Integer yourId, ArrayList<Messange> messages, HashMap<Integer, User> users, String chatId, String pass){
         this.yourId = yourId;
         this.messages = messages;
         this.users = users;
         this.chatId = chatId;
+        this.pass = pass;
     }
 
     public Integer GetYourId(){
@@ -40,6 +41,10 @@ public class Chat {
 
     public String GetChatId(){
         return chatId;
+    }
+
+    public String GetChatPass(){
+        return pass;
     }
 
     public void SetLabel(String label){

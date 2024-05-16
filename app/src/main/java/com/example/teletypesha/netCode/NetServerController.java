@@ -162,19 +162,15 @@ public class NetServerController extends Service implements Serializable {
     // -------------------------------------------------------------------------------------------
 
     // Создание нового чата
-    public static CompletableFuture<Pair<String, String>> CreateNewChat(String chatPassword, boolean isPrivacy) {
-        CompletableFuture<Pair<String, String>> future = new CompletableFuture<>();
+    public static CompletableFuture<String> CreateNewChat(String chatPassword, boolean isPrivacy) {
+        CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
 
         setOnMessageReceivedListener(requestId , new OnMessageReceived() {
             @Override
             public void onMessage(String[] parts) {
                 if (parts.length > 0) {
-                    if (parts.length > 1) {
-                        future.complete(new Pair<>(parts[0], parts[1]));
-                    } else {
-                        future.complete(null);
-                    }
+                    future.complete(parts[0]);
                 }
             }
         });
@@ -197,7 +193,7 @@ public class NetServerController extends Service implements Serializable {
     // Проверка, существует ли такой чат
 
     // ---------------------------------------------------
-    public static CompletableFuture<String> ExistChat(int idChat, String chatPassword)
+    public static CompletableFuture<String> ExistChat(String idChat, String chatPassword)
     {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
@@ -223,11 +219,24 @@ public class NetServerController extends Service implements Serializable {
     // Добавление пользователя в чат
 
     // ---------------------------------------------------
-    public static void addUserToChat(byte[] publicKey, int idChat, String chatPassword) {
+    public static CompletableFuture<String> AddUserToChat(byte[] publicKey, String idChat, String chatPassword) {
+        CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
+
+        setOnMessageReceivedListener(requestId , new OnMessageReceived() {
+            public void onMessage(String[] parts) {
+                if (parts.length > 0) {
+                    future.complete(parts[0]);
+                } else {
+                    future.complete(null);
+                }
+            }
+        });
 
         Log.i("WebSocket", "addUserToChat");
         SendRequest(requestId, "addUserToChat", Base64.getEncoder().encodeToString(publicKey) + " " + idChat + " " + chatPassword);
+
+        return future;
     }
 
     // Отправить сообщение
