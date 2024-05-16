@@ -1,6 +1,8 @@
 package com.example.teletypesha.itemClass;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -142,5 +144,14 @@ public class Chat {
                 iterator.remove();
             }
         }
+    }
+
+    public void SortToTime(){
+        Collections.sort(messages, new Comparator<Messange>() {
+            @Override
+            public int compare(Messange m1, Messange m2) {
+                return m1.sendTime.compareTo(m2.sendTime);
+            }
+        });
     }
 }
