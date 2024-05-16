@@ -86,4 +86,14 @@ public class SharedViewByChats {
             }
         }
     }
+
+    public static boolean ChatIsExist(String id){
+        for (Chat chat:
+             chatList) {
+            if(Objects.equals(chat.chatId, id)){
+                return true;
+            }
+        }
+        return false;
+    }
 }

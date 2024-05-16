@@ -176,7 +176,7 @@ public class NetServerController extends Service implements Serializable {
         });
 
         Log.i("WebSocket", "CreateNewChat");
-        SendRequest(requestId, "ChatCreate", isPrivacy + " " + chatPassword);
+        SendRequest(requestId, "ChatCreate", isPrivacy + " " + String.valueOf(chatPassword));
 
         return future;
     }

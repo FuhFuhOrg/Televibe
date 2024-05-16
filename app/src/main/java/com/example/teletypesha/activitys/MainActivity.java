@@ -43,6 +43,9 @@ import com.example.teletypesha.itemClass.User;
 import com.example.teletypesha.jsons.JsonDataSaver;
 import com.example.teletypesha.netCode.NetServerController;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -277,9 +280,28 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    private String HashPassword(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] encodedHash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+
+            // Преобразовать байты в строку в формате hex
+            StringBuilder hexString = new StringBuilder(2 * encodedHash.length);
+            for (byte b : encodedHash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public void CreateChat(View view) {
-        String chatPassword = String.valueOf(((EditText) findViewById(R.id.create_chat_password)).getText());
+        String chatPassword = HashPassword(String.valueOf(((EditText) findViewById(R.id.create_chat_password)).getText()));
         ToggleButton toggleButton = (ToggleButton) findViewById(R.id.create_chat_is_privacy);
 
         CompletableFuture<String> future = netServerController.CreateNewChat(chatPassword, toggleButton.isChecked());
@@ -299,20 +321,22 @@ public class MainActivity extends AppCompatActivity {
 
     public void AddChat(View view) throws Exception {
         String chatId = String.valueOf(((EditText) findViewById(R.id.add_chat_login)).getText());
-        String chatPassword = String.valueOf(((EditText) findViewById(R.id.add_chat_password)).getText());
+        String chatPassword = HashPassword(String.valueOf(((EditText) findViewById(R.id.add_chat_password)).getText()));
 
-        User user = new User("You");
-        String pk = Crypt.CriptPublicKey(chatId, chatPassword, user.GetPublicKey());
+        if(!SharedViewByChats.ChatIsExist(chatId)) {
+            User user = new User("You");
+            String pk = Crypt.CriptPublicKey(chatId, chatPassword, user.GetPublicKey());
 
-        CompletableFuture<String> future = NetServerController.AddUserToChat(pk, chatId, chatPassword);
-        future.thenAccept(goin -> {
-            if (goin != null) {
-                LocalAddChat(chatId, chatPassword, user, Integer.valueOf(goin));
-                Log.i("WebSocket", goin);
-            } else {
-                Log.e("WebSocket", "Get send msg unsuccessful");
-            }
-        });
+            CompletableFuture<String> future = NetServerController.AddUserToChat(pk, chatId, chatPassword);
+            future.thenAccept(goin -> {
+                if (goin != null) {
+                    LocalAddChat(chatId, chatPassword, user, Integer.valueOf(goin));
+                    Log.i("WebSocket", goin);
+                } else {
+                    Log.e("WebSocket", "Get send msg unsuccessful");
+                }
+            });
+        }
     }
 
     public void AddChat(String chatId, String chatPassword) throws Exception {
