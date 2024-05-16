@@ -51,6 +51,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -299,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
         String chatId = String.valueOf(((EditText) findViewById(R.id.add_chat_login)).getText());
         String chatPassword = String.valueOf(((EditText) findViewById(R.id.add_chat_password)).getText());
 
-        User user = new User(true);
+        User user = new User(true, "You");
         byte[] pk = Crypt.CriptPublicKey(chatId, chatPassword, user.GetPublicKey());
 
         CompletableFuture<String> future = NetServerController.AddUserToChat(pk, chatId, chatPassword);
@@ -315,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void AddChat(String chatId, String chatPassword) throws Exception {
 
-        User user = new User(true);
+        User user = new User(true, "You");
         byte[] pk = Crypt.CriptPublicKey(chatId, chatPassword, user.GetPublicKey());
 
         CompletableFuture<String> future = NetServerController.AddUserToChat(pk, chatId, chatPassword);
@@ -409,7 +410,12 @@ public class MainActivity extends AppCompatActivity {
                 ArrayList<Integer> messages = entry.getValue();
                 int messageCount = messages.size();
 
-                str.append(" " + authorId + " " + messageCount);
+                if(chat.GetUser(authorId).GetPublicKey() == null) {
+                    str.append(" " + authorId + " " + "false" + " " + messageCount);
+                }
+                else {
+                    str.append(" " + authorId + " " + "true" + " " + messageCount);
+                }
 
                 for(Integer msg : messages){
                     str.append(" " + msg);
@@ -442,6 +448,7 @@ public class MainActivity extends AppCompatActivity {
         chatList.addAll(SharedViewByChats.getChatList());
         int index = 0;
 
+        ArrayList<Integer> erased = new ArrayList<>();
         int chatCount = Integer.valueOf(parts[index++]);
         for(int i = 0; i < chatCount; i++){
             String chatId = parts[index++];
@@ -449,30 +456,45 @@ public class MainActivity extends AppCompatActivity {
 
             for(int j = 0; j < authorCount; j++) {
                 int authorId = Integer.parseInt(parts[index++]);
+                if (Boolean.parseBoolean(parts[index++])){
+                    Integer.parseInt(parts[index++]);
+                }
                 int msgCount = Integer.valueOf(parts[index++]);
 
                 for(int k = 0; k < msgCount; k++) {
 
                     int idMsg = Integer.parseInt(parts[index++]);
+                    boolean isErase = Boolean.parseBoolean(parts[index++]);
 
-                    String timeMillis1 = parts[index++];
-                    String timeMillis2 = parts[index++];
-                    String timeString = timeMillis1 + " " + timeMillis2;
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
-                    LocalDateTime time = LocalDateTime.parse(timeString, formatter);
+                    if(!isErase) {
+                        String timeMillis1 = parts[index++];
+                        String timeMillis2 = parts[index++];
+                        String timeString = timeMillis1 + " " + timeMillis2;
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+                        LocalDateTime time = LocalDateTime.parse(timeString, formatter);
 
-                    byte[] msg = Base64.getDecoder().decode(parts[index++]);
+                        byte[] msg = Base64.getDecoder().decode(parts[index++]);
 
-                    for (Chat chat : chatList) {
-                        if (Objects.equals(chat.GetChatId(), chatId)) {
-                            Messange message = new Messange(authorId, idMsg, msg, time);
-                            if (chat.GetUser(authorId) == null) {
-                                chat.AddUser(authorId, new User(false));
+                        for (Chat chat : chatList) {
+                            if (Objects.equals(chat.GetChatId(), chatId)) {
+                                Messange message = new Messange(authorId, idMsg, msg, time);
+                                if (chat.GetUser(authorId) == null) {
+                                    chat.AddUser(authorId, new User(false, String.valueOf(authorId)));
+                                }
+                                chat.AddChangeMessage(message);
+                                break;
                             }
-                            chat.AddChangeMessage(message);
-                            break;
                         }
                     }
+                    else{
+                        erased.add(idMsg);
+                    }
+                }
+            }
+
+            for (Chat chat : chatList) {
+                if (Objects.equals(chat.GetChatId(), chatId)) {
+                    chat.CleanErased(erased);
                 }
             }
         }

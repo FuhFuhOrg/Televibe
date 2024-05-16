@@ -2,6 +2,8 @@ package com.example.teletypesha.itemClass;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Objects;
 
 public class Chat {
@@ -128,5 +130,17 @@ public class Chat {
         }
 
         return missingMessageIdsForAllAuthors;
+    }
+
+    public void CleanErased(ArrayList<Integer> erased) {
+        HashSet<Integer> erasedSet = new HashSet<>(erased);
+        Iterator<Messange> iterator = messages.iterator();
+
+        while (iterator.hasNext()) {
+            Messange message = iterator.next();
+            if (erasedSet.contains(message.messageId)) {
+                iterator.remove();
+            }
+        }
     }
 }

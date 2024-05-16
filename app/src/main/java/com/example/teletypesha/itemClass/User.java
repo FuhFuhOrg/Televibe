@@ -17,10 +17,11 @@ public class User {
         GenerateCrypt();
     }
 
-    public User(boolean isGenerateCrypt){
+    public User(boolean isGenerateCrypt, String name){
         if (isGenerateCrypt){
             GenerateCrypt();
         }
+        this.name = name;
     }
 
     public void GenerateCrypt(){
