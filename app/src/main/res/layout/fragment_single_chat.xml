@@ -15,7 +15,8 @@
             android:id="@+id/chat_recycler"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@color/design_default_color_secondary_variant"
+            android:background="@drawable/back"
+            android:clipToPadding="false"
             app:layout_constraintBottom_toTopOf="@id/message_layout"
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_editor_absoluteX="16dp" />
@@ -24,6 +25,7 @@
             android:id="@+id/message_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/button"
             android:gravity="bottom"
             android:orientation="horizontal"
             android:padding="4dp"
@@ -47,9 +49,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:layout_weight="1"
-                android:text="Отправить"
                 android:onClick="SendMessage"
-                />
+                android:text="Отправить"
+                android:textColorLink="#121839" />
 
         </LinearLayout>
 
