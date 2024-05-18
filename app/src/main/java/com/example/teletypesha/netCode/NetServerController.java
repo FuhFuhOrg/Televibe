@@ -161,6 +161,10 @@ public class NetServerController extends Service implements Serializable {
 
     // -------------------------------------------------------------------------------------------
 
+    // Запросы к серверу
+
+    // -------------------------------------------------------------------------------------------
+
     // Создание нового чата
     public static CompletableFuture<String> CreateNewChat(String chatPassword, boolean isPrivacy) {
         CompletableFuture<String> future = new CompletableFuture<>();
@@ -181,44 +185,6 @@ public class NetServerController extends Service implements Serializable {
         return future;
     }
 
-    public static void UserCreate(int idUser, String idChat, byte[] publicKey) {
-        int requestId = GetK();
-
-        Log.i("WebSocket", "UserCreate");
-        SendRequest(requestId, "UserCreate", idUser + " " + idChat + " " + Base64.getEncoder().encodeToString(publicKey));
-    }
-
-    // ---------------------------------------------------
-
-    // Проверка, существует ли такой чат
-
-    // ---------------------------------------------------
-    public static CompletableFuture<String> ExistChat(String idChat, String chatPassword)
-    {
-        CompletableFuture<String> future = new CompletableFuture<>();
-        int requestId = GetK();
-
-        setOnMessageReceivedListener(requestId , new OnMessageReceived() {
-            public void onMessage(String[] parts) {
-                if (parts.length > 0) {
-                    future.complete(parts[0]);
-                } else {
-                    future.complete(null);
-                }
-            }
-        });
-
-        Log.i("WebSocket", "ExistChat");
-        SendRequest(requestId, "ExistChat", idChat + " " + chatPassword);
-
-        return future;
-    }
-
-    // ---------------------------------------------------
-
-    // Добавление пользователя в чат
-
-    // ---------------------------------------------------
     public static CompletableFuture<String> AddUserToChat(String publicKey, String idChat, String chatPassword) {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
@@ -328,76 +294,6 @@ public class NetServerController extends Service implements Serializable {
 
         Log.i("WebSocket", "RefactorMessage");
         SendRequest(requestId, "RefactorMessage", String.valueOf(idMsg) + " " + String.valueOf(idSender) + " " + Arrays.toString(msg));
-
-        return future;
-    }
-
-    // Поиск сообщения по ключу в msg
-    public static CompletableFuture<String> ReturnMessageByKeyWord(int idSender, byte[] msg) throws Exception {
-        CompletableFuture<String> future = new CompletableFuture<>();
-        int requestId = GetK();
-        setOnMessageReceivedListener(requestId, new OnMessageReceived() {
-            @Override
-            public void onMessage(String[] parts) {
-                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
-                    if (parts.length > 1) {
-                        future.complete(parts[1]);
-                    } else {
-                        future.complete(null);
-                    }
-                }
-            }
-        });
-
-        Log.i("WebSocket", "ReturnMessageByKeyWord");
-        SendRequest(requestId, "ReturnMessageByKeyWord", String.valueOf(idSender) + " " + Arrays.toString(msg));
-
-        return future;
-    }
-
-    // Возврат сообщения по idMsg
-    public static CompletableFuture<String> ReturnMessageByIdMsg(int idMsg) throws Exception {
-        CompletableFuture<String> future = new CompletableFuture<>();
-        int requestId = GetK();
-        setOnMessageReceivedListener(requestId, new OnMessageReceived() {
-            @Override
-            public void onMessage(String[] parts) {
-                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
-                    if (parts.length > 1) {
-                        future.complete(parts[1]);
-                    } else {
-                        future.complete(null);
-                    }
-                }
-            }
-        });
-
-        Log.i("WebSocket", "ReturnMessageByIdMsg");
-        SendRequest(requestId, "ReturnMessageByIdMsg", String.valueOf(idMsg));
-
-        return future;
-    }
-
-    // Возврат k сообщений, отсортированных по времени
-    public static CompletableFuture<String> ReturnLastKMessages(int idSender, int kMessages) throws Exception {
-        CompletableFuture<String> future = new CompletableFuture<>();
-        int requestId = GetK();
-
-        setOnMessageReceivedListener(requestId, new OnMessageReceived() {
-            @Override
-            public void onMessage(String[] parts) {
-                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
-                    if (parts.length > 1) {
-                        future.complete(parts[1]);
-                    } else {
-                        future.complete(null);
-                    }
-                }
-            }
-        });
-
-        Log.i("WebSocket", "ReturnLastKMessages");
-        SendRequest(requestId, "ReturnLastKMessages", String.valueOf(idSender) + " " + String.valueOf(kMessages));
 
         return future;
     }
