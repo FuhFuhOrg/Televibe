@@ -31,10 +31,10 @@
         android:layout_width="200dp"
         android:layout_height="64dp"
         android:layout_marginTop="24dp"
-        android:text="Add new chat"
+        android:onClick="CreateChat"
+        android:text="@string/add_new_chat"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/create_chat_is_privacy"
-        android:onClick="CreateChat"/>
+        app:layout_constraintTop_toBottomOf="@+id/create_chat_is_privacy" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
