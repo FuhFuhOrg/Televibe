@@ -8,8 +8,11 @@
     <string name="set_font">Font</string>
     <string name="add_new_chat">Add new chat</string>
 
+    <string name="open_nav">Open Navigation Drawer</string>
+    <string name="close_nav">Close Navigation Drawer</string>
 
     <string name="comic_sans">Comic_sans</string>
     <string name="inky_thin_pixels">Inky_thin_pixels</string>
     <string name="swampy">Swampy</string>
+
 </resources>
