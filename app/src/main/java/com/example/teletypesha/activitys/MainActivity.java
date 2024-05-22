@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     FragmentManager fragmentManager = getSupportFragmentManager();
     NetServerController netServerController;
     boolean isBound = false;
-
+    private Fragment currentFragment;
 
 
     /// Перенести эту гадость в воркер
