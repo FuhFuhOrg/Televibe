@@ -1,9 +1,5 @@
 package com.example.teletypesha.itemClass;
 
-import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,11 +10,11 @@ import java.util.Objects;
 
 public class Chat {
     Integer yourId;
-    ArrayList<Messange> messages;
+    ArrayList<Message> messages;
     HashMap<Integer, User> users;
     String label, chatId, pass;
 
-    public Chat(Integer yourId, ArrayList<Messange> messages, HashMap<Integer, User> users, String chatId, String pass){
+    public Chat(Integer yourId, ArrayList<Message> messages, HashMap<Integer, User> users, String chatId, String pass){
         this.yourId = yourId;
         this.messages = messages;
         this.users = users;
@@ -39,8 +35,8 @@ public class Chat {
         }
     }
 
-    public void AddChangeMessage(Messange msg){
-        Messange getMsg = GetMessangeForId(msg.messageId, msg.author);
+    public void AddChangeMessage(Message msg){
+        Message getMsg = GetMessangeForId(msg.messageId, msg.author);
         if(getMsg != null){
             messages.remove(getMsg);
         }
@@ -67,7 +63,7 @@ public class Chat {
         return users.get(id);
     }
 
-    public Messange getLastMsg(){
+    public Message getLastMsg(){
         if(messages != null && messages.size() > 0){
             return messages.get(messages.size() - 1);
         }
@@ -76,11 +72,11 @@ public class Chat {
         }
     }
 
-    public ArrayList<Messange> GetMessanges(){
+    public ArrayList<Message> GetMessanges(){
         return messages;
     }
 
-    public Messange GetMessangeForId(Integer id, Integer authorId){
+    public Message GetMessangeForId(Integer id, Integer authorId){
         for (int i = 0; i < messages.size(); i++) {
             if (Objects.equals(messages.get(i).messageId, id) && Objects.equals(messages.get(i).author, authorId)){
                 return messages.get(i);
@@ -100,7 +96,7 @@ public class Chat {
 
         if (messages == null)
             return null;
-        for(Messange msg : messages){
+        for(Message msg : messages){
             if(users.containsKey(msg.author)){
                 allMessageIdsForAllAuthors.putIfAbsent(msg.author, new ArrayList<>());
                 allMessageIdsForAllAuthors.get(msg.author).add(msg.messageId);
@@ -140,13 +136,27 @@ public class Chat {
 
     public void CleanErased(ArrayList<Integer> erased) {
         HashSet<Integer> erasedSet = new HashSet<>(erased);
-        Iterator<Messange> iterator = messages.iterator();
+        Iterator<Message> iterator = messages.iterator();
 
         while (iterator.hasNext()) {
-            Messange message = iterator.next();
+            Message message = iterator.next();
             if (erasedSet.contains(message.messageId)) {
                 iterator.remove();
             }
         }
+    }
+
+    public void SortMessagesByTime() {
+        Collections.sort(messages, new Comparator<Message>() {
+            @Override
+            public int compare(Message m1, Message m2) {
+                if ((m1.GetTimeInSeconds() != -1) && (m2.GetTimeInSeconds() != -1)) {
+                    return Long.compare(m1.GetTimeInSeconds(), m2.GetTimeInSeconds());
+                } else {
+                    return Long.compare(m1.messageId, m2.messageId);
+                }
+
+            }
+        });
     }
 }

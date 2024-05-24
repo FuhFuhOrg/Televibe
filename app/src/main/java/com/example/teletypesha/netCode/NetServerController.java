@@ -5,33 +5,22 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
-import android.util.Pair;
 
 import androidx.annotation.Nullable;
-
-import com.example.teletypesha.itemClass.Chat;
-import com.example.teletypesha.itemClass.Messange;
 
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.security.*;
-import javax.crypto.*;
 
 import tech.gusavila92.websocketclient.WebSocketClient;
-
-import com.example.teletypesha.crypt.Crypt;
-import com.example.teletypesha.itemClass.Chat;
-import com.example.teletypesha.itemClass.Messange;
 
 public class NetServerController extends Service implements Serializable {
     private static int k = 0;
@@ -252,7 +241,7 @@ public class NetServerController extends Service implements Serializable {
     }
 
     // Удаление сообщения
-    public static CompletableFuture<String> DeleteMessage(int idSender, int idMsg) throws Exception {
+    public static CompletableFuture<String> DeleteMessage(int idSender, int idMsg) {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
 
@@ -293,7 +282,7 @@ public class NetServerController extends Service implements Serializable {
         });
 
         Log.i("WebSocket", "RefactorMessage");
-        SendRequest(requestId, "RefactorMessage", String.valueOf(idMsg) + " " + String.valueOf(idSender) + " " + Arrays.toString(msg));
+        SendRequest(requestId, "RefactorMessage", String.valueOf(idMsg) + " " + String.valueOf(idSender) + " " + Base64.getEncoder().encodeToString(msg));
 
         return future;
     }

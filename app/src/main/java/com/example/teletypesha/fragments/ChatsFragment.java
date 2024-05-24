@@ -3,7 +3,6 @@ package com.example.teletypesha.fragments;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +10,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,20 +17,15 @@ import com.example.teletypesha.R;
 import com.example.teletypesha.activitys.MainActivity;
 import com.example.teletypesha.adapters.ChatListAdapter;
 import com.example.teletypesha.itemClass.Chat;
-import com.example.teletypesha.itemClass.Messange;
+import com.example.teletypesha.itemClass.Message;
 import com.example.teletypesha.itemClass.SharedViewByChats;
 import com.example.teletypesha.itemClass.SharedViewByChatsListener;
 import com.example.teletypesha.itemClass.User;
-import com.example.teletypesha.jsons.JsonDataSaver;
-import com.example.teletypesha.netCode.NetServerController;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 public class ChatsFragment extends Fragment implements SharedViewByChatsListener {
     private RecyclerView recyclerView;
@@ -67,10 +59,10 @@ public class ChatsFragment extends Fragment implements SharedViewByChatsListener
             users.put(yourId, new User("You"));
 
             ArrayList<Integer> keys = new ArrayList<>(users.keySet());
-            ArrayList<Messange> messages = new ArrayList<>();
+            ArrayList<Message> messages = new ArrayList<>();
             for (int j = 0; j < 5 + Math.abs(random.nextInt() % 25); j++){
                 Integer randomUserId = keys.get(random.nextInt(keys.size()));
-                messages.add(new Messange(randomUserId, -1, users.get(randomUserId).Encrypt("hi"), LocalDateTime.now()));
+                messages.add(new Message(randomUserId, -1, users.get(randomUserId).Encrypt("hi"), LocalDateTime.now(), false));
             }
 
             chatList.add(new Chat(yourId, messages, users, String.valueOf(random.nextInt()), ""));

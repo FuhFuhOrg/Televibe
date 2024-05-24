@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,8 +25,6 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.teletypesha.R;
 import com.example.teletypesha.crypt.Crypt;
@@ -37,7 +34,7 @@ import com.example.teletypesha.fragments.CreateChatFragment;
 import com.example.teletypesha.fragments.SettingsFragment;
 import com.example.teletypesha.fragments.SingleChatFragment;
 import com.example.teletypesha.itemClass.Chat;
-import com.example.teletypesha.itemClass.Messange;
+import com.example.teletypesha.itemClass.Message;
 import com.example.teletypesha.itemClass.SharedViewByChats;
 import com.example.teletypesha.itemClass.User;
 import com.example.teletypesha.jsons.JsonDataSaver;
@@ -48,14 +45,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -368,7 +363,7 @@ public class MainActivity extends AppCompatActivity {
         SharedViewByChats.setChatList(chatList);
     }
 
-    public void SendMessage(View view) {
+    public void SendMessage() {
         EditText editText = ((EditText) findViewById(R.id.message_edit_text));
         byte[] messange = SharedViewByChats.getSelectChat().GetUser(
                 SharedViewByChats.getSelectChat().GetYourId()).Encrypt(String.valueOf(editText.getText()));
@@ -388,6 +383,31 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("WebSocket", "Get send msg unsuccessful");
             }
         });
+    }
+
+    public void EditMessage(Message message, byte[] msg) {
+        EditText editText = ((EditText) findViewById(R.id.message_edit_text));
+        CompletableFuture<String> future = NetServerController.RefactorMessage(message.messageId, message.author, msg);
+
+        future.thenAccept(goin -> {
+            if (goin != null) {
+                editText.setText("");
+
+                if(goin.equals("true")){
+                    GetMessages();
+                }
+
+                Log.i("WebSocket", goin);
+            } else {
+                Log.e("WebSocket", "Get send msg unsuccessful");
+            }
+        });
+    }
+
+    public void DeleteMessage(Chat chat, Message message) {
+        if (Objects.equals(message.author, chat.GetYourId())) {
+            NetServerController.DeleteMessage(message.author, message.messageId);
+        }
     }
 
 
@@ -507,11 +527,14 @@ public class MainActivity extends AppCompatActivity {
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
                         LocalDateTime time = LocalDateTime.parse(timeString, formatter);
 
+                        long timeInSeconds = time.toEpochSecond(ZoneOffset.UTC);
+
                         byte[] msg = Base64.getDecoder().decode(parts[index++]);
 
                         for (Chat chat : chatList) {
                             if (Objects.equals(chat.GetChatId(), chatId)) {
-                                Messange message = new Messange(authorId, idMsg, msg, time);
+                                Message message = new Message(authorId, idMsg, msg, time, false);
+                                message.SetTimeInSeconds(timeInSeconds); // Сохраняем время в секундах в сообщении
                                 if (chat.GetUser(authorId) == null) {
                                     chat.AddUser(authorId, new User(String.valueOf(authorId), publicKey));
                                 }
@@ -530,12 +553,14 @@ public class MainActivity extends AppCompatActivity {
                 if (Objects.equals(chat.GetChatId(), chatId)) {
                     chat.CleanErased(erased);
                 }
+                chat.SortMessagesByTime();
             }
         }
-        JsonDataSaver.SaveChats(chatList, this);
+
 
 
         Log.i("Chats", "Start Chat Upd");
+        JsonDataSaver.SaveChats(chatList, this);
         SharedViewByChats.setChatList(chatList);
         Log.i("Chats", "End Chat Upd");
     }
