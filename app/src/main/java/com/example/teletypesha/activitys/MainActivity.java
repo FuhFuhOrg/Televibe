@@ -394,11 +394,22 @@ public class MainActivity extends AppCompatActivity {
                 editText.setText("");
 
                 if(goin.equals("true")){
+                    ArrayList<Chat> chatList = new ArrayList<>();
+                    chatList.addAll(SharedViewByChats.getChatList());
+                    for (Chat chats : chatList) {
+                        chats.isChanged = true;
+                        if(chats.GetMessangeForId(message.messageId, message.author) != null){
+                            chats.RemoveMessage(message.messageId, message.author);
+                        }
+                    }
+                    SharedViewByChats.setChatList(chatList);
                     GetMessages();
                 }
 
                 Log.i("WebSocket", goin);
             } else {
+                editText.setText("");
+
                 Log.e("WebSocket", "Get send msg unsuccessful");
             }
         });
@@ -406,7 +417,28 @@ public class MainActivity extends AppCompatActivity {
 
     public void DeleteMessage(Chat chat, Message message) {
         if (Objects.equals(message.author, chat.GetYourId())) {
-            NetServerController.DeleteMessage(message.author, message.messageId);
+            CompletableFuture<String> future = NetServerController.DeleteMessage(message.author, message.messageId);
+
+            future.thenAccept(goin -> {
+                if (goin != null) {
+
+                    ArrayList<Chat> chatList = new ArrayList<>();
+                    chatList.addAll(SharedViewByChats.getChatList());
+                    for (Chat chats : chatList) {
+                        chats.isChanged = true;
+                        if(chats.GetMessangeForId(message.messageId, message.author) != null){
+                            chats.RemoveMessage(message.messageId, message.author);
+                        }
+                    }
+                    SharedViewByChats.setChatList(chatList);
+                    GetMessages();
+
+
+                    Log.i("WebSocket", goin);
+                } else {
+                    Log.e("WebSocket", "Get send msg unsuccessful");
+                }
+            });
         }
     }
 
@@ -443,7 +475,8 @@ public class MainActivity extends AppCompatActivity {
 
         for (int i = 0; i < SharedViewByChats.getChatList().size(); i++){
             Chat chat = SharedViewByChats.getChatList().get(i);
-            HashMap<Integer, ArrayList<Integer>> missMsg = chat.GetMissingIdsForAllAuthors();
+            HashMap<Integer, ArrayList<Integer>> missMsg;
+            missMsg = chat.GetMissingIdsForAllAuthors();
             if(missMsg == null || missMsg.isEmpty()){
                 continue;
             }
@@ -499,6 +532,8 @@ public class MainActivity extends AppCompatActivity {
             String chatId = parts[index++];
             int authorCount = Integer.valueOf(parts[index++]);
 
+            int messagesAddedToChat = 0; // Counter for messages added to the chat
+
             for(int j = 0; j < authorCount; j++) {
                 int authorId = Integer.parseInt(parts[index++]);
                 PublicKey publicKey = null;
@@ -539,6 +574,7 @@ public class MainActivity extends AppCompatActivity {
                                     chat.AddUser(authorId, new User(String.valueOf(authorId), publicKey));
                                 }
                                 chat.AddChangeMessage(message);
+                                messagesAddedToChat++; // Increment the counter
                                 break;
                             }
                         }
@@ -552,12 +588,13 @@ public class MainActivity extends AppCompatActivity {
             for (Chat chat : chatList) {
                 if (Objects.equals(chat.GetChatId(), chatId)) {
                     chat.CleanErased(erased);
+                    chat.SortMessagesByTime();
+                    if (messagesAddedToChat > chat.GetWritedUsers()) {
+                        chat.isChanged = true;
+                    }
                 }
-                chat.SortMessagesByTime();
             }
         }
-
-
 
         Log.i("Chats", "Start Chat Upd");
         JsonDataSaver.SaveChats(chatList, this);

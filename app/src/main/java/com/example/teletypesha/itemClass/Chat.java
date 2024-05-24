@@ -13,6 +13,7 @@ public class Chat {
     ArrayList<Message> messages;
     HashMap<Integer, User> users;
     String label, chatId, pass;
+    public boolean isChanged = false;
 
     public Chat(Integer yourId, ArrayList<Message> messages, HashMap<Integer, User> users, String chatId, String pass){
         this.yourId = yourId;
@@ -59,6 +60,14 @@ public class Chat {
         return users;
     }
 
+    public int GetWritedUsers(){
+        HashSet<Integer> uniqueAuthors = new HashSet<>();
+        for (Message msg : messages) {
+            uniqueAuthors.add(msg.author);
+        }
+        return uniqueAuthors.size();
+    }
+
     public User GetUser(int id){
         return users.get(id);
     }
@@ -103,6 +112,7 @@ public class Chat {
                 lastMsgIdForAllAuthors.put(msg.author, Math.max(lastMsgIdForAllAuthors.getOrDefault(msg.author, 0), msg.messageId));
             }
         }
+
 
         for(Integer authorId : users.keySet()){
             allMessageIdsForAllAuthors.putIfAbsent(authorId, new ArrayList<>());
@@ -158,5 +168,12 @@ public class Chat {
 
             }
         });
+    }
+
+    public void RemoveMessage(int messageId, int authorId) {
+        Message message = GetMessangeForId(messageId, authorId);
+        if (message != null) {
+            messages.remove(message);
+        }
     }
 }

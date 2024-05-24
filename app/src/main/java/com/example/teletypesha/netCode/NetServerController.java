@@ -248,7 +248,7 @@ public class NetServerController extends Service implements Serializable {
         setOnMessageReceivedListener(requestId, new OnMessageReceived() {
             @Override
             public void onMessage(String[] parts) {
-                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
+                if (parts.length > 0) {
                     if (parts.length > 1) {
                         future.complete(parts[1]);
                     } else {
@@ -259,7 +259,7 @@ public class NetServerController extends Service implements Serializable {
         });
 
         Log.i("WebSocket", "DeleteMessage");
-        SendRequest(requestId, "DeleteMessage", String.valueOf(idSender) + " " + String.valueOf(idMsg));
+        SendRequest(requestId, "DeleteMessages", String.valueOf(idSender) + " " + String.valueOf(idMsg));
 
         return future;
     }
@@ -272,11 +272,9 @@ public class NetServerController extends Service implements Serializable {
             @Override
             public void onMessage(String[] parts) {
                 if (parts.length > 0) {
-                    if (parts.length > 1) {
-                        future.complete(parts[1]);
-                    } else {
-                        future.complete(null);
-                    }
+                    future.complete(parts[0]);
+                } else {
+                    future.complete(null);
                 }
             }
         });

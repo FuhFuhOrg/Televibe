@@ -52,6 +52,7 @@ public class SingleChatFragment extends Fragment implements SharedViewByChatsLis
                     byte[] messange = SharedViewByChats.getSelectChat().GetUser(
                             SharedViewByChats.getSelectChat().GetYourId()).Encrypt(String.valueOf(editText.getText()));
                     ((MainActivity) requireActivity()).EditMessage(editedMessage, messange);
+                    isEdited = false;
                 }else{
                     ((MainActivity) requireActivity()).SendMessage();
                 }
@@ -128,6 +129,9 @@ public class SingleChatFragment extends Fragment implements SharedViewByChatsLis
 
     @Override
     public void onSelectChatChanged(Chat newSelectChat) {
-        CreateMessangesList(newSelectChat);
+        if(newSelectChat.isChanged) {
+            newSelectChat.isChanged = false;
+            CreateMessangesList(newSelectChat);
+        }
     }
 }
