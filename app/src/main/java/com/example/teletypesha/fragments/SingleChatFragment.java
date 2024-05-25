@@ -4,16 +4,22 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.teletypesha.R;
 import com.example.teletypesha.activitys.MainActivity;
@@ -41,6 +47,7 @@ public class SingleChatFragment extends Fragment implements SharedViewByChatsLis
         View view = inflater.inflate(R.layout.fragment_single_chat, container, false);
         recyclerView = view.findViewById(R.id.chat_recycler);
         editText = view.findViewById(R.id.message_edit_text);
+
         SharedViewByChats.setListener(this);
         CreateMessangesList(SharedViewByChats.getSelectChat());
 
@@ -58,6 +65,9 @@ public class SingleChatFragment extends Fragment implements SharedViewByChatsLis
                 }
             }
         });
+
+        TextView chatMenuName = view.findViewById(R.id.chat_menu_name);
+        chatMenuName.setText(SharedViewByChats.getSelectChat().GetLabel());
 
         return view;
     }

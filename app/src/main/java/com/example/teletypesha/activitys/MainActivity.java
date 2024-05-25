@@ -31,6 +31,7 @@ import com.example.teletypesha.crypt.Crypt;
 import com.example.teletypesha.fragments.AddChatFragment;
 import com.example.teletypesha.fragments.ChatsFragment;
 import com.example.teletypesha.fragments.CreateChatFragment;
+import com.example.teletypesha.fragments.SettingsChatFragment;
 import com.example.teletypesha.fragments.SettingsFragment;
 import com.example.teletypesha.fragments.SingleChatFragment;
 import com.example.teletypesha.itemClass.Chat;
@@ -127,6 +128,8 @@ public class MainActivity extends AppCompatActivity {
             OpenChatsFragment();
         } else if (currentFragment instanceof CreateChatFragment) {
             OpenChatsFragment();
+        } else if (currentFragment instanceof SettingsChatFragment) {
+            OpenChat(SharedViewByChats.getSelectChat());
         } else {
             super.onBackPressed();
         }
@@ -265,6 +268,17 @@ public class MainActivity extends AppCompatActivity {
 
 
         fragmentTransaction.replace(R.id.main_fragment, createChatFragment);
+        fragmentTransaction.commit();
+    }
+
+    public void OpenChatSettingsFragment(View view){
+        SharedViewByChats.setListener(null);
+
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        SettingsChatFragment settingsChatFragment = new SettingsChatFragment();
+
+
+        fragmentTransaction.replace(R.id.main_fragment, settingsChatFragment);
         fragmentTransaction.commit();
     }
 
