@@ -1,10 +1,15 @@
 package com.example.teletypesha.crypt;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.util.Pair;
+import android.widget.ImageView;
 
 import com.example.teletypesha.itemClass.Chat;
 import com.example.teletypesha.itemClass.User;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
@@ -55,6 +60,26 @@ public final class Crypt {
         return combined;
     }
 
+    public static byte[] EncryptionImage(byte[] msg, PrivateKey privateKey) throws Exception {
+        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+        keyGen.init(256);
+        SecretKey secretKey = keyGen.generateKey();
+
+        Cipher aesCipher = Cipher.getInstance("AES");
+        aesCipher.init(Cipher.ENCRYPT_MODE, secretKey);
+        byte[] encryptedMsg = aesCipher.doFinal(msg);
+
+        Cipher rsaCipher = Cipher.getInstance("RSA");
+        rsaCipher.init(Cipher.WRAP_MODE, privateKey);
+        byte[] encryptedKey = rsaCipher.wrap(secretKey);
+
+        byte[] combined = new byte[encryptedKey.length + encryptedMsg.length];
+        System.arraycopy(encryptedKey, 0, combined, 0, encryptedKey.length);
+        System.arraycopy(encryptedMsg, 0, combined, encryptedKey.length, encryptedMsg.length);
+
+        return combined;
+    }
+
     public static String Decrypt(byte[] combined, PublicKey publicKey) throws Exception {
         byte[] encryptedKey = new byte[256];
         byte[] encryptedMsg = new byte[combined.length - 256];
@@ -70,6 +95,25 @@ public final class Crypt {
         byte[] decryptedMsg = aesCipher.doFinal(encryptedMsg);
 
         return new String(decryptedMsg);
+    }
+
+    public static Bitmap DecryptImage(byte[] combined, PublicKey publicKey) throws Exception {
+        byte[] encryptedKey = new byte[256];
+        byte[] encryptedMsg = new byte[combined.length - 256];
+        System.arraycopy(combined, 0, encryptedKey, 0, 256);
+        System.arraycopy(combined, 256, encryptedMsg, 0, encryptedMsg.length);
+
+        Cipher rsaCipher = Cipher.getInstance("RSA");
+        rsaCipher.init(Cipher.UNWRAP_MODE, publicKey);
+        SecretKey secretKey = (SecretKey) rsaCipher.unwrap(encryptedKey, "AES", Cipher.SECRET_KEY);
+
+        Cipher aesCipher = Cipher.getInstance("AES");
+        aesCipher.init(Cipher.DECRYPT_MODE, secretKey);
+        byte[] decryptedMsg = aesCipher.doFinal(encryptedMsg);
+
+        Bitmap bitmap = BitmapFactory.decodeByteArray(decryptedMsg, 0, decryptedMsg.length);
+
+        return bitmap;
     }
 
     public static String CriptPublicKey(String chatId, String chatPass, PublicKey publicKey) throws Exception {

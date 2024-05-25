@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -41,6 +42,11 @@ import com.example.teletypesha.itemClass.User;
 import com.example.teletypesha.jsons.JsonDataSaver;
 import com.example.teletypesha.netCode.NetServerController;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -398,6 +404,75 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void SendMessageSkrepochka(Uri fileUri) {
+        EditText editText = ((EditText) findViewById(R.id.message_edit_text));
+        try {
+            // Получаем InputStream из URI файла
+            InputStream inputStream = getContentResolver().openInputStream(fileUri);
+
+            // Преобразуем InputStream в байтовый массив
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) != -1) {
+                byteArrayOutputStream.write(buffer, 0, length);
+            }
+            byte[] fileBytes = byteArrayOutputStream.toByteArray();
+
+            // Шифруем содержимое файла
+            byte[] encryptedFile = SharedViewByChats.getSelectChat().GetUser(
+                    SharedViewByChats.getSelectChat().GetYourId()).EncryptImage(fileBytes);
+
+            // Отправляем сообщение
+            Timestamp ts = new Timestamp(System.currentTimeMillis());
+            CompletableFuture<String> future = NetServerController.SendMessage(encryptedFile, SharedViewByChats.getSelectChat().GetYourId(), ts);
+            future.thenAccept(goin -> {
+                if (goin != null) {
+                    editText.setText("");
+
+                    if (goin.equals("true")) {
+                        GetMessages();
+                    }
+
+                    Log.i("WebSocket", goin);
+                } else {
+                    Log.e("WebSocket", "Get send msg unsuccessful");
+                }
+            });
+
+            inputStream.close();
+            byteArrayOutputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    // Метод для чтения содержимого файла в байтовый массив
+    private byte[] readFileToBytes(String filePath) throws IOException {
+        File file = new File(filePath);
+        FileInputStream fis = new FileInputStream(file);
+        byte[] fileBytes = new byte[(int) file.length()];
+        fis.read(fileBytes);
+        fis.close();
+        return fileBytes;
+    }
+
+    // Метод для создания объединенного сообщения, включая тип сообщения и данные
+    private byte[] createCombinedMessage(String messageType, byte[] messageData) {
+        // Создаем массив, включающий тип сообщения и данные
+        byte[] messageTypeBytes = messageType.getBytes(StandardCharsets.UTF_8);
+        byte[] combinedMessage = new byte[messageTypeBytes.length + messageData.length];
+        System.arraycopy(messageTypeBytes, 0, combinedMessage, 0, messageTypeBytes.length);
+        System.arraycopy(messageData, 0, combinedMessage, messageTypeBytes.length, messageData.length);
+        return combinedMessage;
+    }
+
+
+
+
 
     public void EditMessage(Message message, byte[] msg) {
         EditText editText = ((EditText) findViewById(R.id.message_edit_text));

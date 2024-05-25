@@ -1,10 +1,12 @@
 package com.example.teletypesha.adapters;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -65,12 +67,14 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
 
         private CardView buttonLayoutView;
         private TextView msgAuthor, messangeText;
+        private ImageView msgImage;
 
         public ChatViewHolder(@NonNull View itemView) {
             super(itemView);
             buttonLayoutView = itemView.findViewById(R.id.in_messange_layout);
             msgAuthor = itemView.findViewById(R.id.msg_author);
             messangeText = itemView.findViewById(R.id.msg_text);
+            msgImage = itemView.findViewById(R.id.msg_image);
 
             // Добавляем обработчик нажатия для отображения меню
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -112,7 +116,21 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
             // Устанавливаем данные в элементы макета
             Log.i("Debug Adp", "S Create Maket");
             msgAuthor.setText(chat.GetUser(messange.author).GetName());
-            messangeText.setText(chat.GetUser(messange.author).Decrypt(messange.text));
+
+            try {
+                Bitmap bitmap = chat.GetUser(messange.author).DecryptImage(messange.text);
+                if (bitmap != null) {
+                    msgImage.setImageBitmap(bitmap);
+                    msgImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    msgImage.setAdjustViewBounds(true);
+                }
+                else {
+                    messangeText.setText(chat.GetUser(messange.author).Decrypt(messange.text));
+                }
+            }
+            catch (Exception e){
+                messangeText.setText(chat.GetUser(messange.author).Decrypt(messange.text));
+            }
 
             ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) buttonLayoutView.getLayoutParams();
             if (Objects.equals(chat.GetYourId(), messange.author)) {

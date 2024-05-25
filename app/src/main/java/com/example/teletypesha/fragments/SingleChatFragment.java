@@ -1,6 +1,13 @@
 package com.example.teletypesha.fragments;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.FileUtils;
+import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,6 +45,7 @@ public class SingleChatFragment extends Fragment implements SharedViewByChatsLis
     EditText editText;
     private Message editedMessage;
     private boolean isEdited = false;
+    private static final int PICK_FILE_REQUEST = 1;
 
 
 
@@ -50,6 +58,8 @@ public class SingleChatFragment extends Fragment implements SharedViewByChatsLis
 
         SharedViewByChats.setListener(this);
         CreateMessangesList(SharedViewByChats.getSelectChat());
+
+
 
         Button sendButton = view.findViewById(R.id.send_button);
         sendButton.setOnClickListener(new View.OnClickListener() {
@@ -66,10 +76,56 @@ public class SingleChatFragment extends Fragment implements SharedViewByChatsLis
             }
         });
 
+
+        Button sendButtonSkrepochka = view.findViewById(R.id.send_button_screpochka);
+        sendButtonSkrepochka.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("*/*");
+                startActivityForResult(intent, PICK_FILE_REQUEST);
+            }
+        });
+
+
+
+
         TextView chatMenuName = view.findViewById(R.id.chat_menu_name);
         chatMenuName.setText(SharedViewByChats.getSelectChat().GetLabel());
 
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_FILE_REQUEST && resultCode == Activity.RESULT_OK) {
+            if (data != null && data.getData() != null) {
+                Uri fileUri = data.getData();
+                ((MainActivity)requireActivity()).SendMessageSkrepochka(fileUri);
+            }
+        }
+    }
+
+    // Метод для получения реального пути к файлу из URI
+    private String getRealPathFromURI(Context context, Uri contentUri) {
+        String filePath;
+        Cursor cursor = null;
+        try {
+            String[] projection = {MediaStore.Images.Media.DATA};
+            cursor = context.getContentResolver().query(contentUri, projection, null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                filePath = cursor.getString(columnIndex);
+            } else {
+                filePath = contentUri.getPath();
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return filePath;
     }
 
     @Override

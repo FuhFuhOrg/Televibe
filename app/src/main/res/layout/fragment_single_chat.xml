@@ -70,6 +70,13 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/chat_recycler">
 
+            <Button
+                android:id="@+id/send_button_screpochka"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:background="@drawable/ic_attach_icon"/>
+
             <EditText
                 android:id="@+id/message_edit_text"
                 android:layout_width="0dp"

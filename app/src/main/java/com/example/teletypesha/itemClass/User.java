@@ -1,5 +1,6 @@
 package com.example.teletypesha.itemClass;
 
+import android.graphics.Bitmap;
 import android.util.Pair;
 
 import com.example.teletypesha.crypt.Crypt;
@@ -57,12 +58,31 @@ public class User {
         }
     }
 
+    public byte[] EncryptImage(byte[] msg){
+        try {
+            return Crypt.EncryptionImage(msg, privateKey);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public String Decrypt(byte[] msg){
         if (publicKey == null){
             return "KEY NOT FOUND";
         }
         try {
             return Crypt.Decrypt(msg, publicKey);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Bitmap DecryptImage(byte[] msg){
+        if (publicKey == null){
+            return null;
+        }
+        try {
+            return Crypt.DecryptImage(msg, publicKey);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
