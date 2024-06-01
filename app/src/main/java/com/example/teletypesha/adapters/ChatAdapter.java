@@ -123,12 +123,15 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
                     msgImage.setImageBitmap(bitmap);
                     msgImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
                     msgImage.setAdjustViewBounds(true);
+                    messangeText.setText(null);
                 }
                 else {
+                    msgImage.setImageBitmap(null);
                     messangeText.setText(chat.GetUser(messange.author).Decrypt(messange.text));
                 }
             }
             catch (Exception e){
+                msgImage.setImageBitmap(null);
                 messangeText.setText(chat.GetUser(messange.author).Decrypt(messange.text));
             }
 
