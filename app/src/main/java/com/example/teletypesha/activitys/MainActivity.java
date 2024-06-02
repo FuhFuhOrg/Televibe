@@ -2,11 +2,15 @@ package com.example.teletypesha.activitys;
 
 import static com.example.teletypesha.fragments.ChatsFragment.CreateFictChats;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -20,6 +24,7 @@ import android.widget.ToggleButton;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -67,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
     NetServerController netServerController;
     boolean isBound = false;
     private Fragment currentFragment;
+    private static final String CHANNEL_ID = "encryption_channel";
+    private static final int NOTIFICATION_ID = 1;
 
 
     /// Перенести эту гадость в воркер
@@ -421,8 +428,23 @@ public class MainActivity extends AppCompatActivity {
             byte[] fileBytes = byteArrayOutputStream.toByteArray();
 
             // Шифруем содержимое файла
+            if(fileBytes.length > 1024*1024*2){
+                NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Encryption Progress", NotificationManager.IMPORTANCE_LOW);
+                    notificationManager.createNotificationChannel(channel);
+                }
+                String notificationText = "item more then 2mb";
+                Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                        .setContentTitle("Encryption Stopped")
+                        .setContentText(notificationText)
+                        .setSmallIcon(R.drawable.ic_encryption)
+                        .build();
+                notificationManager.notify(NOTIFICATION_ID, notification);
+                return;
+            }
             byte[] encryptedFile = SharedViewByChats.getSelectChat().GetUser(
-                    SharedViewByChats.getSelectChat().GetYourId()).EncryptImage(fileBytes);
+                    SharedViewByChats.getSelectChat().GetYourId()).EncryptImage(this, fileBytes);
 
             // Отправляем сообщение
             Timestamp ts = new Timestamp(System.currentTimeMillis());

@@ -1,11 +1,19 @@
 package com.example.teletypesha.crypt;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
+import android.os.Build;
 import android.util.Pair;
 import android.widget.ImageView;
 
+import androidx.core.app.NotificationCompat;
+
+import com.example.teletypesha.R;
 import com.example.teletypesha.itemClass.Chat;
 import com.example.teletypesha.itemClass.User;
 
@@ -30,6 +38,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 public final class Crypt {
+    private static final String CHANNEL_ID = "encryption_channel";
+    private static final int NOTIFICATION_ID = 1;
 
     public static Pair<PrivateKey, PublicKey> PublicPrivateKeyGeneration() throws Exception {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
@@ -60,14 +70,48 @@ public final class Crypt {
         return combined;
     }
 
-    public static byte[] EncryptionImage(byte[] msg, PrivateKey privateKey) throws Exception {
+    public static byte[] EncryptionImage(Context context, byte[] msg, PrivateKey privateKey) throws Exception {
         KeyGenerator keyGen = KeyGenerator.getInstance("AES");
         keyGen.init(256);
         SecretKey secretKey = keyGen.generateKey();
 
         Cipher aesCipher = Cipher.getInstance("AES");
         aesCipher.init(Cipher.ENCRYPT_MODE, secretKey);
-        byte[] encryptedMsg = aesCipher.doFinal(msg);
+
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Encryption Progress", NotificationManager.IMPORTANCE_LOW);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        int totalBytesProcessed = 0;
+        int chunkSize = 1024 * 1024; // 1024 KB
+        byte[] buffer = new byte[chunkSize];
+        int bytesRead = 0;
+
+        ByteArrayOutputStream encryptedStream = new ByteArrayOutputStream();
+
+        for (int offset = 0; offset < msg.length; offset += chunkSize) {
+            bytesRead = Math.min(chunkSize, msg.length - offset);
+            System.arraycopy(msg, offset, buffer, 0, bytesRead);
+            byte[] encryptedChunk = aesCipher.doFinal(buffer, 0, bytesRead);
+            encryptedStream.write(encryptedChunk);
+            totalBytesProcessed += bytesRead;
+
+            if (totalBytesProcessed % chunkSize == 0) {
+                // Update Notification
+                String notificationText = totalBytesProcessed + " bytes encrypted";
+                Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
+                        .setContentTitle("Encryption in Progress")
+                        .setContentText(notificationText)
+                        .setSmallIcon(R.drawable.ic_encryption)
+                        .setProgress(msg.length, totalBytesProcessed, false)
+                        .build();
+                notificationManager.notify(NOTIFICATION_ID, notification);
+            }
+        }
+
+        byte[] encryptedMsg = encryptedStream.toByteArray();
 
         Cipher rsaCipher = Cipher.getInstance("RSA");
         rsaCipher.init(Cipher.WRAP_MODE, privateKey);
@@ -76,6 +120,16 @@ public final class Crypt {
         byte[] combined = new byte[encryptedKey.length + encryptedMsg.length];
         System.arraycopy(encryptedKey, 0, combined, 0, encryptedKey.length);
         System.arraycopy(encryptedMsg, 0, combined, encryptedKey.length, encryptedMsg.length);
+
+        // Final notification
+        String finalNotificationText = "Encryption complete: " + combined.length + " bytes";
+        Notification finalNotification = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setContentTitle("Encryption Complete")
+                .setContentText(finalNotificationText)
+                .setSmallIcon(R.drawable.ic_encryption)
+                .setProgress(0, 0, false)
+                .build();
+        notificationManager.notify(NOTIFICATION_ID, finalNotification);
 
         return combined;
     }

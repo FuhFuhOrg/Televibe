@@ -1,5 +1,6 @@
 package com.example.teletypesha.itemClass;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Pair;
 
@@ -58,9 +59,9 @@ public class User {
         }
     }
 
-    public byte[] EncryptImage(byte[] msg){
+    public byte[] EncryptImage(Context context, byte[] msg){
         try {
-            return Crypt.EncryptionImage(msg, privateKey);
+            return Crypt.EncryptionImage(context, msg, privateKey);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
