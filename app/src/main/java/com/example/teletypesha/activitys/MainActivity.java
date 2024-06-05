@@ -37,6 +37,8 @@ import com.example.teletypesha.crypt.Crypt;
 import com.example.teletypesha.fragments.AddChatFragment;
 import com.example.teletypesha.fragments.ChatsFragment;
 import com.example.teletypesha.fragments.CreateChatFragment;
+import com.example.teletypesha.fragments.LoginFragment;
+import com.example.teletypesha.fragments.RegistrationFragment;
 import com.example.teletypesha.fragments.SettingsChatFragment;
 import com.example.teletypesha.fragments.SettingsFragment;
 import com.example.teletypesha.fragments.SingleChatFragment;
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
     private Fragment currentFragment;
     private static final String CHANNEL_ID = "encryption_channel";
     private static final int NOTIFICATION_ID = 1;
+    public static String login, password;
 
 
     /// Перенести эту гадость в воркер
@@ -96,12 +99,26 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         handler.removeCallbacks(periodicTask); // Остановка задачи при приостановке активности
         JsonDataSaver.SaveChats(SharedViewByChats.getChatList(), this);
+        if(login != null && password != null){
+            try {
+                NetServerController.Register(login, password, this);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
     @Override
     protected void onDestroy() {
         super.onDestroy();
         handler.removeCallbacks(periodicTask); // Остановка задачи при приостановке активности
         JsonDataSaver.SaveChats(SharedViewByChats.getChatList(), this);
+        if(login != null && password != null){
+            try {
+                NetServerController.Register(login, password, this);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
     ///
 
@@ -133,7 +150,9 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment currentFragment = fragmentManager.findFragmentById(R.id.main_fragment);
 
-        if (currentFragment instanceof SingleChatFragment) {
+        if (currentFragment instanceof ChatsFragment) {
+            OpenLoginFragment(null);
+        } else if (currentFragment instanceof SingleChatFragment) {
             OpenChatsFragment();
         } else if (currentFragment instanceof SettingsFragment) {
             OpenChatsFragment();
@@ -176,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
     protected void OnCreateNet(){
         //netServerController.CreateNewChat("", false);
         //Все для чего нужен сервер
-        OpenChatsFragment();
+        OpenLoginFragment(null);
     }
 
     @Override
@@ -223,8 +242,179 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    public void LoginLocal(View view){
+        EditText login1 = findViewById(R.id.login_login);
+        EditText pass1 = findViewById(R.id.login_password);
 
+        String login1Text = login1.getText().toString();
+        String pass1Text = pass1.getText().toString();
 
+        if (Objects.equals(login, login1Text) && Objects.equals(password, pass1Text)){
+            OpenChatsFragment();
+        } else {
+            NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Encryption Progress", NotificationManager.IMPORTANCE_LOW);
+                notificationManager.createNotificationChannel(channel);
+            }
+            String notificationText = "Регистрация не удалась изза некорректных данных";
+            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setContentTitle("Register Stopped")
+                    .setContentText(notificationText)
+                    .setSmallIcon(R.drawable.ic_encryption)
+                    .build();
+            notificationManager.notify(NOTIFICATION_ID, notification);
+            Log.e("WebSocket", "Reg not alowed");
+        }
+    }
+
+    public void LoginGlobal(View view){
+        EditText login1 = findViewById(R.id.login_login);
+        EditText pass1 = findViewById(R.id.login_password);
+
+        String login1Text = login1.getText().toString();
+        String pass1Text = pass1.getText().toString();
+
+        try {
+            CompletableFuture<String> future = NetServerController.Login(login1Text, pass1Text, this);
+            future.thenAccept(goin -> {
+                if (goin != null) {
+                    try {
+                        JsonDataSaver.SaveAll(this, Crypt.DecryptUser(login1Text, pass1Text, goin, this));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    ForceCheckSavedChats();
+                    OpenChatsFragment();
+                } else {
+                    NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Encryption Progress", NotificationManager.IMPORTANCE_LOW);
+                        notificationManager.createNotificationChannel(channel);
+                    }
+                    String notificationText = "Логин не удалась изза некорректных данных";
+                    Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                            .setContentTitle("Login Stopped")
+                            .setContentText(notificationText)
+                            .setSmallIcon(R.drawable.ic_encryption)
+                            .build();
+                    notificationManager.notify(NOTIFICATION_ID, notification);
+                    Log.e("WebSocket", "Reg not alowed");
+                }
+            });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void LoginGlobal(String login, String password){
+        try {
+            CompletableFuture<String> future = NetServerController.Login(login, password, this);
+            future.thenAccept(goin -> {
+                if (goin != null) {
+                    try {
+                        JsonDataSaver.SaveAll(this, Crypt.DecryptUser(login, password, goin, this));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    ForceCheckSavedChats();
+                    OpenChatsFragment();
+                } else {
+                    NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Encryption Progress", NotificationManager.IMPORTANCE_LOW);
+                        notificationManager.createNotificationChannel(channel);
+                    }
+                    String notificationText = "Логин не удалась изза некорректных данных";
+                    Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                            .setContentTitle("Login Stopped")
+                            .setContentText(notificationText)
+                            .setSmallIcon(R.drawable.ic_encryption)
+                            .build();
+                    notificationManager.notify(NOTIFICATION_ID, notification);
+                    Log.e("WebSocket", "Reg not alowed");
+                }
+            });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void Register(View view) {
+        EditText login1 = findViewById(R.id.registration_login);
+        EditText login2 = findViewById(R.id.registration_login_2);
+        EditText pass1 = findViewById(R.id.registration_password);
+        EditText pass2 = findViewById(R.id.registration_password_2);
+
+        String login1Text = login1.getText().toString();
+        String login2Text = login2.getText().toString();
+        String pass1Text = pass1.getText().toString();
+        String pass2Text = pass2.getText().toString();
+
+        if (Objects.equals(login1Text, login2Text) && Objects.equals(pass1Text, pass2Text)) {
+            try {
+                login = login1Text;
+                password = pass1Text;
+
+                ArrayList<Chat> chats = new ArrayList<>();
+                CreateFictChats(chats);
+                JsonDataSaver.SaveChats(chats, this);
+
+                CompletableFuture<Boolean> future = netServerController.Register(login, password, this);
+                future.thenAccept(goin -> {
+                    if (goin) {
+                        LoginGlobal(login, password);
+                    } else {
+                        NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Encryption Progress", NotificationManager.IMPORTANCE_LOW);
+                            notificationManager.createNotificationChannel(channel);
+                        }
+                        String notificationText = "Регистрация не удалась изза некорректных данных";
+                        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                                .setContentTitle("Register Stopped")
+                                .setContentText(notificationText)
+                                .setSmallIcon(R.drawable.ic_encryption)
+                                .build();
+                        notificationManager.notify(NOTIFICATION_ID, notification);
+                        Log.e("WebSocket", "Reg not alowed");
+                    }
+                });
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            if (!Objects.equals(login1Text, login2Text)) {
+                Toast.makeText(this, "Login fields do not match!", Toast.LENGTH_SHORT).show();
+            } else if (!Objects.equals(pass1Text, pass2Text)) {
+                Toast.makeText(this, "Password fields do not match!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public void OpenLoginFragment(View view){
+        SharedViewByChats.setListener(null);
+
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        LoginFragment loginFragment = new LoginFragment();
+
+        CheckSavedChats();
+
+        fragmentTransaction.replace(R.id.main_fragment, loginFragment);
+        fragmentTransaction.commit();
+    }
+
+    public void OpenRegistrationFragment(View view){
+        SharedViewByChats.setListener(null);
+
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        RegistrationFragment registrationFragment = new RegistrationFragment();
+
+        CheckSavedChats();
+
+        fragmentTransaction.replace(R.id.main_fragment, registrationFragment);
+        fragmentTransaction.commit();
+    }
 
     private void OpenChatsFragment(){
         SharedViewByChats.setListener(null);
@@ -561,6 +751,21 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
+    private void ForceCheckSavedChats(){
+        Log.i("Chats", "Start Check Save");
+        ArrayList<Chat> chats = (JsonDataSaver.TryLoadChats(this));
+        Log.i("Chats", "End Check Save");
+        if(chats == null){
+            chats = new ArrayList<>();
+            // Это комментировать
+            CreateFictChats(chats);
+            JsonDataSaver.SaveChats(chats, this);
+        }
+        Log.i("Chats", "Start sharedViewByChats");
+        SharedViewByChats.setChatList(chats);
+        Log.i("Chats", "End sharedViewByChats");
+    }
 
     private void CheckSavedChats(){
         if (SharedViewByChats.getChatList() == null){

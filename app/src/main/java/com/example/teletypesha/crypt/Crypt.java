@@ -16,6 +16,11 @@ import androidx.core.app.NotificationCompat;
 import com.example.teletypesha.R;
 import com.example.teletypesha.itemClass.Chat;
 import com.example.teletypesha.itemClass.User;
+import com.example.teletypesha.jsons.JsonDataSaver;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -216,6 +221,78 @@ public final class Crypt {
 
         // Восстановление публичного ключа
         PublicKey decrypted = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(decryptedBytes));
+
+        return decrypted;
+    }
+
+    public static String CriptUser(String login, String password, Context context, Boolean returnChats) throws Exception {
+        MessageDigest sha = MessageDigest.getInstance("SHA-256");
+        byte[] loginHashBytes = sha.digest(login.getBytes(StandardCharsets.UTF_8));
+        String loginHash = bytesToHex(loginHashBytes);
+
+        byte[] passwordHashBytes = sha.digest(password.getBytes(StandardCharsets.UTF_8));
+        String passwordHash = bytesToHex(passwordHashBytes);
+
+        String key = login + password;
+        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
+        keyBytes = sha.digest(keyBytes);
+        keyBytes = Arrays.copyOf(keyBytes, 16);
+
+        SecretKeySpec secretKey = new SecretKeySpec(keyBytes, "AES");
+
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+
+        String result;
+        if(returnChats) {
+            JSONObject jsonObject = JsonDataSaver.TryLoadChatsWithoutRead(context);
+            Gson gson = new Gson();
+            String jsonString = gson.toJson(jsonObject);
+            byte[] jsonBytes = jsonString.getBytes(StandardCharsets.UTF_8);
+
+            byte[] encrypted = cipher.doFinal(jsonBytes);
+            String encryptedString = Base64.getEncoder().encodeToString(encrypted);
+
+            result = loginHash + " " + passwordHash + " " + encryptedString;
+        }
+        else{
+            result = loginHash + " " + passwordHash;
+        }
+        return result;
+    }
+
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+
+
+
+    public static JSONObject DecryptUser(String login, String password, String encryptedString, Context context) throws Exception {
+        String key = login + password;
+        MessageDigest sha = MessageDigest.getInstance("SHA-256");
+        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
+        keyBytes = sha.digest(keyBytes);
+        keyBytes = Arrays.copyOf(keyBytes, 16);
+
+        SecretKeySpec secretKey = new SecretKeySpec(keyBytes, "AES");
+
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+
+        byte[] encryptedBytes = Base64.getDecoder().decode(encryptedString);
+
+        byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
+
+        String jsonString = new String(decryptedBytes, StandardCharsets.UTF_8);
+
+        Gson gson = new Gson();
+        JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
+
+        JSONObject decrypted = new JSONObject(jsonObject.toString());
 
         return decrypted;
     }

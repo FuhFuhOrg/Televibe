@@ -3,6 +3,7 @@ package com.example.teletypesha.jsons;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.teletypesha.activitys.MainActivity;
 import com.example.teletypesha.crypt.KeySerializer;
 import com.example.teletypesha.itemClass.Chat;
 import com.example.teletypesha.itemClass.User;
@@ -38,14 +39,53 @@ public class JsonDataSaver implements Serializable  {
         gson = gsonBuilder.create();
     }
 
+    public static void SaveAll(Context context, JSONObject json) {
+        File file = new File(context.getFilesDir(), filename);
+        try (FileWriter fileWriter = new FileWriter(file)) {
+            JSONObject extractedObject = json.getJSONObject("nameValuePairs");
+            fileWriter.write(extractedObject.toString()); // Ensures proper JSON formatting
+            Log.i("JsonDataSaver", "Data successfully saved to " + file.getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static JSONObject TryLoadChatsWithoutRead(Context context){
+        Log.i("Chats", "Данные начали загрузку");
+
+        JSONObject jsonObject = TryLoadJson(context);
+        return jsonObject;
+    }
+
 
     public static ArrayList<Chat> TryLoadChats(Context context) {
 
         Log.i("Chats", "Данные начали загрузку");
 
         JSONObject jsonObject = TryLoadJson(context);
+
         String jsonChats = null;
         if(jsonObject != null) {
+            try {
+                String login = jsonObject.getString("login");
+                if (login != null){
+                    MainActivity.login = login;
+                }
+            } catch (JSONException e) {
+                Log.e("JsonDataSaver", "Login field not found in JSON, setting login to null.");
+            }
+
+            try {
+                String password = jsonObject.getString("password");
+                if (password != null) {
+                    MainActivity.password = password;
+                }
+            } catch (JSONException e) {
+                Log.e("JsonDataSaver", e.toString());
+            }
+
             try {
                 jsonChats = jsonObject.getString("chats");
             } catch (JSONException e) {
@@ -67,12 +107,25 @@ public class JsonDataSaver implements Serializable  {
         return chats;
     }
     public static void SaveChats(ArrayList<Chat> chats, Context context){
+        try {
+            Add("login", MainActivity.login);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Add("password", MainActivity.password);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         Object json = gson.toJson(chats);
         try {
             Add("chats", json);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         SaveToFile(context);
     }
 

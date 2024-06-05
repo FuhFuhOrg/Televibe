@@ -1,12 +1,16 @@
 package com.example.teletypesha.netCode;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+
+import com.example.teletypesha.activitys.MainActivity;
+import com.example.teletypesha.crypt.Crypt;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -281,6 +285,47 @@ public class NetServerController extends Service implements Serializable {
 
         Log.i("WebSocket", "RefactorMessage");
         SendRequest(requestId, "RefactorMessage", String.valueOf(idMsg) + " " + String.valueOf(idSender) + " " + Base64.getEncoder().encodeToString(msg));
+
+        return future;
+    }
+
+    public static CompletableFuture<String> Login(String log, String pass, Context context) throws Exception {
+        CompletableFuture<String> future = new CompletableFuture<>();
+        int requestId = GetK();
+        setOnMessageReceivedListener(requestId, new OnMessageReceived() {
+            @Override
+            public void onMessage(String[] parts) {
+                if (parts.length > 0) {
+                    future.complete(parts[0]);
+                } else {
+                    future.complete(null);
+                }
+            }
+        });
+
+        Log.i("WebSocket", "Login");
+        SendRequest(requestId, "GetUserData", Crypt.CriptUser(log, pass, context, false));
+
+        return future;
+    }
+
+    public static CompletableFuture<Boolean> Register(String log, String pass, Context context) throws Exception {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        int requestId = GetK();
+        setOnMessageReceivedListener(requestId, new OnMessageReceived() {
+            @Override
+            public void onMessage(String[] parts) {
+                if (parts.length > 0) {
+                    future.complete(Boolean.valueOf(parts[0]));
+                } else {
+                    future.complete(false);
+                }
+            }
+        });
+
+        Log.i("WebSocket", "Register");
+        String str = Crypt.CriptUser(log, pass, context, true);
+        SendRequest(requestId, "AddUserData", str);
 
         return future;
     }
