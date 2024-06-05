@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.teletypesha.activitys.MainActivity;
 import com.example.teletypesha.itemClass.Chat;
 import com.example.teletypesha.R;
-import com.example.teletypesha.itemClass.Messange;
+import com.example.teletypesha.itemClass.Message;
 
 import java.util.List;
 
@@ -67,10 +67,10 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatVi
         public void bind(Chat chat) {
             // Устанавливаем данные в элементы макета
             Log.i("Debug Adp", "S Create Maket");
-            labelView.setText(chat.getName().get(0).toString());
-            Messange msg = chat.getLastMsg();
+            labelView.setText(chat.GetLabel());
+            Message msg = chat.getLastMsg();
             if(msg != null){
-                lastMsgView.setText(msg.text);
+                lastMsgView.setText(chat.GetUser(msg.author).Decrypt(msg.text));
             }
 
             buttonLayoutView.setOnClickListener(new View.OnClickListener() {
@@ -81,8 +81,6 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatVi
             });
             buttonLayoutView.getLayoutParams().width = (int) (width * 1);
             Log.i("Debug Adp", "E Create Maket");
-            // Предполагая, что у вас есть изображения для каждого элемента, вы можете установить их здесь
-            // imageView.setImageResource(R.drawable.your_image_resource);
         }
     }
 }

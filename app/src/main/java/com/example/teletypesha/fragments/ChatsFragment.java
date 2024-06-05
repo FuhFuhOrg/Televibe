@@ -17,55 +17,65 @@ import com.example.teletypesha.R;
 import com.example.teletypesha.activitys.MainActivity;
 import com.example.teletypesha.adapters.ChatListAdapter;
 import com.example.teletypesha.itemClass.Chat;
-import com.example.teletypesha.itemClass.Messange;
+import com.example.teletypesha.itemClass.Message;
+import com.example.teletypesha.itemClass.SharedViewByChats;
+import com.example.teletypesha.itemClass.SharedViewByChatsListener;
+import com.example.teletypesha.itemClass.User;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
-public class ChatsFragment extends Fragment {
+public class ChatsFragment extends Fragment implements SharedViewByChatsListener {
     private RecyclerView recyclerView;
-    ArrayList<Chat> chatList = new ArrayList<>();
     ChatListAdapter adapter;
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chats, container, false);
         recyclerView = view.findViewById(R.id.recycler);
-
-        GetFictChats();
-        CreateItemList();
-
+        SharedViewByChats.setListener(this);
+        CreateItemList(SharedViewByChats.getChatList());
         return view;
     }
 
-    private void GetFictChats(){
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+    }
+
+    public static void CreateFictChats(ArrayList<Chat> chatList){
+        Random random = new Random();
         for (int i = 0; i < 10; i++){
-            Integer yourId = (new Random()).nextInt();
+            Integer yourId = random.nextInt();
 
-            ArrayList<Integer> users = new ArrayList<>();
-            users.add((new Random()).nextInt());
-            users.add((new Random()).nextInt());
+            HashMap<Integer, User> users = new HashMap<>();
+            for (int j = 0; j < 2 + Math.abs(random.nextInt() % 4); j++){
+                users.put(random.nextInt(), new User("Pip" + j));
+            }
+            users.put(yourId, new User("You"));
 
-            ArrayList<Messange> messages = new ArrayList<>();
-            messages.add(new Messange(users.get((new Random()).nextInt(users.size())), "hi", LocalDateTime.now()));
-            messages.add(new Messange(users.get((new Random()).nextInt(users.size())), "hi", LocalDateTime.now()));
-            messages.add(new Messange(users.get((new Random()).nextInt(users.size())), "hi", LocalDateTime.now()));
-            messages.add(new Messange(users.get((new Random()).nextInt(users.size())), "hi", LocalDateTime.now()));
-            messages.add(new Messange(users.get((new Random()).nextInt(users.size())), "hi", LocalDateTime.now()));
+            ArrayList<Integer> keys = new ArrayList<>(users.keySet());
+            ArrayList<Message> messages = new ArrayList<>();
+            for (int j = 0; j < 5 + Math.abs(random.nextInt() % 25); j++){
+                Integer randomUserId = keys.get(random.nextInt(keys.size()));
+                messages.add(new Message(randomUserId, -1, users.get(randomUserId).Encrypt("hi"), LocalDateTime.now(), false));
+            }
 
-            messages.add(new Messange(yourId, "hi", LocalDateTime.now()));
-            messages.add(new Messange(yourId, "hi", LocalDateTime.now()));
-
-            chatList.add(new Chat(yourId, messages, users, (new Random()).nextInt()));
+            chatList.add(new Chat(yourId, messages, users, String.valueOf(random.nextInt()), ""));
+            if(random.nextInt() > 0){
+                chatList.get(chatList.size() - 1).SetLabel("Amogus");
+            }
         }
     }
 
-    private void CreateItemList(){
+    private void CreateItemList(ArrayList<Chat> chats){
         DisplayMetrics displayMetrics = new DisplayMetrics();
         requireActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        adapter = new ChatListAdapter(chatList, displayMetrics.widthPixels, (MainActivity) requireActivity());
+        adapter = new ChatListAdapter(chats, displayMetrics.widthPixels, (MainActivity) requireActivity());
 
         requireActivity().runOnUiThread(new Runnable() {
             @Override
@@ -76,5 +86,22 @@ public class ChatsFragment extends Fragment {
                 Log.i("Debug", "adapter set");
             }
         });
+    }
+
+
+
+
+
+
+
+    // Подписки
+    @Override
+    public void onChatListChanged(ArrayList<Chat> newChatList) {
+        CreateItemList(newChatList);
+    }
+
+    @Override
+    public void onSelectChatChanged(Chat newSelectChat) {
+        //
     }
 }

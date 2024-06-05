@@ -1,43 +1,40 @@
 package com.example.teletypesha.netCode;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
-import android.util.Pair;
 
 import androidx.annotation.Nullable;
 
-import com.example.teletypesha.itemClass.Chat;
-import com.example.teletypesha.itemClass.Messange;
+import com.example.teletypesha.activitys.MainActivity;
+import com.example.teletypesha.crypt.Crypt;
 
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.security.*;
-import javax.crypto.*;
 
 import tech.gusavila92.websocketclient.WebSocketClient;
 
-import com.example.teletypesha.crypt.Crypt;
-import com.example.teletypesha.itemClass.Chat;
-import com.example.teletypesha.itemClass.Messange;
-
 public class NetServerController extends Service implements Serializable {
-    private int k = 0;
+    private static int k = 0;
     public static String s = "95.165.27.159";
 
     public static WebSocketClient webSocketClient;
-    private Map<Integer, OnMessageReceived> listeners = new HashMap<>();
+    private static Map<Integer, OnMessageReceived> listeners = new HashMap<>();
+
+    public void AddNewChat(String chatId, String chatPassword) {
+    }
 
     public interface OnMessageReceived {
         void onMessage(String[] parts) throws Exception;
@@ -55,7 +52,7 @@ public class NetServerController extends Service implements Serializable {
         }
     }
 
-    public void setOnMessageReceivedListener(int id, OnMessageReceived listener) {
+    public static void setOnMessageReceivedListener(int id, OnMessageReceived listener) {
         listeners.put(id, listener);
     }
 
@@ -138,15 +135,16 @@ public class NetServerController extends Service implements Serializable {
         return binder;
     }
 
-    private void SendRequest(int id, String requestWord, String string){
-        webSocketClient.send("/sql " + requestWord + " " + String.valueOf(id) + " " + string);
+    private static void SendRequest(int id, String requestWord, String string){
+        if(webSocketClient != null)
+            webSocketClient.send("/sql " + requestWord + " " + String.valueOf(id) + " " + string);
     }
 
-    private void SendUnregistredRequest(String string){
+    private static void SendUnregistredRequest(String string){
         webSocketClient.send(string);
     }
 
-    private int GetK(){
+    private static int GetK(){
         k++;
         if(k >= 1000000){
             k = 0;
@@ -156,65 +154,83 @@ public class NetServerController extends Service implements Serializable {
 
     // -------------------------------------------------------------------------------------------
 
+    // Запросы к серверу
+
+    // -------------------------------------------------------------------------------------------
+
     // Создание нового чата
-    public CompletableFuture<String> CreateNewChat(String chatPassword, boolean isPrivacy) {
+    public static CompletableFuture<String> CreateNewChat(String chatPassword, boolean isPrivacy) {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
 
         setOnMessageReceivedListener(requestId , new OnMessageReceived() {
             @Override
             public void onMessage(String[] parts) {
-                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
-                    if (parts.length > 1) {
-                        future.complete(parts[1]);
-                    } else {
-                        future.complete(null);
-                    }
+                if (parts.length > 0) {
+                    future.complete(parts[0]);
                 }
             }
         });
 
         Log.i("WebSocket", "CreateNewChat");
-        SendRequest(requestId, "ChatCreate", chatPassword + " " + isPrivacy);
+        SendRequest(requestId, "ChatCreate", isPrivacy + " " + String.valueOf(chatPassword));
+
+        return future;
+    }
+
+    public static CompletableFuture<String> AddUserToChat(String publicKey, String idChat, String chatPassword) {
+        CompletableFuture<String> future = new CompletableFuture<>();
+        int requestId = GetK();
+
+        setOnMessageReceivedListener(requestId , new OnMessageReceived() {
+            public void onMessage(String[] parts) {
+                if (parts.length > 0) {
+                    future.complete(parts[0]);
+                } else {
+                    future.complete(null);
+                }
+            }
+        });
+
+        Log.i("WebSocket", "addUserToChat");
+        SendRequest(requestId, "addUserToChat", publicKey + " " + idChat + " " + chatPassword);
 
         return future;
     }
 
     // Отправить сообщение
-    public CompletableFuture<String> SendMessage(int idMsg, int idSender, Timestamp timeMsg, String msg, PublicKey publicKey) throws Exception {
+    public static CompletableFuture<String> SendMessage(byte[] msg, int idSender, Timestamp timeMsg) {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
 
-        String encryptionMsg = Arrays.toString(Crypt.Encryption(msg, publicKey));
         setOnMessageReceivedListener(requestId , new OnMessageReceived() {
             public void onMessage(String[] parts) {
-                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
-                    if (parts.length > 1) {
-                        future.complete(parts[1]);
-                    } else {
-                        future.complete(null);
-                    }
+                if (parts.length > 0) {
+                    future.complete(parts[0]);
+                } else {
+                    future.complete(null);
                 }
             }
         });
 
         Log.i("WebSocket", "SendMessage");
-        SendRequest(requestId, "SendMessage", String.valueOf(requestId) + " " + String.valueOf(idMsg) + " " + String.valueOf(idSender) + " " + String.valueOf(timeMsg) + " " + encryptionMsg);
+        String timeWithoutMilliseconds = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(timeMsg);
+        SendRequest(requestId, "SendMessage", String.valueOf(idSender) + " " + String.valueOf(timeWithoutMilliseconds) + " " + Base64.getEncoder().encodeToString(msg));
 
         return future;
     }
 
     // Вернуть сообщения, которые больше idMsg
-    public CompletableFuture<String> GetMessages(int idSender, int idMsg) throws Exception {
-        CompletableFuture<String> future = new CompletableFuture<>();
+    public static CompletableFuture<String[]> GetMessages(String str) {
+        CompletableFuture<String[]> future = new CompletableFuture<>();
         int requestId = GetK();
 
         setOnMessageReceivedListener(requestId, new OnMessageReceived() {
             @Override
             public void onMessage(String[] parts) {
-                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
+                if (parts.length > 0) {
                     if (parts.length > 1) {
-                        future.complete(parts[1]);
+                        future.complete(parts);
                     } else {
                         future.complete(null);
                     }
@@ -223,20 +239,20 @@ public class NetServerController extends Service implements Serializable {
         });
 
         Log.i("WebSocket", "GetMessages");
-        SendRequest(requestId, "GetMessages", String.valueOf(idSender) + " " + String.valueOf(idMsg));
+        SendRequest(requestId, "GetMessages", str);
 
         return future;
     }
 
     // Удаление сообщения
-    public CompletableFuture<String> DeleteMessage(int idSender, int idMsg) throws Exception {
+    public static CompletableFuture<String> DeleteMessage(int idSender, int idMsg) {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
 
         setOnMessageReceivedListener(requestId, new OnMessageReceived() {
             @Override
             public void onMessage(String[] parts) {
-                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
+                if (parts.length > 0) {
                     if (parts.length > 1) {
                         future.complete(parts[1]);
                     } else {
@@ -247,106 +263,70 @@ public class NetServerController extends Service implements Serializable {
         });
 
         Log.i("WebSocket", "DeleteMessage");
-        SendRequest(requestId, "DeleteMessage", String.valueOf(idSender) + " " + String.valueOf(idMsg));
+        SendRequest(requestId, "DeleteMessages", String.valueOf(idSender) + " " + String.valueOf(idMsg));
 
         return future;
     }
 
     // Изменение сообщения
-    public CompletableFuture<String> RefactorMessage(int idMsg, String msg, PublicKey publicKey) throws Exception {
+    public static CompletableFuture<String> RefactorMessage(int idMsg, int idSender, byte[] msg) {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
-
-        String encryptionMsg = Arrays.toString(Crypt.Encryption(msg, publicKey));
         setOnMessageReceivedListener(requestId, new OnMessageReceived() {
             @Override
             public void onMessage(String[] parts) {
-                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
-                    if (parts.length > 1) {
-                        future.complete(parts[1]);
-                    } else {
-                        future.complete(null);
-                    }
+                if (parts.length > 0) {
+                    future.complete(parts[0]);
+                } else {
+                    future.complete(null);
                 }
             }
         });
 
         Log.i("WebSocket", "RefactorMessage");
-        SendRequest(requestId, "RefactorMessage", String.valueOf(idMsg) + " " + encryptionMsg);
+        SendRequest(requestId, "RefactorMessage", String.valueOf(idMsg) + " " + String.valueOf(idSender) + " " + Base64.getEncoder().encodeToString(msg));
 
         return future;
     }
 
-    // Поиск сообщения по ключу в msg
-    public CompletableFuture<String> ReturnMessageByKeyWord(int idSender, String msg, PublicKey publicKey) throws Exception {
-        CompletableFuture<String> future = new CompletableFuture<>();
-        int requestId = GetK();
-
-        String encryptionMsg = Arrays.toString(Crypt.Encryption(msg, publicKey));
-        setOnMessageReceivedListener(requestId, new OnMessageReceived() {
-            @Override
-            public void onMessage(String[] parts) {
-                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
-                    if (parts.length > 1) {
-                        future.complete(parts[1]);
-                    } else {
-                        future.complete(null);
-                    }
-                }
-            }
-        });
-
-        Log.i("WebSocket", "ReturnMessageByKeyWord");
-        SendRequest(requestId, "ReturnMessageByKeyWord", String.valueOf(idSender) + " " + encryptionMsg);
-
-        return future;
-    }
-
-    // Возврат сообщения по idMsg
-    public CompletableFuture<String> ReturnMessageByIdMsg(int idMsg) throws Exception {
+    public static CompletableFuture<String> Login(String log, String pass, Context context) throws Exception {
         CompletableFuture<String> future = new CompletableFuture<>();
         int requestId = GetK();
         setOnMessageReceivedListener(requestId, new OnMessageReceived() {
             @Override
             public void onMessage(String[] parts) {
-                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
-                    if (parts.length > 1) {
-                        future.complete(parts[1]);
-                    } else {
-                        future.complete(null);
-                    }
+                if (parts.length > 0) {
+                    future.complete(parts[0]);
+                } else {
+                    future.complete(null);
                 }
             }
         });
 
-        Log.i("WebSocket", "ReturnMessageByIdMsg");
-        SendRequest(requestId, "ReturnMessageByIdMsg", String.valueOf(idMsg));
+        Log.i("WebSocket", "Login");
+        SendRequest(requestId, "GetUserData", Crypt.CriptUser(log, pass, context, false));
 
         return future;
     }
 
-    // Возврат k сообщений, отсортированных по времени
-    public CompletableFuture<String> ReturnLastKMessages(int idSender, int kMessages) throws Exception {
-        CompletableFuture<String> future = new CompletableFuture<>();
+    public static CompletableFuture<Boolean> Register(String log, String pass, Context context) throws Exception {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
         int requestId = GetK();
-
         setOnMessageReceivedListener(requestId, new OnMessageReceived() {
             @Override
             public void onMessage(String[] parts) {
-                if (parts.length > 0 && parts[0].equals(String.valueOf(requestId))) {
-                    if (parts.length > 1) {
-                        future.complete(parts[1]);
-                    } else {
-                        future.complete(null);
-                    }
+                if (parts.length > 0) {
+                    future.complete(Boolean.valueOf(parts[0]));
+                } else {
+                    future.complete(false);
                 }
             }
         });
 
-        Log.i("WebSocket", "ReturnLastKMessages");
-        SendRequest(requestId, "ReturnLastKMessages", String.valueOf(idSender) + " " + String.valueOf(kMessages));
+        Log.i("WebSocket", "Register");
+        String str = Crypt.CriptUser(log, pass, context, true);
+        SendRequest(requestId, "AddUserData", str);
 
         return future;
     }
-
 }

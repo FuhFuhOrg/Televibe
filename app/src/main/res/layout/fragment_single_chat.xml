@@ -11,24 +11,71 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent">
 
+        <LinearLayout
+            android:id="@+id/chat_menu"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:title="Chat"
+            app:titleTextColor="@android:color/white"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/chat_menu_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textSize="20dp"
+                    android:text="AAAA"
+                    android:gravity="center"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:gravity="center">
+                <Button
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/ic_menu_icon"
+                    android:onClick="OpenChatSettingsFragment"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/chat_recycler"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@color/design_default_color_secondary_variant"
+            android:background="@color/background_fragment_chats"
+            android:clipToPadding="false"
             app:layout_constraintBottom_toTopOf="@id/message_layout"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/chat_menu"
             tools:layout_editor_absoluteX="16dp" />
 
         <LinearLayout
             android:id="@+id/message_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/button"
             android:gravity="bottom"
             android:orientation="horizontal"
             android:padding="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/chat_recycler">
+
+            <Button
+                android:id="@+id/send_button_screpochka"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:background="@drawable/ic_attach_icon"/>
 
             <EditText
                 android:id="@+id/message_edit_text"
@@ -48,8 +95,7 @@
                 android:layout_gravity="bottom"
                 android:layout_weight="1"
                 android:text="Отправить"
-                android:onClick="SendMessage"
-                />
+                android:textColorLink="#121839" />
 
         </LinearLayout>
 

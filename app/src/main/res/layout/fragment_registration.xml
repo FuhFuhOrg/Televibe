@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_fragment_chats"
+    tools:context=".fragments.RegistrationFragment">
+
+    <Button
+        android:id="@+id/login_set_button"
+        android:layout_width="200dp"
+        android:layout_height="64dp"
+        android:onClick="OpenLoginFragment"
+        android:text="@string/login"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/registration_login"
+        android:layout_width="200dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="200dp"
+        android:hint="Login"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/registration_login_2"
+        android:layout_width="200dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="24dp"
+        android:hint="ReLogin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/registration_login" />
+
+    <EditText
+        android:id="@+id/registration_password"
+        android:layout_width="200dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="24dp"
+        android:hint="Password"
+        android:inputType="textPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/registration_login_2"/>
+
+    <EditText
+        android:id="@+id/registration_password_2"
+        android:layout_width="200dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="24dp"
+        android:hint="RePassword"
+        android:inputType="textPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/registration_password"/>
+
+    <Button
+        android:id="@+id/registration_button"
+        android:layout_width="200dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="24dp"
+        android:onClick="Register"
+        android:text="@string/password"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/registration_password_2" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
