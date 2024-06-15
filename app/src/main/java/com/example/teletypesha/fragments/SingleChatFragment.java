@@ -137,17 +137,19 @@ public class SingleChatFragment extends Fragment implements SharedViewByChatsLis
 
     public void scrollToLastUnreadMessage(Chat chat) {
         // Получите индекс последнего непрочитанного сообщения
-        int lastUnreadIndex = -1;
         ArrayList<Message> messages = chat.GetMessanges();
+        int lastUnreadIndex = messages.size() - 1;
         for (int i = messages.size() - 1; i >= 0; i--) {
             if (!messages.get(i).GetIsReaded()) {
                 lastUnreadIndex = i;
+            }
+            else{
                 break;
             }
         }
 
         // Если найдено непрочитанное сообщение, прокрутите Recycler к этому сообщению
-        if (lastUnreadIndex != -1) {
+        if (lastUnreadIndex != 0) {
             int recyclerViewIndex = lastUnreadIndex;
             recyclerView.scrollToPosition(recyclerViewIndex);
         }

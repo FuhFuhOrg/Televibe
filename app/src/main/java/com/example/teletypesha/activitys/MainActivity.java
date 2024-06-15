@@ -905,7 +905,7 @@ public class MainActivity extends AppCompatActivity {
                 if (Objects.equals(chat.GetChatId(), chatId)) {
                     chat.CleanErased(erased);
                     chat.SortMessagesByTime();
-                    if (messagesAddedToChat > chat.GetWritedUsers()) {
+                    if (messagesAddedToChat > 0) {
                         chat.isChanged = true;
                     }
                 }
