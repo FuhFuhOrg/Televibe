@@ -24,6 +24,7 @@ public class User {
         this.publicKey = publicKey;
     }
 
+    // Генерация ключей
     public void GenerateCrypt(){
         Pair<PrivateKey, PublicKey> keys;
         try {

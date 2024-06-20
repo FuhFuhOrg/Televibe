@@ -30,6 +30,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     private MainActivity mainActivity;
     private SingleChatFragment singleChatFragment;
 
+    // Конструктор адаптера для чата, принимает объект чата, ширину экрана, активность и фрагмент
     public ChatAdapter(Chat chat, int width, MainActivity mainActivity, SingleChatFragment singleChatFragment) {
         this.chat = chat;
         this.width = width;
@@ -39,6 +40,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         Log.i("Debug Adp", String.valueOf(chat.GetMessanges().size()));
     }
 
+    // Создает ViewHolder для элемента списка сообщений
     @NonNull
     @Override
     public ChatAdapter.ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -48,6 +50,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         return new ChatAdapter.ChatViewHolder(itemView);
     }
 
+    // Привязывает данные сообщения к ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ChatAdapter.ChatViewHolder holder, int position) {
         Message message = chat.GetMessanges().get(position);
@@ -58,17 +61,20 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         }
     }
 
+    // Возвращает количество сообщений в чате
     @Override
     public int getItemCount() {
         return chat.GetMessanges().size();
     }
 
+    // ViewHolder для представления элемента сообщения в списке
     public class ChatViewHolder extends RecyclerView.ViewHolder {
 
         private CardView buttonLayoutView;
         private TextView msgAuthor, messangeText;
         private ImageView msgImage;
 
+        // Инициализация ViewHolder и установка обработчика нажатия для отображения меню
         public ChatViewHolder(@NonNull View itemView) {
             super(itemView);
             buttonLayoutView = itemView.findViewById(R.id.in_messange_layout);
@@ -112,11 +118,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
             });
         }
 
+        // Привязывает данные сообщения к элементам макета
         public void bind(Message messange) {
             // Устанавливаем данные в элементы макета
             Log.i("Debug Adp", "S Create Maket");
             msgAuthor.setText(chat.GetUser(messange.author).GetName());
 
+            // Попытка расшифровать изображение или текст сообщения
             try {
                 Bitmap bitmap = chat.GetUser(messange.author).DecryptImage(messange.text);
                 if (bitmap != null) {
@@ -124,17 +132,16 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
                     msgImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
                     msgImage.setAdjustViewBounds(true);
                     messangeText.setText(null);
-                }
-                else {
+                } else {
                     msgImage.setImageBitmap(null);
                     messangeText.setText(chat.GetUser(messange.author).Decrypt(messange.text));
                 }
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 msgImage.setImageBitmap(null);
                 messangeText.setText(chat.GetUser(messange.author).Decrypt(messange.text));
             }
 
+            // Установка параметров макета в зависимости от автора сообщения
             ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) buttonLayoutView.getLayoutParams();
             if (Objects.equals(chat.GetYourId(), messange.author)) {
                 layoutParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
@@ -147,6 +154,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
             }
             buttonLayoutView.setLayoutParams(layoutParams);
 
+            // Установка ширины элемента
             buttonLayoutView.getLayoutParams().width = (int) (width * 0.6);
             Log.i("Debug Adp", "E Create Maket");
         }

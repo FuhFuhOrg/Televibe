@@ -27,6 +27,8 @@ public class Chat {
         return yourId;
     }
 
+    // (+)
+    // Получить название чата и в случие его отсутствия Id
     public String GetLabel(){
         if(label != null){
             return label;
@@ -36,6 +38,8 @@ public class Chat {
         }
     }
 
+    // (**)
+    // Добавить сообщение
     public void AddChangeMessage(Message msg){
         Message getMsg = GetMessangeForId(msg.messageId, msg.author);
         if(getMsg != null){
@@ -60,6 +64,8 @@ public class Chat {
         return users;
     }
 
+    // (***)
+    // Находит количество юзеров
     public int GetWritedUsers(){
         HashSet<Integer> uniqueAuthors = new HashSet<>();
         for (Message msg : messages) {
@@ -72,6 +78,8 @@ public class Chat {
         return users.get(id);
     }
 
+    // (+)
+    // Возраает последне сообщение
     public Message getLastMsg(){
         if(messages != null && messages.size() > 0){
             return messages.get(messages.size() - 1);
@@ -85,6 +93,8 @@ public class Chat {
         return messages;
     }
 
+    // (***)
+    // Возращает сообщение по id
     public Message GetMessangeForId(Integer id, Integer authorId){
         for (int i = 0; i < messages.size(); i++) {
             if (Objects.equals(messages.get(i).messageId, id) && Objects.equals(messages.get(i).author, authorId)){
@@ -98,6 +108,8 @@ public class Chat {
         users.put(id, user);
     }
 
+    // (***)
+    // Получение пропущеных
     public HashMap<Integer, ArrayList<Integer>> GetMissingIdsForAllAuthors(){
         HashMap<Integer, ArrayList<Integer>> allMessageIdsForAllAuthors = new HashMap<>();
         HashMap<Integer, Integer> lastMsgIdForAllAuthors = new HashMap<>();
@@ -144,6 +156,8 @@ public class Chat {
         return missingMessageIdsForAllAuthors;
     }
 
+    // (***)
+    // Удаляет удаленные в бд сообщения * не работает
     public void CleanErased(ArrayList<Integer> erased) {
         HashSet<Integer> erasedSet = new HashSet<>(erased);
         Iterator<Message> iterator = messages.iterator();
@@ -156,6 +170,8 @@ public class Chat {
         }
     }
 
+    // (**)
+    // Сортирует по времни
     public void SortMessagesByTime() {
         Collections.sort(messages, new Comparator<Message>() {
             @Override

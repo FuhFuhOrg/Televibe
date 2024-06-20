@@ -6,6 +6,7 @@ public class Message {
     public byte[] text;
     public Integer author, messageId;
     LocalDateTime sendTime;
+    // УБРАТЬ
     boolean isRead;
     long timeInSecond = -1;
 
@@ -16,11 +17,12 @@ public class Message {
         this.text = text;
     }
 
+    // УБРАТЬ
     public boolean GetIsReaded(){
         return isRead;
     }
 
-
+    // УБРАТЬ
     public void SetIsReaded(boolean isRead){
         this.isRead = isRead;
     }

@@ -8,11 +8,13 @@ import java.util.Base64;
 import com.google.gson.*;
 
 public class KeySerializer implements JsonSerializer<Key>, JsonDeserializer<Key> {
+    // Сериализует Ключ
     @Override
     public JsonElement serialize(Key key, Type type, JsonSerializationContext jsonSerializationContext) {
         return new JsonPrimitive(Base64.getEncoder().encodeToString(key.getEncoded()));
     }
 
+    // Десериализует Ключ
     @Override
     public Key deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         try {

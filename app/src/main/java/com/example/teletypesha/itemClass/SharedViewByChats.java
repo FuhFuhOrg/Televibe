@@ -17,6 +17,8 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
 
+
+// Работает не всегда
 public class SharedViewByChats {
     private static ArrayList<Chat> chatList;
     private static Chat selectChat;

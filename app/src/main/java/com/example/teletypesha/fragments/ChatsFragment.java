@@ -29,9 +29,9 @@ import java.util.Random;
 
 public class ChatsFragment extends Fragment implements SharedViewByChatsListener {
     private RecyclerView recyclerView;
-    ChatListAdapter adapter;
+    private ChatListAdapter adapter;
 
-
+    // Создает и настраивает представление фрагмента
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -42,41 +42,45 @@ public class ChatsFragment extends Fragment implements SharedViewByChatsListener
         return view;
     }
 
+    // Настройка представления фрагмента после его создания
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
     }
 
-    public static void CreateFictChats(ArrayList<Chat> chatList){
+    // Создание фиктивных чатов для тестирования
+    public static void CreateFictChats(ArrayList<Chat> chatList) {
         Random random = new Random();
-        for (int i = 0; i < 10; i++){
+        for (int i = 0; i < 10; i++) {
             Integer yourId = random.nextInt();
 
             HashMap<Integer, User> users = new HashMap<>();
-            for (int j = 0; j < 2 + Math.abs(random.nextInt() % 4); j++){
+            for (int j = 0; j < 2 + Math.abs(random.nextInt() % 4); j++) {
                 users.put(random.nextInt(), new User("Pip" + j));
             }
             users.put(yourId, new User("You"));
 
             ArrayList<Integer> keys = new ArrayList<>(users.keySet());
             ArrayList<Message> messages = new ArrayList<>();
-            for (int j = 0; j < 5 + Math.abs(random.nextInt() % 25); j++){
+            for (int j = 0; j < 5 + Math.abs(random.nextInt() % 25); j++) {
                 Integer randomUserId = keys.get(random.nextInt(keys.size()));
                 messages.add(new Message(randomUserId, -1, users.get(randomUserId).Encrypt("hi"), LocalDateTime.now(), false));
             }
 
             chatList.add(new Chat(yourId, messages, users, String.valueOf(random.nextInt()), ""));
-            if(random.nextInt() > 0){
+            if (random.nextInt() > 0) {
                 chatList.get(chatList.size() - 1).SetLabel("Amogus");
             }
         }
     }
 
-    private void CreateItemList(ArrayList<Chat> chats){
+    // Создание и настройка адаптера для списка чатов
+    private void CreateItemList(ArrayList<Chat> chats) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         requireActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         adapter = new ChatListAdapter(chats, displayMetrics.widthPixels, (MainActivity) requireActivity());
 
+        // Установка адаптера для RecyclerView на главном потоке
         requireActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -88,20 +92,15 @@ public class ChatsFragment extends Fragment implements SharedViewByChatsListener
         });
     }
 
-
-
-
-
-
-
-    // Подписки
+    // Обновление списка чатов при изменении
     @Override
     public void onChatListChanged(ArrayList<Chat> newChatList) {
         CreateItemList(newChatList);
     }
 
+    // Обработка изменений выбранного чата (пока пустая)
     @Override
     public void onSelectChatChanged(Chat newSelectChat) {
-        //
+        // Пустой метод для будущей реализации
     }
 }

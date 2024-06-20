@@ -41,14 +41,13 @@ import java.util.Objects;
 
 public class SingleChatFragment extends Fragment implements SharedViewByChatsListener {
     private RecyclerView recyclerView;
-    ChatAdapter adapter;
-    EditText editText;
+    private ChatAdapter adapter;
+    private EditText editText;
     private Message editedMessage;
     private boolean isEdited = false;
     private static final int PICK_FILE_REQUEST = 1;
 
-
-
+    // Создание и настройка представления фрагмента
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -59,23 +58,20 @@ public class SingleChatFragment extends Fragment implements SharedViewByChatsLis
         SharedViewByChats.setListener(this);
         CreateMessangesList(SharedViewByChats.getSelectChat());
 
-
-
         Button sendButton = view.findViewById(R.id.send_button);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isEdited){
+                if (isEdited) {
                     byte[] messange = SharedViewByChats.getSelectChat().GetUser(
                             SharedViewByChats.getSelectChat().GetYourId()).Encrypt(String.valueOf(editText.getText()));
                     ((MainActivity) requireActivity()).EditMessage(editedMessage, messange);
                     isEdited = false;
-                }else{
+                } else {
                     ((MainActivity) requireActivity()).SendMessage();
                 }
             }
         });
-
 
         Button sendButtonSkrepochka = view.findViewById(R.id.send_button_screpochka);
         sendButtonSkrepochka.setOnClickListener(new View.OnClickListener() {
@@ -87,27 +83,25 @@ public class SingleChatFragment extends Fragment implements SharedViewByChatsLis
             }
         });
 
-
-
-
         TextView chatMenuName = view.findViewById(R.id.chat_menu_name);
         chatMenuName.setText(SharedViewByChats.getSelectChat().GetLabel());
 
         return view;
     }
 
+    // Обработка результата выбора файла
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_FILE_REQUEST && resultCode == Activity.RESULT_OK) {
             if (data != null && data.getData() != null) {
                 Uri fileUri = data.getData();
-                ((MainActivity)requireActivity()).SendMessageSkrepochka(fileUri);
+                ((MainActivity) requireActivity()).SendMessageSkrepochka(fileUri);
             }
         }
     }
 
-    // Метод для получения реального пути к файлу из URI
+    // Получение реального пути к файлу из URI
     private String getRealPathFromURI(Context context, Uri contentUri) {
         String filePath;
         Cursor cursor = null;
@@ -133,10 +127,8 @@ public class SingleChatFragment extends Fragment implements SharedViewByChatsLis
         super.onViewCreated(view, savedInstanceState);
     }
 
-
-
+    // Прокрутка к последнему непрочитанному сообщению
     public void scrollToLastUnreadMessage(Chat chat) {
-        // Получите индекс последнего непрочитанного сообщения
         int lastUnreadIndex = -1;
         ArrayList<Message> messages = chat.GetMessanges();
         for (int i = messages.size() - 1; i >= 0; i--) {
@@ -146,15 +138,13 @@ public class SingleChatFragment extends Fragment implements SharedViewByChatsLis
             }
         }
 
-        // Если найдено непрочитанное сообщение, прокрутите Recycler к этому сообщению
         if (lastUnreadIndex != -1) {
-            int recyclerViewIndex = lastUnreadIndex;
-            recyclerView.scrollToPosition(recyclerViewIndex);
+            recyclerView.scrollToPosition(lastUnreadIndex);
         }
     }
 
-
-    private void CreateMessangesList(Chat chat){
+    // Создание списка сообщений и настройка адаптера
+    private void CreateMessangesList(Chat chat) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         requireActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         adapter = new ChatAdapter(chat, displayMetrics.widthPixels, (MainActivity) requireActivity(), this);
@@ -171,31 +161,25 @@ public class SingleChatFragment extends Fragment implements SharedViewByChatsLis
         });
     }
 
-    public void StartEditMessage(Chat chat, Message message){
-        if(Objects.equals(message.author, chat.GetYourId())) {
+    // Начало редактирования сообщения
+    public void StartEditMessage(Chat chat, Message message) {
+        if (Objects.equals(message.author, chat.GetYourId())) {
             editedMessage = message;
             isEdited = true;
             editText.setText(chat.GetUser(chat.GetYourId()).Decrypt(message.text));
         }
     }
 
-
-
-
-
-
-
-
-
-    // Подписки
+    // Обработка изменения списка чатов
     @Override
     public void onChatListChanged(ArrayList<Chat> newChatList) {
-        //
+        // Пустой метод для будущей реализации
     }
 
+    // Обработка изменения выбранного чата
     @Override
     public void onSelectChatChanged(Chat newSelectChat) {
-        if(newSelectChat.isChanged) {
+        if (newSelectChat.isChanged) {
             newSelectChat.isChanged = false;
             CreateMessangesList(newSelectChat);
         }

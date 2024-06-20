@@ -46,6 +46,7 @@ public final class Crypt {
     private static final String CHANNEL_ID = "encryption_channel";
     private static final int NOTIFICATION_ID = 1;
 
+    // Генерация пары открытого и закрытого ключей RSA
     public static Pair<PrivateKey, PublicKey> PublicPrivateKeyGeneration() throws Exception {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(2048);
@@ -55,19 +56,24 @@ public final class Crypt {
         return new Pair<>(privateKey, publicKey);
     }
 
+    // Шифрование строки с использованием AES и закрытого ключа RSA
     public static byte[] Encryption(String msg, PrivateKey privateKey) throws Exception {
+        // Генерация секретного ключа AES
         KeyGenerator keyGen = KeyGenerator.getInstance("AES");
         keyGen.init(256);
         SecretKey secretKey = keyGen.generateKey();
 
+        // Шифрование сообщения с использованием AES
         Cipher aesCipher = Cipher.getInstance("AES");
         aesCipher.init(Cipher.ENCRYPT_MODE, secretKey);
         byte[] encryptedMsg = aesCipher.doFinal(msg.getBytes());
 
+        // Шифрование секретного ключа AES с использованием RSA
         Cipher rsaCipher = Cipher.getInstance("RSA");
         rsaCipher.init(Cipher.WRAP_MODE, privateKey);
         byte[] encryptedKey = rsaCipher.wrap(secretKey);
 
+        // Комбинирование зашифрованного ключа и зашифрованного сообщения
         byte[] combined = new byte[encryptedKey.length + encryptedMsg.length];
         System.arraycopy(encryptedKey, 0, combined, 0, encryptedKey.length);
         System.arraycopy(encryptedMsg, 0, combined, encryptedKey.length, encryptedMsg.length);
@@ -75,27 +81,34 @@ public final class Crypt {
         return combined;
     }
 
+    // Шифрование изображения с использованием AES и закрытого ключа RSA, с уведомлениями о прогрессе
     public static byte[] EncryptionImage(Context context, byte[] msg, PrivateKey privateKey) throws Exception {
+        // Генерация секретного ключа AES
         KeyGenerator keyGen = KeyGenerator.getInstance("AES");
         keyGen.init(256);
         SecretKey secretKey = keyGen.generateKey();
 
+        // Инициализация шифра AES для шифрования
         Cipher aesCipher = Cipher.getInstance("AES");
         aesCipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
+        // Настройка уведомлений
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Encryption Progress", NotificationManager.IMPORTANCE_LOW);
             notificationManager.createNotificationChannel(channel);
         }
 
+        // Переменные для отслеживания прогресса
         int totalBytesProcessed = 0;
-        int chunkSize = 1024 * 1024; // 1024 KB
+        int chunkSize = 1024 * 1024; // 1024 КБ
         byte[] buffer = new byte[chunkSize];
         int bytesRead = 0;
 
+        // Поток для хранения зашифрованных данных изображения
         ByteArrayOutputStream encryptedStream = new ByteArrayOutputStream();
 
+        // Шифрование изображения по частям
         for (int offset = 0; offset < msg.length; offset += chunkSize) {
             bytesRead = Math.min(chunkSize, msg.length - offset);
             System.arraycopy(msg, offset, buffer, 0, bytesRead);
@@ -103,11 +116,11 @@ public final class Crypt {
             encryptedStream.write(encryptedChunk);
             totalBytesProcessed += bytesRead;
 
+            // Обновление уведомления о прогрессе
             if (totalBytesProcessed % chunkSize == 0) {
-                // Update Notification
-                String notificationText = totalBytesProcessed + " bytes encrypted";
+                String notificationText = totalBytesProcessed + " байт зашифровано";
                 Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
-                        .setContentTitle("Encryption in Progress")
+                        .setContentTitle("Шифрование в процессе")
                         .setContentText(notificationText)
                         .setSmallIcon(R.drawable.ic_encryption)
                         .setProgress(msg.length, totalBytesProcessed, false)
@@ -118,18 +131,20 @@ public final class Crypt {
 
         byte[] encryptedMsg = encryptedStream.toByteArray();
 
+        // Шифрование секретного ключа AES с использованием RSA
         Cipher rsaCipher = Cipher.getInstance("RSA");
         rsaCipher.init(Cipher.WRAP_MODE, privateKey);
         byte[] encryptedKey = rsaCipher.wrap(secretKey);
 
+        // Комбинирование зашифрованного ключа и зашифрованного изображения
         byte[] combined = new byte[encryptedKey.length + encryptedMsg.length];
         System.arraycopy(encryptedKey, 0, combined, 0, encryptedKey.length);
         System.arraycopy(encryptedMsg, 0, combined, encryptedKey.length, encryptedMsg.length);
 
-        // Final notification
-        String finalNotificationText = "Encryption complete: " + combined.length + " bytes";
+        // Финальное уведомление
+        String finalNotificationText = "Шифрование завершено: " + combined.length + " байт";
         Notification finalNotification = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setContentTitle("Encryption Complete")
+                .setContentTitle("Шифрование завершено")
                 .setContentText(finalNotificationText)
                 .setSmallIcon(R.drawable.ic_encryption)
                 .setProgress(0, 0, false)
@@ -139,16 +154,20 @@ public final class Crypt {
         return combined;
     }
 
+    // Расшифровка зашифрованного байтового массива в строку с использованием RSA и AES
     public static String Decrypt(byte[] combined, PublicKey publicKey) throws Exception {
+        // Извлечение зашифрованного ключа AES и зашифрованного сообщения
         byte[] encryptedKey = new byte[256];
         byte[] encryptedMsg = new byte[combined.length - 256];
         System.arraycopy(combined, 0, encryptedKey, 0, 256);
         System.arraycopy(combined, 256, encryptedMsg, 0, encryptedMsg.length);
 
+        // Расшифровка ключа AES с использованием RSA
         Cipher rsaCipher = Cipher.getInstance("RSA");
         rsaCipher.init(Cipher.UNWRAP_MODE, publicKey);
         SecretKey secretKey = (SecretKey) rsaCipher.unwrap(encryptedKey, "AES", Cipher.SECRET_KEY);
 
+        // Расшифровка сообщения с использованием AES
         Cipher aesCipher = Cipher.getInstance("AES");
         aesCipher.init(Cipher.DECRYPT_MODE, secretKey);
         byte[] decryptedMsg = aesCipher.doFinal(encryptedMsg);
@@ -156,30 +175,36 @@ public final class Crypt {
         return new String(decryptedMsg);
     }
 
+    // Расшифровка зашифрованного байтового массива в изображение Bitmap с использованием RSA и AES
     public static Bitmap DecryptImage(byte[] combined, PublicKey publicKey) throws Exception {
+        // Извлечение зашифрованного ключа AES и зашифрованного изображения
         byte[] encryptedKey = new byte[256];
         byte[] encryptedMsg = new byte[combined.length - 256];
         System.arraycopy(combined, 0, encryptedKey, 0, 256);
         System.arraycopy(combined, 256, encryptedMsg, 0, encryptedMsg.length);
 
+        // Расшифровка ключа AES с использованием RSA
         Cipher rsaCipher = Cipher.getInstance("RSA");
         rsaCipher.init(Cipher.UNWRAP_MODE, publicKey);
         SecretKey secretKey = (SecretKey) rsaCipher.unwrap(encryptedKey, "AES", Cipher.SECRET_KEY);
 
+        // Расшифровка изображения с использованием AES
         Cipher aesCipher = Cipher.getInstance("AES");
         aesCipher.init(Cipher.DECRYPT_MODE, secretKey);
         byte[] decryptedMsg = aesCipher.doFinal(encryptedMsg);
 
+        // Преобразование байтового массива в изображение Bitmap
         Bitmap bitmap = BitmapFactory.decodeByteArray(decryptedMsg, 0, decryptedMsg.length);
 
         return bitmap;
     }
 
+    // Шифрование публичного ключа с использованием комбинации chatId и chatPass, возврат строки Base64
     public static String CriptPublicKey(String chatId, String chatPass, PublicKey publicKey) throws Exception {
-        // Объединяем два ключевых слова
+        // Объединение chatId и chatPass для формирования ключа
         String key = chatId + chatPass;
 
-        // Генерация ключа AES из строки
+        // Генерация ключа AES из объединенной строки
         MessageDigest sha = MessageDigest.getInstance("SHA-256");
         byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
         keyBytes = sha.digest(keyBytes);
@@ -187,23 +212,23 @@ public final class Crypt {
 
         SecretKeySpec secretKey = new SecretKeySpec(keyBytes, "AES");
 
-        // Инициализация шифра
+        // Инициализация шифра AES для шифрования
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
-        // Шифрование и кодирование в Base64
+        // Шифрование публичного ключа и кодирование в Base64
         byte[] encrypted = cipher.doFinal(publicKey.getEncoded());
         String encryptedString = Base64.getEncoder().encodeToString(encrypted);
 
         return encryptedString;
     }
 
-
+    // Расшифровка строки Base64 в публичный ключ с использованием chatId и chatPass
     public static PublicKey DecryptPublicKey(String chatId, String chatPass, String encryptedString) throws Exception {
-        // Объединяем два ключевых слова
+        // Объединение chatId и chatPass для формирования ключа
         String key = chatId + chatPass;
 
-        // Генерация ключа AES из строки
+        // Генерация ключа AES из объединенной строки
         MessageDigest sha = MessageDigest.getInstance("SHA-256");
         byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
         keyBytes = sha.digest(keyBytes);
@@ -211,7 +236,7 @@ public final class Crypt {
 
         SecretKeySpec secretKey = new SecretKeySpec(keyBytes, "AES");
 
-        // Инициализация шифра
+        // Инициализация шифра AES для расшифровки
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, secretKey);
 
@@ -225,6 +250,7 @@ public final class Crypt {
         return decrypted;
     }
 
+    // Шифрование информации о пользователе и, при необходимости, данных чатов с использованием логина и пароля
     public static String CriptUser(String login, String password, Context context, Boolean returnChats) throws Exception {
         MessageDigest sha = MessageDigest.getInstance("SHA-256");
         byte[] loginHashBytes = sha.digest(login.getBytes(StandardCharsets.UTF_8));
@@ -233,6 +259,7 @@ public final class Crypt {
         byte[] passwordHashBytes = sha.digest(password.getBytes(StandardCharsets.UTF_8));
         String passwordHash = bytesToHex(passwordHashBytes);
 
+        // Генерация ключа из логина и пароля
         String key = login + password;
         byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
         keyBytes = sha.digest(keyBytes);
@@ -240,11 +267,13 @@ public final class Crypt {
 
         SecretKeySpec secretKey = new SecretKeySpec(keyBytes, "AES");
 
+        // Инициализация шифра AES для шифрования
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
         String result;
-        if(returnChats) {
+        if (returnChats) {
+            // Загрузка данных чатов и их шифрование
             JSONObject jsonObject = JsonDataSaver.TryLoadChatsWithoutRead(context);
             Gson gson = new Gson();
             String jsonString = gson.toJson(jsonObject);
@@ -254,13 +283,14 @@ public final class Crypt {
             String encryptedString = Base64.getEncoder().encodeToString(encrypted);
 
             result = loginHash + " " + passwordHash + " " + encryptedString;
-        }
-        else{
+        } else {
+            // Возврат только хэшей
             result = loginHash + " " + passwordHash;
         }
         return result;
     }
 
+    // Преобразование байтового массива в шестнадцатеричную строку
     private static String bytesToHex(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
         for (byte b : bytes) {
@@ -269,9 +299,9 @@ public final class Crypt {
         return sb.toString();
     }
 
-
-
+    // Расшифровка информации о пользователе с использованием логина и пароля, возврат объекта JSONObject
     public static JSONObject DecryptUser(String login, String password, String encryptedString, Context context) throws Exception {
+        // Генерация ключа из логина и пароля
         String key = login + password;
         MessageDigest sha = MessageDigest.getInstance("SHA-256");
         byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
@@ -280,21 +310,22 @@ public final class Crypt {
 
         SecretKeySpec secretKey = new SecretKeySpec(keyBytes, "AES");
 
+        // Инициализация шифра AES для расшифровки
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, secretKey);
 
+        // Декодирование строки Base64 и расшифровка
         byte[] encryptedBytes = Base64.getDecoder().decode(encryptedString);
-
         byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
 
+        // Преобразование расшифрованного байтового массива в JSON строку и её парсинг
         String jsonString = new String(decryptedBytes, StandardCharsets.UTF_8);
-
         Gson gson = new Gson();
         JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
 
+        // Преобразование JsonObject в JSONObject
         JSONObject decrypted = new JSONObject(jsonObject.toString());
 
         return decrypted;
     }
-
 }

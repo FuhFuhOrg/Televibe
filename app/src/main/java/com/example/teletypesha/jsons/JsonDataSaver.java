@@ -32,6 +32,8 @@ public class JsonDataSaver implements Serializable  {
     static String filename = "SavedChats.json";
     static Gson gson;
 
+    // (**) Перенести создание в if gson != null => эта функция
+    // Создает gson
     public static void AwakeJson(){
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(PrivateKey.class, new KeySerializer());
@@ -39,6 +41,8 @@ public class JsonDataSaver implements Serializable  {
         gson = gsonBuilder.create();
     }
 
+    // (*)
+    // Сохраняет все данные в локальный файл
     public static void SaveAll(Context context, JSONObject json) {
         File file = new File(context.getFilesDir(), filename);
         try (FileWriter fileWriter = new FileWriter(file)) {
@@ -52,6 +56,8 @@ public class JsonDataSaver implements Serializable  {
         }
     }
 
+    // (+)
+    // Читает Json без проебразований
     public static JSONObject TryLoadChatsWithoutRead(Context context){
         Log.i("Chats", "Данные начали загрузку");
 
@@ -60,6 +66,8 @@ public class JsonDataSaver implements Serializable  {
     }
 
 
+    // (*)
+    // Читает Json и преобразует в чаты и информацию
     public static ArrayList<Chat> TryLoadChats(Context context) {
 
         Log.i("Chats", "Данные начали загрузку");
@@ -106,6 +114,9 @@ public class JsonDataSaver implements Serializable  {
 
         return chats;
     }
+
+    // (*)
+    // Сохранят в Json чаты и информацию
     public static void SaveChats(ArrayList<Chat> chats, Context context){
         try {
             Add("login", MainActivity.login);
@@ -129,6 +140,8 @@ public class JsonDataSaver implements Serializable  {
         SaveToFile(context);
     }
 
+    // (*)
+    // Сохранят data в файл json
     private static void SaveToFile(Context context) {
         File file = new File(context.getFilesDir(), filename);
         try (FileWriter fileWriter = new FileWriter(file)) {
@@ -144,6 +157,8 @@ public class JsonDataSaver implements Serializable  {
 
 
 
+    // (**) часто вылетает
+    // Сохранят data в файл json
     private static JSONObject TryLoadJson(Context context){
         File file = new File(context.getFilesDir(), filename);
         if (file.exists()) {

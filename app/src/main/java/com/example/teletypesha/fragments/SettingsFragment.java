@@ -21,51 +21,52 @@ import com.example.teletypesha.activitys.MainActivity;
 public class SettingsFragment extends Fragment {
     boolean isFirstSelection = true;
 
+    // Создание и настройка представления фрагмента
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
+        // Настройка спиннера для выбора шрифтов
         SetFontsSpinner(view);
 
         return view;
     }
 
-    private void SetFontsSpinner(View view){
+    // Настройка спиннера для выбора шрифтов
+    private void SetFontsSpinner(View view) {
         Spinner spinner = view.findViewById(R.id.set_font_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.fonts_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
+        // Установка слушателя выбора элемента в спиннере
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (isFirstSelection) {
-                    isFirstSelection = false;
+                    isFirstSelection = false; // Пропускаем первое срабатывание
                     return;
                 }
                 String selected = parent.getItemAtPosition(position).toString();
                 Toast.makeText(requireActivity(), "Вы выбрали: " + selected, Toast.LENGTH_SHORT).show();
 
-                Typeface typeface;
-                switch (position){
+                // Смена темы и перезагрузка основного контента
+                switch (position) {
                     case 0:
                         requireActivity().setTheme(R.style.comic_sans);
-                        requireActivity().setContentView(R.layout.activity_main);
-                        ((MainActivity)  requireActivity()).OpenSettingsFragment();
                         break;
                     case 1:
                         requireActivity().setTheme(R.style.inky_thin_pixels);
-                        requireActivity().setContentView(R.layout.activity_main);
-                        ((MainActivity)  requireActivity()).OpenSettingsFragment();
                         break;
                     case 2:
                         requireActivity().setTheme(R.style.swampy);
-                        requireActivity().setContentView(R.layout.activity_main);
-                        ((MainActivity)  requireActivity()).OpenSettingsFragment();
                         break;
                 }
+                // Перезагрузка основного контента и открытие фрагмента настроек
+                requireActivity().setContentView(R.layout.activity_main);
+                ((MainActivity) requireActivity()).OpenSettingsFragment();
             }
 
             @Override
