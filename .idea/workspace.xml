@@ -5,12 +5,12 @@
       <config />
     </shared>
     <layouts>
-      <layout url="file://$USER_HOME$/AppData/Local/Android/Sdk/platforms/android-34/data/res/layout/simple_spinner_dropdown_item.xml">
+      <layout url="file://$PROJECT_DIR$/../AppData/Local/Android/Sdk/platforms/android-34/data/res/layout/simple_spinner_dropdown_item.xml">
         <config>
           <theme>@style/Theme.TeletypeSHA</theme>
         </config>
       </layout>
-      <layout url="file://$USER_HOME$/AppData/Local/Android/Sdk/platforms/android-34/data/res/layout/simple_spinner_item.xml">
+      <layout url="file://$PROJECT_DIR$/../AppData/Local/Android/Sdk/platforms/android-34/data/res/layout/simple_spinner_item.xml">
         <config>
           <theme>@style/Theme.TeletypeSHA</theme>
         </config>
@@ -86,7 +86,16 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7e002004-c531-4e1d-84b9-edf0cc312fd8" name="Changes" comment="" />
+    <list default="true" id="7e002004-c531-4e1d-84b9-edf0cc312fd8" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Flutter/tele_vibe/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/Flutter/tele_vibe/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Flutter/tele_vibe/linux/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/Flutter/tele_vibe/linux/flutter/generated_plugin_registrant.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Flutter/tele_vibe/linux/flutter/generated_plugin_registrant.h" beforeDir="false" afterPath="$PROJECT_DIR$/Flutter/tele_vibe/linux/flutter/generated_plugin_registrant.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Flutter/tele_vibe/linux/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/Flutter/tele_vibe/linux/flutter/generated_plugins.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Flutter/tele_vibe/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/Flutter/tele_vibe/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Flutter/tele_vibe/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/Flutter/tele_vibe/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Flutter/tele_vibe/windows/flutter/generated_plugin_registrant.h" beforeDir="false" afterPath="$PROJECT_DIR$/Flutter/tele_vibe/windows/flutter/generated_plugin_registrant.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Flutter/tele_vibe/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/Flutter/tele_vibe/windows/flutter/generated_plugins.cmake" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -95,7 +104,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[C:\Users\zzz20\.android\avd\Copy_of_Iphone_15_pro_max_API_34.avd]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[C:\Users\Artem\.android\avd\Pixel_7_Pro_API_33.avd]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -136,8 +145,8 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$USER_HOME$/AppData/Local/Google/AndroidStudio2023.2/device-explorer/Iphone 15 pro max API 34/_/data/data/com.example.teletypesha/files/SavedChats.json" root0="SKIP_INSPECTION" />
-    <setting file="file://$USER_HOME$/AppData/Local/Google/AndroidStudio2023.2/device-explorer/Pixel 7 Pro API 34/_/data/data/com.example.teletypesha/files/SavedChats.json" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../AppData/Local/Google/AndroidStudio2023.2/device-explorer/Iphone 15 pro max API 34/_/data/data/com.example.teletypesha/files/SavedChats.json" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../AppData/Local/Google/AndroidStudio2023.2/device-explorer/Pixel 7 Pro API 34/_/data/data/com.example.teletypesha/files/SavedChats.json" root0="SKIP_INSPECTION" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
@@ -156,7 +165,7 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "git-widget-placeholder": "FlutterWork",
-    "last_opened_file_path": "C:/Users/zzz20/Desktop",
+    "last_opened_file_path": "C:/Users/Artem/Teletype/AS",
     "project.structure.last.edited": "Dependencies",
     "project.structure.proportion": "0.17",
     "project.structure.side.proportion": "0.2"
