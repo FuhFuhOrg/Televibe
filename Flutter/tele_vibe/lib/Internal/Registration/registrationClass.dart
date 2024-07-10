@@ -1,14 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:tele_vibe/loginClass.dart';
+import 'package:tele_vibe/GettedData/netServerController.dart';
+import 'package:tele_vibe/Widgets/Login/loginClass.dart';
 
-class RegisterClass extends StatelessWidget {
-  const RegisterClass({super.key});
+class RegistrationPage extends StatefulWidget {
+  @override
+  _RegisterClassState createState() => _RegisterClassState();
+}
+
+ 
+class _RegisterClassState extends State<RegistrationPage> {
+  final TextEditingController _mailController = TextEditingController();
+  final TextEditingController _loginController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _rePasswordController = TextEditingController();
+
 
   void _navigateToLoginPage(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const LoginClass()),
+      MaterialPageRoute(builder: (context) => LoginPage()),
     );
+  }
+  
+  void _registrationNewAccount(BuildContext context) {
+    String mail = _mailController.text;
+    String login = _loginController.text;
+    String password = _passwordController.text;
+    String rePassword = _rePasswordController.text;
+
+    print('Mail: $mail');
+    print('Login: $login');
+    print('Password: $password');
+    print('Re-Password: $rePassword');
+
+    NetServerController().register(login, password).then((goin) {
+      if (goin) {
+        print('Return Registration');
+      }
+    });
   }
 
   @override
@@ -25,6 +54,7 @@ class RegisterClass extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               TextField(
+                controller: _mailController,
                 decoration: InputDecoration(
                   labelText: 'Mail',
                   border: OutlineInputBorder(),
@@ -33,6 +63,7 @@ class RegisterClass extends StatelessWidget {
               ),
               SizedBox(height: 16),
               TextField(
+                controller: _loginController,
                 decoration: InputDecoration(
                   labelText: 'Login',
                   border: OutlineInputBorder(),
@@ -41,6 +72,7 @@ class RegisterClass extends StatelessWidget {
               ),
               SizedBox(height: 16),
               TextField(
+                controller: _passwordController,
                 decoration: InputDecoration(
                   labelText: 'Password',
                   border: OutlineInputBorder(),
@@ -48,6 +80,7 @@ class RegisterClass extends StatelessWidget {
               ),
               SizedBox(height: 16),
               TextField(
+                controller: _rePasswordController,
                 decoration: InputDecoration(
                   labelText: 'Re Password',
                   helperText: "Повторите пароль",
@@ -57,9 +90,7 @@ class RegisterClass extends StatelessWidget {
               ),
               SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () {
-                  // Handle login button press
-                },
+                onPressed: () => _registrationNewAccount(context),
                 child: Text('Register'),
               ),
               SizedBox(height: 64),
