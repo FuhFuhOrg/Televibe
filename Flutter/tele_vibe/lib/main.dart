@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tele_vibe/Widgets/Login/loginClass.dart';
+import 'package:tele_vibe/Widgets/loginClass.dart';
 
 void main() {
   runApp(const MyApp());

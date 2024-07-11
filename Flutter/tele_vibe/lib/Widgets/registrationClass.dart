@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tele_vibe/GettedData/netServerController.dart';
-import 'package:tele_vibe/Widgets/ViewModel/loginClass.dart';
+import 'package:tele_vibe/Widgets/loginClass.dart';
 
 class RegistrationPage extends StatefulWidget {
   @override
