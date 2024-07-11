@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:tele_vibe/Data/chats.dart';
 import 'package:tele_vibe/GettedData/netServerController.dart';
 import 'package:tele_vibe/Internal/AllChats/allChatsClass.dart';
-import 'package:tele_vibe/Internal/Registration/registrationClass.dart';
+import 'package:tele_vibe/Widgets/ViewModel/registrationClass.dart';
 
 class LoginPage extends StatefulWidget {
   @override
