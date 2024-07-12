@@ -51,16 +51,17 @@ class _RegisterClassState extends State<RegistrationPage> {
         title: const Center(
           child: Text('Login'),
           ),
-          toolbarHeight: MediaQuery.of(context).size.height * 0.20,
+          toolbarHeight: MediaQuery.of(context).size.height * 0.25,
           automaticallyImplyLeading: false,
         ),
       body: Center(
         child: SizedBox(
-          height: MediaQuery.of(context).size.height * 0.90,// ограничение в 90% от краев экрана
-          width: MediaQuery.of(context).size.width * 0.90,
+          height: MediaQuery.of(context).size.height * 0.9,// ограничение в 90% от краев экрана
+          width: MediaQuery.of(context).size.width * 0.9,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            //mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              const SizedBox(height: 8),
               TextField(
                 cursorColor: Colors.black,
                 controller: _mailController,
@@ -164,7 +165,7 @@ class _RegisterClassState extends State<RegistrationPage> {
                 ),
                 obscureText: _obscureTextRePassword,
               ),
-              const SizedBox(height: 110),
+              SizedBox(height: MediaQuery.of(context).size.width * 0.40),
               ElevatedButton(
                 onPressed: () => _registrationNewAccount(context),
                 style: TextButton.styleFrom(
