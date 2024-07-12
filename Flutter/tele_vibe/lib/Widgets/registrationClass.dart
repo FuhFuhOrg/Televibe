@@ -172,7 +172,7 @@ class _RegisterClassState extends State<RegistrationPage> {
                       backgroundColor: const Color.fromRGBO(120, 160, 131, 1),
                     ),
                 child: const Text(
-                      'Register',
+                      'Registerr',
                       style: TextStyle(color: Colors.black),
                       
                     )
