@@ -9,6 +9,8 @@ class RegistrationPage extends StatefulWidget {
 
  
 class _RegisterClassState extends State<RegistrationPage> {
+  bool _obscureTextPassword = true;
+  bool _obscureTextRePassword = true;
   final TextEditingController _mailController = TextEditingController();
   final TextEditingController _loginController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -43,10 +45,15 @@ class _RegisterClassState extends State<RegistrationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        title: const Text('Login'),
-      ),
+        backgroundColor: Colors.white,
+        title: const Center(
+          child: Text('Login'),
+          ),
+          toolbarHeight: 200.0,
+          automaticallyImplyLeading: false,
+        ),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -54,52 +61,133 @@ class _RegisterClassState extends State<RegistrationPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               TextField(
+                cursorColor: Colors.black,
                 controller: _mailController,
-                decoration: InputDecoration(
-                  labelText: 'Mail',
+                decoration: const InputDecoration(
+                  labelText: 'Mail (необязательно)',
+                  labelStyle: TextStyle(color: Colors.black),
                   border: OutlineInputBorder(),
-                  helperText: "Необязательно",
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black), // установите нужный цвет
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black), // установите тот же цвет
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.red), // установите нужный цвет
+                  ),
+                  contentPadding: EdgeInsets.only(left: 10.0),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 8),
               TextField(
+                cursorColor: Colors.black,
                 controller: _loginController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Login',
+                  labelStyle: TextStyle(color: Colors.black),
                   border: OutlineInputBorder(),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black), // установите нужный цвет
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black), // установите тот же цвет
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.red), // установите нужный цвет
+                  ),
+                  contentPadding: EdgeInsets.only(left: 10.0),
                 ),
-                obscureText: true,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 8),
               TextField(
+                cursorColor: Colors.black,
                 controller: _passwordController,
                 decoration: InputDecoration(
                   labelText: 'Password',
-                  border: OutlineInputBorder(),
+                  labelStyle: const TextStyle(color: Colors.black),
+                  border: const OutlineInputBorder(),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black), // установите нужный цвет
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black), // установите тот же цвет
+                  ),
+                  errorBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.red), // установите нужный цвет
+                  ),
+                  suffix: IconButton(
+                    icon: Icon(
+                      _obscureTextPassword ? Icons.visibility : Icons.visibility_off,
+                      color: Colors.black,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureTextPassword = !_obscureTextPassword;
+                      });
+                    }
+                  ),
+                  contentPadding: const EdgeInsets.only(left: 10.0),
                 ),
+                obscureText: _obscureTextPassword,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 8),
               TextField(
+                cursorColor: Colors.black,
                 controller: _rePasswordController,
                 decoration: InputDecoration(
                   labelText: 'Re Password',
-                  helperText: "Повторите пароль",
-                  border: OutlineInputBorder(),
+                  labelStyle: const TextStyle(color: Colors.black),
+                  border: const OutlineInputBorder(),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black), // установите нужный цвет
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black), // установите тот же цвет
+                  ),
+                  errorBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.red), // установите нужный цвет
+                  ),
+                  suffix: IconButton(
+                    icon: Icon(
+                      _obscureTextRePassword ? Icons.visibility : Icons.visibility_off,
+                      color: Colors.black,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureTextRePassword = !_obscureTextRePassword;
+                      });
+                    }
+                  ),
+                  contentPadding: const EdgeInsets.only(left: 10.0),
                 ),
-                obscureText: true,
+                obscureText: _obscureTextRePassword,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 110),
               ElevatedButton(
                 onPressed: () => _registrationNewAccount(context),
-                child: Text('Register'),
+                style: TextButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(120, 160, 131, 1), // установите нужный цвет
+                    ),
+                child: const Text(
+                      'Register',
+                      style: TextStyle(color: Colors.black),
+                      
+                    )
               ),
-              SizedBox(height: 64),
+              const SizedBox(height: 32),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
                     onPressed: () => _navigateToLoginPage(context),
-                    child: Text('Go to Login'),
+                    style: TextButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(120, 160, 131, 1), // установите нужный цвет
+                    ),
+                    child: const Text(
+                      'Go to Login',
+                      style: TextStyle(color: Colors.black),
+                    ),
                   ),
                 ],
               ),

@@ -82,6 +82,8 @@ class _LoginClassState extends State<LoginPage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: const Text('Login'),
+        toolbarHeight: 200.0,
+        automaticallyImplyLeading: false,
       ),
       body: Center(
         child: Padding(
@@ -91,7 +93,7 @@ class _LoginClassState extends State<LoginPage> {
             children: <Widget>[
               TextField(
                 controller: _loginController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Login',
                   border: OutlineInputBorder(),
                 ),
