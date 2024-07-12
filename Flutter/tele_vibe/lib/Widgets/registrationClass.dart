@@ -7,9 +7,9 @@ class RegistrationPage extends StatefulWidget {
   _RegisterClassState createState() => _RegisterClassState();
 }
 
- 
+
 class _RegisterClassState extends State<RegistrationPage> {
-  bool _obscureTextPassword = true;
+  bool _obscureTextPassword = true; // Сокрытие пароля
   bool _obscureTextRePassword = true;
   final TextEditingController _mailController = TextEditingController();
   final TextEditingController _loginController = TextEditingController();
@@ -51,12 +51,13 @@ class _RegisterClassState extends State<RegistrationPage> {
         title: const Center(
           child: Text('Login'),
           ),
-          toolbarHeight: 200.0,
+          toolbarHeight: MediaQuery.of(context).size.height * 0.20,
           automaticallyImplyLeading: false,
         ),
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.90,// ограничение в 90% от краев экрана
+          width: MediaQuery.of(context).size.width * 0.90,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
