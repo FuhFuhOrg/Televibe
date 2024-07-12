@@ -68,13 +68,13 @@ class _RegisterClassState extends State<RegistrationPage> {
                   labelStyle: TextStyle(color: Colors.black),
                   border: OutlineInputBorder(),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black), // установите нужный цвет
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black), // установите тот же цвет
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                   errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red), // установите нужный цвет
+                    borderSide: BorderSide(color: Colors.red),
                   ),
                   contentPadding: EdgeInsets.only(left: 10.0),
                 ),
@@ -88,13 +88,13 @@ class _RegisterClassState extends State<RegistrationPage> {
                   labelStyle: TextStyle(color: Colors.black),
                   border: OutlineInputBorder(),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black), // установите нужный цвет
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black), // установите тот же цвет
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                   errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red), // установите нужный цвет
+                    borderSide: BorderSide(color: Colors.red), 
                   ),
                   contentPadding: EdgeInsets.only(left: 10.0),
                 ),
@@ -108,13 +108,13 @@ class _RegisterClassState extends State<RegistrationPage> {
                   labelStyle: const TextStyle(color: Colors.black),
                   border: const OutlineInputBorder(),
                   enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black), // установите нужный цвет
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                   focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black), // установите тот же цвет
+                    borderSide: BorderSide(color: Colors.black), 
                   ),
                   errorBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red), // установите нужный цвет
+                    borderSide: BorderSide(color: Colors.red), 
                   ),
                   suffix: IconButton(
                     icon: Icon(
@@ -140,13 +140,13 @@ class _RegisterClassState extends State<RegistrationPage> {
                   labelStyle: const TextStyle(color: Colors.black),
                   border: const OutlineInputBorder(),
                   enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black), // установите нужный цвет
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                   focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black), // установите тот же цвет
+                    borderSide: BorderSide(color: Colors.black), 
                   ),
                   errorBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red), // установите нужный цвет
+                    borderSide: BorderSide(color: Colors.red),
                   ),
                   suffix: IconButton(
                     icon: Icon(
@@ -167,7 +167,7 @@ class _RegisterClassState extends State<RegistrationPage> {
               ElevatedButton(
                 onPressed: () => _registrationNewAccount(context),
                 style: TextButton.styleFrom(
-                      backgroundColor: const Color.fromRGBO(120, 160, 131, 1), // установите нужный цвет
+                      backgroundColor: const Color.fromRGBO(120, 160, 131, 1),
                     ),
                 child: const Text(
                       'Register',
@@ -182,7 +182,7 @@ class _RegisterClassState extends State<RegistrationPage> {
                   TextButton(
                     onPressed: () => _navigateToLoginPage(context),
                     style: TextButton.styleFrom(
-                      backgroundColor: const Color.fromRGBO(120, 160, 131, 1), // установите нужный цвет
+                      backgroundColor: const Color.fromRGBO(120, 160, 131, 1),
                     ),
                     child: const Text(
                       'Go to Login',
