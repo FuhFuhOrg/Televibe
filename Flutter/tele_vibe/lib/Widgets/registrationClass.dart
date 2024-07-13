@@ -169,13 +169,12 @@ class _RegisterClassState extends State<RegistrationPage> {
                 ElevatedButton(
                   onPressed: () => _registrationNewAccount(context),
                   style: TextButton.styleFrom(
-                        backgroundColor: const Color.fromRGBO(120, 160, 131, 1),
-                      ),
+                    backgroundColor: const Color.fromRGBO(120, 160, 131, 1),
+                  ),
                   child: const Text(
-                        'Register',
-                        style: TextStyle(color: Colors.black),
-                        
-                      )
+                    'Register',
+                    style: TextStyle(color: Colors.black),
+                  ),
                 ),
                 const SizedBox(height: 32),
                 Row(
