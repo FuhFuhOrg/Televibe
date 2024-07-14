@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tele_vibe/Widgets/chatList.dart';
 
 
 class AllChatsPage extends StatefulWidget {
@@ -6,7 +7,16 @@ class AllChatsPage extends StatefulWidget {
   _AllChatsClassState createState() => _AllChatsClassState();
 }
 
+void _navigateToChatList(BuildContext context){
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => chatListPage()),
+    );
+  }
+
 class _AllChatsClassState extends State<AllChatsPage>{
+  final List<String> entries = <String>['ff', 'gg', 'hh', 'ff', 'gg', 'hh', 'ff', 'gg', 'hh', 'ff', 'gg', 'hh'];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,17 +40,30 @@ class _AllChatsClassState extends State<AllChatsPage>{
           ),
         ),
       ),
-      body: const Scrollbar(
-        child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-                  // Основные эоементы тут, но я вместо колумн буду использовать листвью
-            ],
-          ),
-        ),
-      ),
+      body: entries.isNotEmpty
+      ? ListView.builder(
+          itemCount: entries.length,
+          itemBuilder: (BuildContext context, int index) {
+            return ListTile(
+              onTap: () => _navigateToChatList(context),
+              leading: const CircleAvatar(
+                backgroundImage: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg'),
+              ),
+              tileColor: Colors.grey,
+              textColor: Colors.black,
+              title: Text('Item ${entries[index]}'), // Название чата
+              subtitle: Text('Item ${entries[index]}'), // Сообщение
+              trailing: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 32), // Отступ сверху
+                  Text('Item ${entries[index]}'), // Время
+                ],
+              ),
+            );
+          },
+        )
+      : const Center(child: Text('You don`t have chats(')),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.grey.shade600,
