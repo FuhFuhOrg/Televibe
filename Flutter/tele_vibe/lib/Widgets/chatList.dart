@@ -7,13 +7,14 @@ class chatListPage extends StatefulWidget {
 }
 
 class _chatListState extends State<chatListPage>{
+  final List<String> entries = <String>['ff', 'gg', 'hh', 'ff', 'gg', 'hh', 'ff', 'gg', 'hh', 'ff', 'gg', 'hh'];
   final TextEditingController _textController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.08),
         child: AppBar(
@@ -54,7 +55,12 @@ class _chatListState extends State<chatListPage>{
         ),
       ),
 
-      
+      body: ListView.builder(
+        itemCount: entries.length,
+        itemBuilder: (BuildContext context, int index) {
+
+        }
+      ),
 
       bottomNavigationBar: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -64,6 +70,9 @@ class _chatListState extends State<chatListPage>{
           children: <Widget>[
             Expanded(
               child: TextField(
+                maxLines: null,
+                autocorrect: true,
+                enableSuggestions: true,
                 controller: _textController,
                 decoration: const InputDecoration(
                   hintText: 'Введите ваше сообщение... ',
