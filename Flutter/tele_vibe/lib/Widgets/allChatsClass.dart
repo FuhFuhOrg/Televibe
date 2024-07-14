@@ -80,7 +80,7 @@ class _AllChatsClassState extends State<AllChatsPage>{
             label: "Chats",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings_outlined),
+            icon: Icon(Icons.person),
             label: "Profile",
           ),
         ],
