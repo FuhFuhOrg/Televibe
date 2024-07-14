@@ -7,7 +7,7 @@ class chatListPage extends StatefulWidget {
 }
 
 class _chatListState extends State<chatListPage>{
-  final List<String> entries = <String>['ff', 'gg', 'hh', 'ff', 'gg', 'hh', 'ff', 'gg', 'hh', 'ff', 'gg', 'hh'];
+  final List<String> entries = <String>['ff', 'gg', 'hh', 'ff', 'gg', 'hh', 'ff', 'gg', 'hh', 'ff', 'gg', 'h'];
   final TextEditingController _textController = TextEditingController();
 
   @override
