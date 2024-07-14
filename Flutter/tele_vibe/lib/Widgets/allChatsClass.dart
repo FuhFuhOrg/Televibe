@@ -80,10 +80,11 @@ class _AllChatsClassState extends State<AllChatsPage>{
             label: "Chats",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_box),
+            icon: Icon(Icons.settings_outlined),
             label: "Profile",
           ),
         ],
+        currentIndex: 1,
       ),
     );
   }
