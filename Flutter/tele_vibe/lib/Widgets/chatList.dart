@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class ChatListPage extends StatefulWidget {
   @override
@@ -31,7 +32,8 @@ class _ChatListState extends State<ChatListPage> {
           title: const Row(
             children: <Widget>[
               CircleAvatar(
-                backgroundImage: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg'),
+                backgroundImage: NetworkImage(
+                    'https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg'),
               ),
               SizedBox(width: 8),
               Expanded(
@@ -75,12 +77,16 @@ class _ChatListState extends State<ChatListPage> {
             showAvatar = !entries[index]['isMe'];
           }
 
-          return MessageBubble(
-            text: entries[index]['text'],
-            isMe: entries[index]['isMe'],
-            userName: entries[index]['userName'],
-            time: entries[index]['time'],
-            showAvatar: showAvatar,
+          return GestureDetector(
+            onLongPress: () => _showMessageOptions(context, index),
+            child: MessageBubble(
+              text: entries[index]['text'],
+              isMe: entries[index]['isMe'],
+              userName: entries[index]['userName'],
+              time: entries[index]['time'],
+              showAvatar: showAvatar,
+              showUserName: !entries[index]['isMe'], // Показываем ник только для других пользователей
+            ),
           );
         },
       ),
@@ -120,6 +126,80 @@ class _ChatListState extends State<ChatListPage> {
       ),
     );
   }
+
+  void _showMessageOptions(BuildContext context, int index) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Wrap(
+          children: <Widget>[
+            ListTile(
+              leading: const Icon(Icons.copy),
+              title: const Text('Копировать'),
+              onTap: () {
+                Clipboard.setData(ClipboardData(text: entries[index]['text']));
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('Изменить'),
+              onTap: () {
+                Navigator.pop(context);
+                _showEditDialog(context, index);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete),
+              title: const Text('Удалить'),
+              onTap: () {
+                setState(() {
+                  entries.removeAt(index);
+                });
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showEditDialog(BuildContext context, int index) {
+    TextEditingController editController = TextEditingController(text: entries[index]['text']);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Изменить сообщение'),
+          content: TextField(
+            controller: editController,
+            decoration: const InputDecoration(
+              hintText: 'Введите текст сообщения',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Отмена'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Сохранить'),
+              onPressed: () {
+                setState(() {
+                  entries[index]['text'] = editController.text;
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
 
 class MessageBubble extends StatelessWidget {
@@ -128,6 +208,7 @@ class MessageBubble extends StatelessWidget {
   final String userName;
   final String time;
   final bool showAvatar;
+  final bool showUserName;
 
   const MessageBubble({
     required this.text,
@@ -135,6 +216,7 @@ class MessageBubble extends StatelessWidget {
     required this.userName,
     required this.time,
     required this.showAvatar,
+    required this.showUserName,
   });
 
   @override
@@ -170,6 +252,15 @@ class MessageBubble extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
+                if (showUserName)
+                  Text(
+                    userName,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 12.0,
+                    ),
+                  ),
+                const SizedBox(height: 5.0),
                 Text(
                   text,
                   style: TextStyle(color: isMe ? Colors.black : Colors.white),
