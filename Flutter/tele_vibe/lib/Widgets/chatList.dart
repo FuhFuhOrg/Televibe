@@ -18,11 +18,23 @@ class _ChatListState extends State<ChatListPage> {
   ];
 
   final TextEditingController _textController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Открытие чата с прокруткой вниз
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToBottom();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       backgroundColor: const Color(0xFF8DA18B), // Основной зеленоватый фон
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.08),
@@ -66,68 +78,99 @@ class _ChatListState extends State<ChatListPage> {
           ),
         ),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(10.0),
-        itemCount: entries.length,
-        itemBuilder: (BuildContext context, int index) {
-          bool showAvatar = false;
-
-          // Показываем аватарку только для последнего сообщения группы одного пользователя
-          if (index == entries.length - 1 || entries[index]['userName'] != entries[index + 1]['userName']) {
-            showAvatar = !entries[index]['isMe'];
-          }
-
-          return GestureDetector(
-            onLongPress: () => _showMessageOptions(context, index),
-            child: MessageBubble(
-              text: entries[index]['text'],
-              isMe: entries[index]['isMe'],
-              userName: entries[index]['userName'],
-              time: entries[index]['time'],
-              showAvatar: showAvatar,
-              showUserName: !entries[index]['isMe'], // Показываем ник только для других пользователей
-            ),
-          );
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
         },
-      ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        height: 58.0,
-        color: const Color(0xFF3E505F), // Цвет фона под полем ввода
-        child: Row(
+        child: Column(
           children: <Widget>[
             Expanded(
-              child: TextField(
-                maxLines: null,
-                autocorrect: true,
-                enableSuggestions: true,
-                controller: _textController,
-                decoration: const InputDecoration(
-                  hintText: 'Введите ваше сообщение... ',
-                  hintStyle: TextStyle(color: Colors.white54),
-                  border: InputBorder.none,
-                ),
+              child: ListView.builder(
+                controller: _scrollController,
+                padding: const EdgeInsets.all(10.0),
+                itemCount: entries.length,
+                itemBuilder: (BuildContext context, int index) {
+                  bool showAvatar = false;
+
+                  // Показываем аватарку только для последнего сообщения группы одного пользователя
+                  if (index == entries.length - 1 || entries[index]['userName'] != entries[index + 1]['userName']) {
+                    showAvatar = !entries[index]['isMe'];
+                  }
+
+                  return GestureDetector(
+                    onLongPress: () => _showMessageOptions(context, index),
+                    child: MessageBubble(
+                      text: entries[index]['text'],
+                      isMe: entries[index]['isMe'],
+                      userName: entries[index]['userName'],
+                      time: entries[index]['time'],
+                      showAvatar: showAvatar,
+                      showUserName: !entries[index]['isMe'], // Показываем ник только для других пользователей
+                    ),
+                  );
+                },
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.send, color: Colors.white),
-              onPressed: () {
-                String message = _textController.text;
-                if (message.isNotEmpty) {
-                  setState(() {
-                    entries.add({'text': message, 'isMe': true, 'userName': 'Я', 'time': '12:05'});
-                  });
-                  _textController.clear();
-                }
-              },
-            ),
+            _buildMessageInput(),
           ],
         ),
       ),
     );
   }
 
+  Widget _buildMessageInput() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      height: 58.0,
+      color: const Color(0xFF3E505F), // Цвет фона под полем ввода
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: TextField(
+              focusNode: _focusNode,
+              maxLines: null,
+              autocorrect: true,
+              enableSuggestions: true,
+              controller: _textController,
+              decoration: const InputDecoration(
+                hintText: 'Введите ваше сообщение... ',
+                hintStyle: TextStyle(color: Colors.white54),
+                border: InputBorder.none,
+              ),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.send, color: Colors.white),
+            onPressed: () {
+              String message = _textController.text;
+              if (message.isNotEmpty) {
+                setState(() {
+                  entries.add({'text': message, 'isMe': true, 'userName': 'Я', 'time': '12:05'});
+                });
+                _textController.clear();
+                _focusNode.requestFocus();
+                _scrollToBottom(); // Прокрутка вниз после отправки сообщения
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
   void _showMessageOptions(BuildContext context, int index) {
+    FocusScope.of(context).unfocus(); // Убираем фокус с текстового поля
+
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -238,19 +281,22 @@ class MessageBubble extends StatelessWidget {
         ],
         Flexible(
           child: Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.7, // Максимальная ширина сообщения 70% экрана
+            ),
             margin: const EdgeInsets.symmetric(vertical: 5.0),
             padding: const EdgeInsets.all(10.0),
             decoration: BoxDecoration(
-              color: isMe ? const Color(0xFFEBEBEB) : const Color(0xFF3E505F),
+              color: isMe ? Colors.green : Colors.blue,
               borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(15.0),
-                topRight: const Radius.circular(15.0),
-                bottomLeft: Radius.circular(isMe ? 15.0 : 0),
-                bottomRight: Radius.circular(isMe ? 0 : 15.0),
+                topLeft: const Radius.circular(12.0),
+                topRight: const Radius.circular(12.0),
+                bottomLeft: isMe ? const Radius.circular(12.0) : Radius.zero,
+                bottomRight: isMe ? Radius.zero : const Radius.circular(12.0),
               ),
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 if (showUserName)
                   Text(
@@ -260,17 +306,22 @@ class MessageBubble extends StatelessWidget {
                       fontSize: 12.0,
                     ),
                   ),
-                const SizedBox(height: 5.0),
                 Text(
                   text,
-                  style: TextStyle(color: isMe ? Colors.black : Colors.white),
+                  style: TextStyle(
+                    color: isMe ? Colors.black : Colors.white,
+                    fontSize: 16.0,
+                  ),
                 ),
                 const SizedBox(height: 5.0),
-                Text(
-                  time,
-                  style: const TextStyle(
-                    color: Colors.white54,
-                    fontSize: 12.0,
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: Text(
+                    time,
+                    style: const TextStyle(
+                      color: Colors.white54,
+                      fontSize: 12.0,
+                    ),
                   ),
                 ),
               ],
