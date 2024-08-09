@@ -7,10 +7,13 @@ class ChatListPage extends StatefulWidget {
 
 class _ChatListState extends State<ChatListPage> {
   final List<Map<String, dynamic>> entries = [
-    {'text': 'Привет!', 'isMe': true, 'userName': 'Я', 'time': '12:01'},
+    {'text': 'Привет!', 'isMe': false, 'userName': 'Пользователь 1', 'time': '12:01'},
     {'text': 'Как дела?', 'isMe': false, 'userName': 'Пользователь 1', 'time': '12:02'},
-    {'text': 'Хорошо, а у тебя?', 'isMe': false, 'userName': 'Пользователь 2', 'time': '12:03'},
+    {'text': 'Хорошо, а у тебя?', 'isMe': true, 'userName': 'Я', 'time': '12:03'},
     {'text': 'Тоже хорошо!', 'isMe': true, 'userName': 'Я', 'time': '12:04'},
+    {'text': 'Что нового?', 'isMe': false, 'userName': 'Пользователь 2', 'time': '12:05'},
+    {'text': 'Ничего особенного.', 'isMe': true, 'userName': 'Я', 'time': '12:06'},
+    {'text': 'Понятно.', 'isMe': false, 'userName': 'Пользователь 2', 'time': '12:07'},
   ];
 
   final TextEditingController _textController = TextEditingController();
@@ -65,12 +68,19 @@ class _ChatListState extends State<ChatListPage> {
         padding: const EdgeInsets.all(10.0),
         itemCount: entries.length,
         itemBuilder: (BuildContext context, int index) {
+          bool showAvatar = false;
+
+          // Показываем аватарку только для последнего сообщения группы одного пользователя
+          if (index == entries.length - 1 || entries[index]['userName'] != entries[index + 1]['userName']) {
+            showAvatar = !entries[index]['isMe'];
+          }
+
           return MessageBubble(
             text: entries[index]['text'],
             isMe: entries[index]['isMe'],
             userName: entries[index]['userName'],
             time: entries[index]['time'],
-            showAvatar: !entries[index]['isMe'], // Показываем аватар только для других пользователей
+            showAvatar: showAvatar,
           );
         },
       ),
@@ -130,14 +140,18 @@ class MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: isMe ? MainAxisAlignment.start : MainAxisAlignment.end,
+      mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: <Widget>[
-        if (showAvatar) ...[
-          CircleAvatar(
-            backgroundImage: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg'),
-            radius: 15,
-          ),
+        if (!isMe) ...[
+          // Добавляем аватарку или пустое место
+          showAvatar
+              ? const CircleAvatar(
+                  backgroundImage: NetworkImage(
+                      'https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg'),
+                  radius: 15,
+                )
+              : const SizedBox(width: 31), // Ширина аватарки + отступ
           const SizedBox(width: 8),
         ],
         Flexible(
@@ -147,10 +161,10 @@ class MessageBubble extends StatelessWidget {
             decoration: BoxDecoration(
               color: isMe ? const Color(0xFFEBEBEB) : const Color(0xFF3E505F),
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(15.0),
-                topRight: Radius.circular(15.0),
-                bottomLeft: Radius.circular(isMe ? 0 : 15.0),
-                bottomRight: Radius.circular(isMe ? 15.0 : 0),
+                topLeft: const Radius.circular(15.0),
+                topRight: const Radius.circular(15.0),
+                bottomLeft: Radius.circular(isMe ? 15.0 : 0),
+                bottomRight: Radius.circular(isMe ? 0 : 15.0),
               ),
             ),
             child: Column(
