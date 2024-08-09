@@ -1,24 +1,29 @@
 import 'package:flutter/material.dart';
 
-
-class chatListPage extends StatefulWidget {
+class ChatListPage extends StatefulWidget {
   @override
-  _chatListState createState() => _chatListState();
+  _ChatListState createState() => _ChatListState();
 }
 
-class _chatListState extends State<chatListPage>{
-  final List<String> entries = <String>['ff', 'gg', 'hh', 'ff', 'gg', 'hh', 'ff', 'gg', 'hh', 'ff', 'gg', 'h'];
+class _ChatListState extends State<ChatListPage> {
+  final List<Map<String, dynamic>> entries = [
+    {'text': 'Привет!', 'isMe': true, 'userName': 'Я', 'time': '12:01'},
+    {'text': 'Как дела?', 'isMe': false, 'userName': 'Пользователь 1', 'time': '12:02'},
+    {'text': 'Хорошо, а у тебя?', 'isMe': false, 'userName': 'Пользователь 2', 'time': '12:03'},
+    {'text': 'Тоже хорошо!', 'isMe': true, 'userName': 'Я', 'time': '12:04'},
+  ];
+
   final TextEditingController _textController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFF8DA18B), // Основной зеленоватый фон
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.08),
         child: AppBar(
-          backgroundColor: Colors.green,
+          backgroundColor: const Color(0xFF3E505F), // Темно-серый цвет AppBar
           automaticallyImplyLeading: false,
           title: const Row(
             children: <Widget>[
@@ -31,15 +36,17 @@ class _chatListState extends State<chatListPage>{
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      'Item',
+                      'Name Group',
                       style: TextStyle(
                         fontSize: 20,
+                        color: Colors.white,
                       ),
                     ), // Название чата
                     Text(
-                      'Item',
+                      '10 участников',
                       style: TextStyle(
-                        fontSize: 13, 
+                        fontSize: 13,
+                        color: Colors.white70,
                       ),
                     ), // Кол-во участников
                   ],
@@ -47,25 +54,30 @@ class _chatListState extends State<chatListPage>{
               ),
               Icon(
                 Icons.search,
-                color: Colors.black,
+                color: Colors.white,
                 size: 20,
               ),
             ],
           ),
         ),
       ),
-
       body: ListView.builder(
+        padding: const EdgeInsets.all(10.0),
         itemCount: entries.length,
         itemBuilder: (BuildContext context, int index) {
-
-        }
+          return MessageBubble(
+            text: entries[index]['text'],
+            isMe: entries[index]['isMe'],
+            userName: entries[index]['userName'],
+            time: entries[index]['time'],
+            showAvatar: !entries[index]['isMe'], // Показываем аватар только для других пользователей
+          );
+        },
       ),
-
       bottomNavigationBar: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         height: 58.0,
-        color: Colors.green,
+        color: const Color(0xFF3E505F), // Цвет фона под полем ввода
         child: Row(
           children: <Widget>[
             Expanded(
@@ -76,21 +88,91 @@ class _chatListState extends State<chatListPage>{
                 controller: _textController,
                 decoration: const InputDecoration(
                   hintText: 'Введите ваше сообщение... ',
+                  hintStyle: TextStyle(color: Colors.white54),
                   border: InputBorder.none,
                 ),
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.send),
+              icon: const Icon(Icons.send, color: Colors.white),
               onPressed: () {
-                // Обработчик событий
                 String message = _textController.text;
-                _textController.clear();
+                if (message.isNotEmpty) {
+                  setState(() {
+                    entries.add({'text': message, 'isMe': true, 'userName': 'Я', 'time': '12:05'});
+                  });
+                  _textController.clear();
+                }
               },
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class MessageBubble extends StatelessWidget {
+  final String text;
+  final bool isMe;
+  final String userName;
+  final String time;
+  final bool showAvatar;
+
+  const MessageBubble({
+    required this.text,
+    required this.isMe,
+    required this.userName,
+    required this.time,
+    required this.showAvatar,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: isMe ? MainAxisAlignment.start : MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: <Widget>[
+        if (showAvatar) ...[
+          CircleAvatar(
+            backgroundImage: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg'),
+            radius: 15,
+          ),
+          const SizedBox(width: 8),
+        ],
+        Flexible(
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 5.0),
+            padding: const EdgeInsets.all(10.0),
+            decoration: BoxDecoration(
+              color: isMe ? const Color(0xFFEBEBEB) : const Color(0xFF3E505F),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15.0),
+                topRight: Radius.circular(15.0),
+                bottomLeft: Radius.circular(isMe ? 0 : 15.0),
+                bottomRight: Radius.circular(isMe ? 15.0 : 0),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                Text(
+                  text,
+                  style: TextStyle(color: isMe ? Colors.black : Colors.white),
+                ),
+                const SizedBox(height: 5.0),
+                Text(
+                  time,
+                  style: const TextStyle(
+                    color: Colors.white54,
+                    fontSize: 12.0,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

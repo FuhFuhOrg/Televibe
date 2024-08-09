@@ -10,7 +10,7 @@ class AllChatsPage extends StatefulWidget {
 void _navigateToChatList(BuildContext context){
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => chatListPage()),
+      MaterialPageRoute(builder: (context) => ChatListPage()),
     );
   }
 
