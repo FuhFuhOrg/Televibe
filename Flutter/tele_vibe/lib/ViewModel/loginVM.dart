@@ -41,7 +41,7 @@ class LoginVM extends StatelessWidget {
     );
   }
 
-  void FalseLoginAccount(BuildContext context, 
+  void falseLoginAccount(BuildContext context, 
   TextEditingController _loginController, TextEditingController _passwordController) {
     String login = _loginController.text;
     String password = _passwordController.text;
@@ -53,7 +53,7 @@ class LoginVM extends StatelessWidget {
     _navigateToAllChats(context);
   }
 
-  void LoginAccount(BuildContext context, 
+  void loginAccount(BuildContext context, 
   TextEditingController _loginController, TextEditingController _passwordController) {
     String login = _loginController.text;
     String password = _passwordController.text;
