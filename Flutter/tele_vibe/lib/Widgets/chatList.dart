@@ -276,7 +276,7 @@ class MessageBubble extends StatelessWidget {
                       'https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg'),
                   radius: 15,
                 )
-              : const SizedBox(width: 31), // Ширина аватарки + отступ
+              : const SizedBox(width: 31), // Ширина аватарки + отступ, ня
           const SizedBox(width: 8),
         ],
         Flexible(
