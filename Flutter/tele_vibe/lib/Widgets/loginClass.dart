@@ -1,10 +1,7 @@
-import 'dart:async';
+
 
 import 'package:flutter/material.dart';
-import 'package:tele_vibe/Data/chats.dart';
-import 'package:tele_vibe/GettedData/netServerController.dart';
-import 'package:tele_vibe/Widgets/allChatsClass.dart';
-import 'package:tele_vibe/Widgets/registrationClass.dart';
+import 'package:tele_vibe/ViewModel/loginVM.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -14,70 +11,17 @@ class LoginPage extends StatefulWidget {
 class _LoginClassState extends State<LoginPage> {
   final TextEditingController _loginController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  late StreamSubscription<int> _chatsSubscription;
+  late LoginVM _loginVM;
 
   @override
   void initState() {
     super.initState();
-    _chatsSubscription = Chats.onValueChanged.listen((value) {
-      _handleChatsValueChanged(value);
-    });
-  }
-
-  @override
-  void dispose() {
-    _chatsSubscription.cancel();
-    _loginController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  void _handleChatsValueChanged(int value) {
-    // Здесь вы можете выполнять действия при изменении переменной value
-    print('Chats value changed: $value');
-  }
-
-  void _navigateToRegisterPage(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => RegistrationPage()),
-    );
-  }
-
-  void _navigateToAllChats(BuildContext context){
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => AllChatsPage()),
-    );
-  }
-
-  void _falseLoginAccount(BuildContext context) {
-    String login = _loginController.text;
-    String password = _passwordController.text;
-
-    print('Login: $login');
-    print('Password: $password');
-
-    print('Return Login');
-    _navigateToAllChats(context);
-  }
-
-  void _loginAccount(BuildContext context) {
-    String login = _loginController.text;
-    String password = _passwordController.text;
-
-    print('Login: $login');
-    print('Password: $password');
-
-    NetServerController().login(login, password).then((goin) {
-      if (goin != " ") {
-        print('Return Login');
-      }
-    });
+    _loginVM = LoginVM();
   }
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< Updated upstream
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -91,10 +35,28 @@ class _LoginClassState extends State<LoginPage> {
       body: Form(
         child: Scrollbar(
           child: SingleChildScrollView(
+=======
+    return MaterialApp(
+      title: 'Login',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: const Text('Login'),
+          toolbarHeight: 200.0,
+          automaticallyImplyLeading: false,
+        ),
+        body: Center(
+          child: Padding(
+>>>>>>> Stashed changes
             padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+<<<<<<< Updated upstream
                 const SizedBox(height: 8),
                 TextField(
                   cursorColor: Colors.black,
@@ -147,10 +109,35 @@ class _LoginClassState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 32),
+=======
+                TextField(
+                  controller: _loginController,
+                  decoration: const InputDecoration(
+                    labelText: 'Login',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(),
+                  ),
+                  obscureText: true,
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => _loginVM.fakeLoginAccount(context, _loginController, _passwordController),
+                  child: Text('Login'),
+                ),
+                SizedBox(height: 64),
+>>>>>>> Stashed changes
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
+<<<<<<< Updated upstream
                       onPressed: () => _navigateToRegisterPage(context),
                       style: TextButton.styleFrom(
                         backgroundColor: const Color.fromRGBO(120, 160, 131, 1),
@@ -159,6 +146,10 @@ class _LoginClassState extends State<LoginPage> {
                         'Go to Registration',
                         style: TextStyle(color: Colors.black),
                       ),
+=======
+                      onPressed: () => _loginVM.navigateToRegisterPage(context),
+                      child: Text('Go to Registration'),
+>>>>>>> Stashed changes
                     ),
                   ],
                 ),
