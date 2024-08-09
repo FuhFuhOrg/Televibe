@@ -6,14 +6,7 @@ class RegistrationPage extends StatefulWidget {
   _RegistrationPageState createState() => _RegistrationPageState();
 }
 
-<<<<<<< Updated upstream
-
-class _RegisterClassState extends State<RegistrationPage> {
-  bool _obscureTextPassword = true; // Сокрытие пароля
-  bool _obscureTextRePassword = true;
-=======
 class _RegistrationPageState extends State<RegistrationPage> {
->>>>>>> Stashed changes
   final TextEditingController _mailController = TextEditingController();
   final TextEditingController _loginController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -81,23 +74,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
               ),
               SizedBox(height: 64),
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => _registrationVM.navigateToLoginPage(context),
-                    child: Text('Go to Login'),
-                  ),
-                  child: const Text(
-                    'Register',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
-                const SizedBox(height: 32),
-                Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
-                      onPressed: () => _navigateToLoginPage(context),
+                      onPressed: () => _registrationVM.navigateToLoginPage(context),
                       style: TextButton.styleFrom(
                         backgroundColor: const Color.fromRGBO(120, 160, 131, 1),
                       ),
@@ -107,9 +87,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       ),
                     ),
                   ],
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
