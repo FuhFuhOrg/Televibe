@@ -7,44 +7,30 @@ import 'package:tele_vibe/Widgets/allChatsClass.dart';
 import 'package:tele_vibe/Widgets/loginClass.dart';
 import 'package:tele_vibe/Widgets/registrationClass.dart';
 
-class LoginVM extends StatelessWidget {
+class LoginVM {
   late StreamSubscription<int> _chatsSubscription;
 
-  @override
-  void initState() {
+   LoginVM() {
     _chatsSubscription = Chats.onValueChanged.listen((value) {
       _handleChatsValueChanged(value);
     });
   }
 
-  @override
   void dispose() {
     _chatsSubscription.cancel();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Login',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: LoginPage(),
-    );
-  }
-
-  void NavigateToRegisterPage(BuildContext context) {
+  void navigateToRegisterPage(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => RegistrationPage()),
     );
   }
 
-  void FalseLoginAccount(BuildContext context, 
-  TextEditingController _loginController, TextEditingController _passwordController) {
-    String login = _loginController.text;
-    String password = _passwordController.text;
+  void fakeLoginAccount(BuildContext context, 
+  TextEditingController loginController, TextEditingController passwordController) {
+    String login = loginController.text;
+    String password = passwordController.text;
 
     print('Login: $login');
     print('Password: $password');
@@ -53,10 +39,10 @@ class LoginVM extends StatelessWidget {
     _navigateToAllChats(context);
   }
 
-  void LoginAccount(BuildContext context, 
-  TextEditingController _loginController, TextEditingController _passwordController) {
-    String login = _loginController.text;
-    String password = _passwordController.text;
+  void loginAccount(BuildContext context, 
+  TextEditingController loginController, TextEditingController passwordController) {
+    String login = loginController.text;
+    String password = passwordController.text;
 
     print('Login: $login');
     print('Password: $password');
