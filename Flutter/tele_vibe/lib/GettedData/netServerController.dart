@@ -190,7 +190,7 @@ class NetServerController with WidgetsBindingObserver {
       }
     });
 
-    sendRequest(requestId, "GetUserData", log + " " + pass); // Assuming Crypt.CriptUser is replaced with log + " " + pass for simplicity
+    sendRequest(requestId, "Login", log + " " + pass); // Assuming Crypt.CriptUser is replaced with log + " " + pass for simplicity
     return completer.future;
   }
 
