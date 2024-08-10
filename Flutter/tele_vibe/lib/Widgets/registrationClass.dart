@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tele_vibe/GettedData/netServerController.dart';
+import 'package:tele_vibe/ViewModel/registrationVM.dart';
 import 'package:tele_vibe/Widgets/loginClass.dart';
 
 class RegistrationPage extends StatefulWidget {
@@ -9,38 +10,13 @@ class RegistrationPage extends StatefulWidget {
 
 
 class _RegisterClassState extends State<RegistrationPage> {
-  bool _obscureTextPassword = true; // Сокрытие пароля
+  bool _obscureTextPassword = true;
   bool _obscureTextRePassword = true;
   final TextEditingController _mailController = TextEditingController();
   final TextEditingController _loginController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _rePasswordController = TextEditingController();
-
-
-  void _navigateToLoginPage(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
-    );
-  }
-  
-  void _registrationNewAccount(BuildContext context) {
-    String mail = _mailController.text;
-    String login = _loginController.text;
-    String password = _passwordController.text;
-    String rePassword = _rePasswordController.text;
-
-    print('Mail: $mail');
-    print('Login: $login');
-    print('Password: $password');
-    print('Re-Password: $rePassword');
-
-    NetServerController().register(login, password).then((goin) {
-      if (goin) {
-        print('Return Registration');
-      }
-    });
-  }
+  final RegistrationVM _registrationVM = RegistrationVM();
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +143,8 @@ class _RegisterClassState extends State<RegistrationPage> {
                 ),
                 SizedBox(height: MediaQuery.of(context).size.width * 0.25),
                 ElevatedButton(
-                  onPressed: () => _registrationNewAccount(context),
+                  onPressed: () => _registrationVM.registerNewAccount(context, _mailController, 
+                  _loginController, _passwordController, _rePasswordController),
                   style: TextButton.styleFrom(
                     backgroundColor: const Color.fromRGBO(120, 160, 131, 1),
                   ),
@@ -181,7 +158,7 @@ class _RegisterClassState extends State<RegistrationPage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
-                      onPressed: () => _navigateToLoginPage(context),
+                      onPressed: () => _registrationVM.navigateToLoginPage(context),
                       style: TextButton.styleFrom(
                         backgroundColor: const Color.fromRGBO(120, 160, 131, 1),
                       ),

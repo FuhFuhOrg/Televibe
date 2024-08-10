@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:tele_vibe/Data/chats.dart';
 import 'package:tele_vibe/GettedData/netServerController.dart';
 import 'package:tele_vibe/Widgets/allChatsClass.dart';
-import 'package:tele_vibe/Widgets/loginClass.dart';
 import 'package:tele_vibe/Widgets/registrationClass.dart';
 
 class LoginVM {
