@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tele_vibe/ViewModel/AllChatsVM.dart';
 import 'package:tele_vibe/Widgets/chatList.dart';
 
 
@@ -7,15 +8,14 @@ class AllChatsPage extends StatefulWidget {
   _AllChatsClassState createState() => _AllChatsClassState();
 }
 
-void _navigateToChatList(BuildContext context){
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ChatListPage()),
-    );
-  }
-
 class _AllChatsClassState extends State<AllChatsPage>{
   final List<String> entries = <String>['ff', 'gg', 'hh', 'ff', 'gg', 'hh', 'ff', 'gg', 'hh', 'ff', 'gg', 'hh'];
+  final AllChatsVM _allChatsVM = AllChatsVM();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,7 @@ class _AllChatsClassState extends State<AllChatsPage>{
           itemCount: entries.length,
           itemBuilder: (BuildContext context, int index) {
             return ListTile(
-              onTap: () => _navigateToChatList(context),
+              onTap: () => _allChatsVM.navigateToChatList(context),
               leading: const CircleAvatar(
                 backgroundImage: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg'),
               ),
