@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'chatInfo.dart'; // Импорт нового экрана
+import 'chatInfo.dart';
 
 class ChatListPage extends StatefulWidget {
   @override
@@ -67,7 +67,7 @@ class _ChatListState extends State<ChatListPage> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => NewPage()),
+                MaterialPageRoute(builder: (context) => ChatInfo()),
               );
             },
             child: _isSearching ? _buildSearchField() : _buildTitle(),
