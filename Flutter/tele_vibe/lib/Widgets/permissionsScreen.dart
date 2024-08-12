@@ -35,7 +35,7 @@ class PermissionsScreen extends StatelessWidget {
               title: const Text('Разрешение 2'),
               value: false,
               onChanged: (bool? value) {
-                // Логика изменения разрешения
+                // Логика изменения разрешения 
               },
             ),
             const SizedBox(height: 16),
