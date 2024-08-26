@@ -28,14 +28,14 @@ class ChatInfo extends StatelessWidget {
                     'https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg',
                     fit: BoxFit.cover,
                   ),
-                  Align(
+                  const Align(
                     alignment: Alignment.bottomLeft,
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
-                        children: const <Widget>[
+                        children: <Widget>[
                           Text(
                             'Название группы',
                             style: TextStyle(
@@ -120,13 +120,13 @@ class ChatInfo extends StatelessWidget {
                           _showParticipantOptions(context, index);
                         },
                         child: ListTile(
-                          leading: CircleAvatar(
+                          leading: const CircleAvatar(
                             backgroundImage: NetworkImage(
                               'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png',
                             ), // Укажите URL фотографии участника
                           ),
                           title: Text('Никнейм ${index + 1}'),
-                          subtitle: Text('Описание участника'),
+                          subtitle: const Text('Описание участника'),
                           trailing: Text(
                             _getUserRole(index),
                             style: TextStyle(
