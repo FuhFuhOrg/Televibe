@@ -148,7 +148,7 @@ class ChatInfo extends StatelessWidget {
   }
 
   String _getUserRole(int index) {
-    // Пример логики для назначения роли
+    // Пример логики для назначения роли 
     switch (index) {
       case 0:
         return 'Владелец';
