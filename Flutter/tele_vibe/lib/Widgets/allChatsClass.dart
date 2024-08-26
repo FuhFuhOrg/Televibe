@@ -34,31 +34,82 @@ class _AllChatsClassState extends State<AllChatsPage> {
         ? ListView.builder(
             itemCount: entries.length,
             itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ChatListPage()), // Переход на экран чата
-                  );
+              return GestureDetector(
+                onLongPress: () {
+                  _showChatOptions(context);
                 },
-                leading: const CircleAvatar(
-                  backgroundImage: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg'),
-                ),
-                tileColor: Colors.grey,
-                textColor: Colors.black,
-                title: Text('Item ${entries[index]}'), // Название чата
-                subtitle: Text('Item ${entries[index]}'), // Сообщение
-                trailing: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 32), // Отступ сверху
-                    Text('Item ${entries[index]}'), // Время
-                  ],
+                child: ListTile(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ChatListPage()), // Переход на экран чата
+                    );
+                  },
+                  leading: const CircleAvatar(
+                    backgroundImage: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg'),
+                  ),
+                  tileColor: Colors.grey,
+                  textColor: Colors.black,
+                  title: Text('Item ${entries[index]}'), // Название чата
+                  subtitle: Text('Item ${entries[index]}'), // Сообщение
+                  trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 32), // Отступ сверху
+                      Text('Item ${entries[index]}'), // Время
+                    ],
+                  ),
                 ),
               );
             },
           )
-        : const Center(child: Text('You don`t have chats('));
+        : const Center(child: Text('You don\'t have chats('));
+  }
+
+  // Метод для отображения меню с опциями
+  void _showChatOptions(BuildContext context) {
+    showMenu<String>(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        MediaQuery.of(context).size.width - 100,
+        MediaQuery.of(context).size.height - 200,
+        0,
+        0,
+      ),
+      items: <PopupMenuEntry<String>>[
+        const PopupMenuItem<String>(
+          value: 'clear_history',
+          child: Text('Очистить историю'),
+        ),
+        const PopupMenuItem<String>(
+          value: 'leave_group',
+          child: Text('Выйти из группы'),
+        ),
+      ],
+    ).then((String? value) {
+      if (value != null) {
+        switch (value) {
+          case 'clear_history':
+            // Логика для очистки истории
+            _clearChatHistory();
+            break;
+          case 'leave_group':
+            // Логика для выхода из группы
+            _leaveGroup();
+            break;
+        }
+      }
+    });
+  }
+
+  void _clearChatHistory() {
+    // Реализуйте логику очистки истории здесь
+    print('Очистить историю');
+  }
+
+  void _leaveGroup() {
+    // Реализуйте логику выхода из группы здесь
+    print('Выйти из группы');
   }
 
   void _onItemTapped(int index) {
