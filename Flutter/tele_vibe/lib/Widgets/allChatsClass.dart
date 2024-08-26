@@ -11,13 +11,13 @@ class AllChatsPage extends StatefulWidget {
 class _AllChatsClassState extends State<AllChatsPage> {
   int _selectedIndex = 1;
   bool _isSearching = false; // Флаг для отображения строки поиска
-  TextEditingController _searchController = TextEditingController(); // Контроллер для строки поиска
+  final TextEditingController _searchController = TextEditingController(); // Контроллер для строки поиска
 
   // Метод для выбора экрана в зависимости от выбранного индекса
   Widget _getSelectedScreen() {
     switch (_selectedIndex) {
       case 0:
-        return Settings(nickname: 'YourNickname'); // Экран настроек
+        return Settings(); // Экран настроек
       case 1:
         return _buildChatList(); // Список чатов
       case 2:
@@ -103,12 +103,12 @@ class _AllChatsClassState extends State<AllChatsPage> {
   }
 
   void _clearChatHistory() {
-    // Реализуйте логику очистки истории здесь
+    // Логика очистки истории
     print('Очистить историю');
   }
 
   void _leaveGroup() {
-    // Реализуйте логику выхода из группы здесь
+    // Логика выхода из группы
     print('Выйти из группы');
   }
 
