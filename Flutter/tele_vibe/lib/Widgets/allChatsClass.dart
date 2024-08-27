@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tele_vibe/ViewModel/AllChatsVM.dart';
 import 'package:tele_vibe/Widgets/chatList.dart';
 import 'package:tele_vibe/Widgets/profileScreen.dart';
 import 'package:tele_vibe/Widgets/settings.dart';
@@ -12,6 +13,7 @@ class _AllChatsClassState extends State<AllChatsPage> {
   int _selectedIndex = 1;
   bool _isSearching = false; // Флаг для отображения строки поиска
   final TextEditingController _searchController = TextEditingController(); // Контроллер для строки поиска
+  final AllChatsVM _allChatsVM = AllChatsVM();
 
   // Метод для выбора экрана в зависимости от выбранного индекса
   Widget _getSelectedScreen() {

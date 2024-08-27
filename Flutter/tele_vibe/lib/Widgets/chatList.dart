@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'chatInfo.dart';
+import 'package:tele_vibe/Widgets/UnderWidgets/messageBubble.dart';
 
 class ChatListPage extends StatefulWidget {
   @override
