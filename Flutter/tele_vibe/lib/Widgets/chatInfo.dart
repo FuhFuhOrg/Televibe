@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'profileScreen.dart'; // Экран профиля
 import 'renameScreen.dart'; // Экран переименования
 import 'permissionsScreen.dart'; // Экран изменения разрешений
+import 'addParticipantScreen.dart';
 
 class ChatInfo extends StatelessWidget {
   @override
@@ -90,6 +91,10 @@ class ChatInfo extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ElevatedButton(
                     onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) => AddParticipantScreen(),
+                      );
                       // Логика добавления участников
                     },
                     style: ElevatedButton.styleFrom(
