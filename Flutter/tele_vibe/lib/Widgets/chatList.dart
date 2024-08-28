@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'chatInfo.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ChatListPage extends StatefulWidget {
   @override
@@ -17,6 +18,7 @@ class _ChatListState extends State<ChatListPage> {
     {'text': 'Ничего особенного.', 'isMe': true, 'userName': 'Я', 'time': '12:06'},
     {'text': 'Понятно.', 'isMe': false, 'userName': 'Пользователь 2', 'time': '12:07'},
   ];
+  bool _isPickingImage = false;
 
   List<Map<String, dynamic>> filteredEntries = [];
   final TextEditingController _textController = TextEditingController();
@@ -181,6 +183,10 @@ class _ChatListState extends State<ChatListPage> {
       color: const Color(0xFF3E505F),
       child: Row(
         children: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.attach_file, color: Colors.white),
+            onPressed: _pickImage,
+          ),
           Expanded(
             child: TextField(
               focusNode: _focusNode,
@@ -198,20 +204,11 @@ class _ChatListState extends State<ChatListPage> {
           IconButton(
             icon: const Icon(Icons.send, color: Colors.white),
             onPressed: () {
-              String message = _textController.text;
-              if (message.isNotEmpty) {
-                setState(() {
-                  entries.add({'text': message, 'isMe': true, 'userName': 'Я', 'time': '12:05'});
-                  _filterMessages();  // Обновляем результаты поиска после добавления нового сообщения
-                });
-                _textController.clear();
-                _focusNode.requestFocus();
-                _scrollToBottom();
-              }
+              // Ваш существующий код для отправки сообщения
             },
           ),
         ],
-      ),
+      )
     );
   }
 
@@ -301,6 +298,27 @@ class _ChatListState extends State<ChatListPage> {
         );
       },
     );
+  }
+
+  Future<void> _pickImage() async {
+    if (_isPickingImage) return; // Если уже происходит выбор изображения, ничего не делаем
+
+    setState(() {
+      _isPickingImage = true;
+    });
+
+    try {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        // Обработайте выбранное изображение
+        print('Изображение выбрано: ${pickedFile.path}');
+      }
+    } finally {
+      setState(() {
+        _isPickingImage = false;
+      });
+    }
   }
 }
 
