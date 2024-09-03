@@ -6,7 +6,7 @@ import 'package:web_socket_channel/status.dart' as status;
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class NetServerController with WidgetsBindingObserver {
-  static final String s = "95.165.27.159";
+  static const String s = "95.165.27.159";
   static WebSocketChannel? webSocketChannel;
   static int k = 0;
   static Map<int, Function(List<String>)> listeners = {};
@@ -190,7 +190,7 @@ class NetServerController with WidgetsBindingObserver {
       }
     });
 
-    sendRequest(requestId, "Login", log + " " + pass); // Assuming Crypt.CriptUser is replaced with log + " " + pass for simplicity
+    sendRequest(requestId, "Login", "$log $pass"); // Assuming Crypt.CriptUser is replaced with log + " " + pass for simplicity
     return completer.future;
   }
 
@@ -206,7 +206,7 @@ class NetServerController with WidgetsBindingObserver {
       }
     });
 
-    sendRequest(requestId, "AddUserData", log + " " + pass); // Assuming Crypt.CriptUser is replaced with log + " " + pass for simplicity
+    sendRequest(requestId, "AddUserData", "$log $pass"); // Assuming Crypt.CriptUser is replaced with log + " " + pass for simplicity
     return completer.future;
   }
 
