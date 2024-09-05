@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:tele_vibe/ViewModel/AllChatsVM.dart';
+import 'package:tele_vibe/Data/chats.dart';
+import 'package:tele_vibe/ViewModel/allChatsVM.dart';
 import 'package:tele_vibe/Widgets/chatList.dart';
 import 'package:tele_vibe/Widgets/profileScreen.dart';
 import 'package:tele_vibe/Widgets/settings.dart';
@@ -14,6 +17,23 @@ class _AllChatsClassState extends State<AllChatsPage> {
   bool _isSearching = false; // Флаг для отображения строки поиска
   final TextEditingController _searchController = TextEditingController(); // Контроллер для строки поиска
   final AllChatsVM _allChatsVM = AllChatsVM();
+  late final StreamSubscription subscriptionChats;
+  ChatsData chatsData = ChatsData();
+  // ПРОШУ ИЛЬЯ ПИШИ ЭТО ПРОЩУ
+  @override
+  void initState() {
+    subscriptionChats = Chats.onValueChanged.listen((newValue) {
+      chatsData = newValue;
+      _getSelectedScreen();
+    });
+    super.initState();
+  }
+  // ПРОШУ ИЛЬЯ ПИШИ ЭТО ПРОЩУ, ЭТО ТОЖЕ
+  @override
+  void dispose() {
+    _allChatsVM.dispose();
+    super.dispose();
+  }
 
   // Метод для выбора экрана в зависимости от выбранного индекса
   Widget _getSelectedScreen() {
@@ -31,10 +51,9 @@ class _AllChatsClassState extends State<AllChatsPage> {
 
   // Строим список чатов как отдельный метод
   Widget _buildChatList() {
-    final List<String> entries = <String>['ff', 'gg', 'hh', 'ff', 'gg', 'hh', 'ff', 'gg', 'hh', 'ff', 'gg', 'hh'];
-    return entries.isNotEmpty
+    return chatsData.chats.isNotEmpty
         ? ListView.builder(
-            itemCount: entries.length,
+            itemCount: chatsData.chats.length,
             itemBuilder: (BuildContext context, int index) {
               return GestureDetector(
                 onLongPress: () {
@@ -52,13 +71,13 @@ class _AllChatsClassState extends State<AllChatsPage> {
                   ),
                   tileColor: Colors.grey,
                   textColor: Colors.black,
-                  title: Text('Item ${entries[index]}'), // Название чата
-                  subtitle: Text('Item ${entries[index]}'), // Сообщение
+                  title: Text('Item ${chatsData.chats[index]}'), // Название чата
+                  subtitle: Text('Item ${chatsData.chats[index]}'), // Сообщение
                   trailing: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const SizedBox(height: 32), // Отступ сверху
-                      Text('Item ${entries[index]}'), // Время
+                      Text('Item ${chatsData.chats[index]}'), // Время
                     ],
                   ),
                 ),
@@ -70,6 +89,7 @@ class _AllChatsClassState extends State<AllChatsPage> {
 
   // Метод для отображения меню с опциями
   void _showChatOptions(BuildContext context) {
+    // Убираем создание нового экземпляра AllChatsVM
     showMenu<String>(
       context: context,
       position: RelativeRect.fromLTRB(
@@ -93,25 +113,15 @@ class _AllChatsClassState extends State<AllChatsPage> {
         switch (value) {
           case 'clear_history':
             // Логика для очистки истории
-            _clearChatHistory();
+            _allChatsVM.clearChatHistory();
             break;
           case 'leave_group':
             // Логика для выхода из группы
-            _leaveGroup();
+            _allChatsVM.leaveGroup(); 
             break;
         }
       }
     });
-  }
-
-  void _clearChatHistory() {
-    // Логика очистки истории
-    print('Очистить историю');
-  }
-
-  void _leaveGroup() {
-    // Логика выхода из группы
-    print('Выйти из группы');
   }
 
   void _onItemTapped(int index) {

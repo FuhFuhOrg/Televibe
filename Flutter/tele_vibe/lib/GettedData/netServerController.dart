@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:tele_vibe/GettedData/cryptController.dart';
 import 'package:web_socket_channel/status.dart' as status;
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -190,7 +191,8 @@ class NetServerController with WidgetsBindingObserver {
       }
     });
 
-    sendRequest(requestId, "Login", "$log $pass"); // Assuming Crypt.CriptUser is replaced with log + " " + pass for simplicity
+    sendRequest(requestId, "Login", 
+    "${CryptController.encryptAES(log, "")} ${CryptController.encryptAES(pass, "")}");
     return completer.future;
   }
 

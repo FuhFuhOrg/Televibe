@@ -1,44 +1,65 @@
 import 'dart:convert';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:encrypt/encrypt.dart' as encrypt;
 
 class CryptController {
-  static late encrypt.IV iv;
-  late String aesEncryptionKey;
-  static late encrypt.Encrypter encrypter;
+  static (encrypt.IV, encrypt.Encrypter) GenCrypter(String aesEncryptionKey) {
+    // Создаем ключ из строки
+    final key = encrypt.Key.fromUtf8(aesEncryptionKey);
+
+    // Создаем IV из первых 16 символов ключа
+    final ivString = aesEncryptionKey.substring(0, 16);
+    final iv = encrypt.IV.fromUtf8(ivString);
+
+    // Возвращаем IV и Encrypter
+    return (
+      iv,
+      encrypt.Encrypter(
+        encrypt.AES(
+          key, 
+          mode: encrypt.AESMode.ctr, 
+          padding: null
+        )
+      )
+    );
+  }
   
-  String generateRandomString(int len) {
+  static String generateRandomString(int len) {
     var r = Random();
     const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
     return List.generate(len, (index) => _chars[r.nextInt(_chars.length)]).join();
   }
 
-  (String, String) GetKeys(){
+  static (String, String) getRandomKeys(){
     return (generateRandomString(128), generateRandomString(128));
   }
+  // Функция для шифрования текста
+  static String encryptAES(String text, String key) {
+    // Получаем IV и Encrypter с помощью GenCrypter
+    final (iv, encrypter) = GenCrypter(key);
 
-  CryptController._() {
-    aesEncryptionKey = generateRandomString(128);
-    iv = encrypt.IV.fromUtf8(aesEncryptionKey);
-    encrypter = encrypt.Encrypter(encrypt.AES(
-      encrypt.Key.fromUtf8(aesEncryptionKey), 
-      mode: encrypt.AESMode.ctr, padding: null));
+    // Шифруем текст
+    final encrypted = encrypter.encrypt(text, iv: iv);
+
+    // Возвращаем результат в виде строки Base64
+    return encrypted.base64;
   }
 
-  String encryptAES(String text) {
-    return encrypter.encrypt(text, iv: iv).base64;
-  }
+  // Функция для расшифровки текста
+  static String decryptAES(String encrypted, String key) {
+    // Декодируем зашифрованный текст из Base64
+    final encryptedBytes = base64.decode(encrypted);
 
-  String decryptAES(String encrypted) {
-    final Uint8List encryptedBytesWithSalt = base64.decode(encrypted);
-    final Uint8List encryptedBytes = encryptedBytesWithSalt.sublist(
-      0,
-      encryptedBytesWithSalt.length,
+    // Создаем IV и Encrypter с помощью GenCrypter (используем тот же ключ и первые 16 символов для IV)
+    final (iv, encrypter) = GenCrypter(key);
+
+    // Расшифровываем данные, используя Encrypter и IV
+    final decrypted = encrypter.decrypt(
+      encrypt.Encrypted(encryptedBytes),
+      iv: iv,
     );
-    final String decrypted =
-        encrypter.decrypt64(base64.encode(encryptedBytes), iv: iv);
+
     return decrypted;
   }
 }

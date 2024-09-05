@@ -2,16 +2,20 @@ import 'dart:async';
 
 class Chats {
   // Это локальная переменная
-  static int _value = 0;
+  static ChatsData _value = ChatsData();
   // Это геттер
-  static int get value => _value;
+  static ChatsData get value => _value;
   // Это контроллеры подписок
-  static final StreamController<int> _controller = StreamController<int>.broadcast();
+  static final StreamController<ChatsData> _controller = StreamController<ChatsData>.broadcast();
   // Это Подписки
-  static Stream<int> get onValueChanged => _controller.stream;
+  static Stream<ChatsData> get onValueChanged => _controller.stream;
 
-  static void setValue(int newValue) {
+  static void setValue(ChatsData newValue) {
     _value = newValue;
     _controller.add(_value);
   }
+}
+
+class ChatsData {
+  List<String> chats = List.empty();
 }

@@ -1,23 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:tele_vibe/Data/chats.dart';
 import 'package:tele_vibe/GettedData/netServerController.dart';
 import 'package:tele_vibe/Widgets/allChatsClass.dart';
 import 'package:tele_vibe/Widgets/registrationClass.dart';
 
 class LoginVM {
-  late StreamSubscription<int> _chatsSubscription;
-
-   LoginVM() {
-    _chatsSubscription = Chats.onValueChanged.listen((value) {
-      _handleChatsValueChanged(value);
-    });
-  }
-
-  void dispose() {
-    _chatsSubscription.cancel();
-  }
 
   void navigateToRegisterPage(BuildContext context) {
     Navigator.push(
@@ -51,11 +37,6 @@ class LoginVM {
         print('Return Login');
       }
     });
-  }
-
-  void _handleChatsValueChanged(int value) {
-    // Здесь вы можете выполнять действия при изменении переменной value
-    print('Chats value changed: $value');
   }
 
   void _navigateToAllChats(BuildContext context){
