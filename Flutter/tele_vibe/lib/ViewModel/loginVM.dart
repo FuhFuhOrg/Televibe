@@ -21,6 +21,8 @@ class LoginVM {
     print('Password: $password');
 
     print('Return Login');
+    
+    _startChatsAddiction();
     _navigateToAllChats(context);
   }
 
@@ -35,8 +37,14 @@ class LoginVM {
     NetServerController().login(login, password).then((goin) {
       if (goin != " ") {
         print('Return Login');
+        _startChatsAddiction();
+        _navigateToAllChats(context);
       }
     });
+  }
+
+  void _startChatsAddiction(){
+    // Код вызывающий подгрузку Json и WS чатов
   }
 
   void _navigateToAllChats(BuildContext context){
