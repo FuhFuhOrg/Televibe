@@ -5,7 +5,8 @@ import 'package:tele_vibe/Data/chats.dart';
 
 class LocalDataSave {
   // Метод для сохранения объекта ChatsData в локальное хранилище
-  static Future<void> saveChatsData(ChatsData chatsData) async {
+  static Future<void> saveChatsData() async {
+    ChatsData chatsData = Chats.value;
     final prefs = await SharedPreferences.getInstance();
     final String jsonString = jsonEncode(chatsData.toJson());
     await prefs.setString('chatsData', jsonString);

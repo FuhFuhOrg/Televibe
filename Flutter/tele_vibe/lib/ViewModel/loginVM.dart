@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tele_vibe/GettedData/localDataSaveController.dart';
 import 'package:tele_vibe/GettedData/netServerController.dart';
 import 'package:tele_vibe/Widgets/allChatsClass.dart';
 import 'package:tele_vibe/Widgets/registrationClass.dart';
@@ -45,6 +46,8 @@ class LoginVM {
 
   void _startChatsAddiction(){
     // Код вызывающий подгрузку Json и WS чатов
+    LocalDataSave.loadChatsData();
+    
   }
 
   void _navigateToAllChats(BuildContext context){
