@@ -5,11 +5,14 @@ import 'package:encrypt/encrypt.dart' as encrypt;
 
 class CryptController {
   static (encrypt.IV, encrypt.Encrypter) GenCrypter(String aesEncryptionKey) {
+    // Дополняем или обрезаем ключ до 32 символов (256 бит)
+    final String paddedKey = aesEncryptionKey.padRight(32, '0').substring(0, 32);
+    
     // Создаем ключ из строки
-    final key = encrypt.Key.fromUtf8(aesEncryptionKey);
+    final key = encrypt.Key.fromUtf8(paddedKey);
 
     // Создаем IV из первых 16 символов ключа
-    final ivString = aesEncryptionKey.substring(0, 16);
+    String ivString = aesEncryptionKey.padRight(16, '0').substring(0, 16);
     final iv = encrypt.IV.fromUtf8(ivString);
 
     // Возвращаем IV и Encrypter
@@ -24,7 +27,7 @@ class CryptController {
       )
     );
   }
-  
+    
   static String generateRandomString(int len) {
     var r = Random();
     const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
@@ -34,6 +37,7 @@ class CryptController {
   static (String, String) getRandomKeys(){
     return (generateRandomString(128), generateRandomString(128));
   }
+
   // Функция для шифрования текста
   static String encryptAES(String text, String key) {
     // Получаем IV и Encrypter с помощью GenCrypter

@@ -11,6 +11,8 @@ class NetServerController with WidgetsBindingObserver {
   static WebSocketChannel? webSocketChannel;
   static int k = 0;
   static Map<int, Function(List<String>)> listeners = {};
+  bool _isReconnecting = false;
+  static const int reconnectDelaySeconds = 5; // Задержка в секундах
 
   static final NetServerController _instance = NetServerController._internal();
 
@@ -28,6 +30,8 @@ class NetServerController with WidgetsBindingObserver {
   }
 
   void createWebSocketClient() {
+    if (_isReconnecting) return; // Избегаем многократных попыток
+
     final uri = Uri.parse("ws://$s:17825/");
     webSocketChannel = WebSocketChannel.connect(uri);
 
@@ -35,13 +39,25 @@ class NetServerController with WidgetsBindingObserver {
       onTextReceived(message);
     }, onDone: () {
       print('WebSocket closed');
-      start(); // Restart connection if closed
+      _attemptReconnect(); // Запускаем попытку переподключения
     }, onError: (error) {
       print('WebSocket error: $error');
-      start(); // Restart connection on error
+      _attemptReconnect(); // Запускаем попытку переподключения при ошибке
     });
 
     sendUnregistredRequest("Hello World!");
+  }
+
+  // Функция для попытки переподключения
+  void _attemptReconnect() {
+    if (_isReconnecting) return; // Проверяем, уже ли идет попытка переподключения
+    _isReconnecting = true;
+
+    Future.delayed(Duration(seconds: reconnectDelaySeconds), () {
+      print('Attempting to reconnect...');
+      start();
+      _isReconnecting = false; // Сбрасываем флаг после попытки
+    });
   }
 
   void onTextReceived(String message) {
@@ -66,11 +82,17 @@ class NetServerController with WidgetsBindingObserver {
     if (webSocketChannel != null) {
       webSocketChannel!.sink.add("/sql $requestWord $id $message");
     }
+    else{
+      createWebSocketClient();
+    }
   }
 
   void sendUnregistredRequest(String message) {
     if (webSocketChannel != null) {
       webSocketChannel!.sink.add(message);
+    }
+    else{
+      createWebSocketClient();
     }
   }
 
@@ -191,7 +213,7 @@ class NetServerController with WidgetsBindingObserver {
       }
     });
 
-    sendRequest(requestId, "Login", 
+    sendRequest(requestId, "AltLogin", 
     "${CryptController.encryptAES(log, "")} ${CryptController.encryptAES(pass, "")}");
     return completer.future;
   }
@@ -207,8 +229,10 @@ class NetServerController with WidgetsBindingObserver {
         completer.complete(false);
       }
     });
+    String regdata = "  ";
 
-    sendRequest(requestId, "AddUserData", "$log $pass"); // Assuming Crypt.CriptUser is replaced with log + " " + pass for simplicity
+    sendRequest(requestId, "AltRegister", 
+    "${CryptController.encryptAES(log, "")} ${CryptController.encryptAES(pass, "")} ${CryptController.encryptAES(regdata, "")}");
     return completer.future;
   }
 
@@ -223,61 +247,5 @@ class NetServerController with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     webSocketChannel?.sink.close(status.goingAway);
-  }
-}
-
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  NetServerController().start();
-
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter WebSocket Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  void initState() {
-    super.initState();
-    NetServerController().start();
-  }
-
-  @override
-  void dispose() {
-    NetServerController().dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Flutter WebSocket Demo'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('WebSocket Connection Example'),
-          ],
-        ),
-      ),
-    );
   }
 }
