@@ -213,7 +213,7 @@ class NetServerController with WidgetsBindingObserver {
       }
     });
 
-    sendRequest(requestId, "AltLogin", 
+    sendRequest(requestId, "Login", 
     "${CryptController.encryptAES(log, "")} ${CryptController.encryptAES(pass, "")}");
     return completer.future;
   }
