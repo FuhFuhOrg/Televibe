@@ -53,7 +53,7 @@ class NetServerController with WidgetsBindingObserver {
     if (_isReconnecting) return; // Проверяем, уже ли идет попытка переподключения
     _isReconnecting = true;
 
-    Future.delayed(Duration(seconds: reconnectDelaySeconds), () {
+    Future.delayed(const Duration(seconds: reconnectDelaySeconds), () {
       print('Attempting to reconnect...');
       start();
       _isReconnecting = false; // Сбрасываем флаг после попытки

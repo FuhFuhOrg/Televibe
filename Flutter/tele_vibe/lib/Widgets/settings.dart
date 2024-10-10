@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Settings extends StatelessWidget {
+  const Settings({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,6 +66,8 @@ class Settings extends StatelessWidget {
 }
 
 class LanguageSettings extends StatelessWidget {
+  const LanguageSettings({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

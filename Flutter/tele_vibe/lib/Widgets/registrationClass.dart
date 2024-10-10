@@ -4,6 +4,8 @@ import 'package:tele_vibe/ViewModel/registrationVM.dart';
 import 'package:tele_vibe/Widgets/loginClass.dart';
 
 class RegistrationPage extends StatefulWidget {
+  const RegistrationPage({super.key});
+
   @override
   _RegisterClassState createState() => _RegisterClassState();
 }

@@ -5,6 +5,8 @@ import 'permissionsScreen.dart'; // Экран изменения разреше
 import 'addParticipantScreen.dart';
 
 class ChatInfo extends StatelessWidget {
+  const ChatInfo({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +34,7 @@ class ChatInfo extends StatelessWidget {
                   const Align(
                     alignment: Alignment.bottomLeft,
                     child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: EdgeInsets.all(16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
@@ -226,9 +228,11 @@ class ChatInfo extends StatelessWidget {
 }
 
 class BottomSheetMenu extends StatelessWidget {
+  const BottomSheetMenu({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 200,
       child: Column(
         children: <Widget>[
@@ -260,6 +264,8 @@ class BottomSheetMenu extends StatelessWidget {
 }
 
 class EditGroupNameScreen extends StatelessWidget {
+  const EditGroupNameScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

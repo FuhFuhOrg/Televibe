@@ -6,8 +6,11 @@ import 'package:tele_vibe/ViewModel/allChatsVM.dart';
 import 'package:tele_vibe/Widgets/chatList.dart';
 import 'package:tele_vibe/Widgets/profileScreen.dart';
 import 'package:tele_vibe/Widgets/settings.dart';
+import 'package:tele_vibe/Widgets/ChatGroupOptionsPage.dart';
 
 class AllChatsPage extends StatefulWidget {
+  const AllChatsPage({super.key});
+
   @override
   _AllChatsClassState createState() => _AllChatsClassState();
 }
@@ -131,84 +134,87 @@ class _AllChatsClassState extends State<AllChatsPage> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: (_selectedIndex == 1 || _isSearching) ? PreferredSize(
-        preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.08),
-        child: AppBar(
-          backgroundColor: Colors.green,
-          automaticallyImplyLeading: false,
-          title: _isSearching
-              ? TextField(
-                  controller: _searchController,
-                  decoration: const InputDecoration(
-                    hintText: 'Search chats...',
-                    border: InputBorder.none,
-                  ),
-                  style: const TextStyle(color: Colors.white, fontSize: 18),
-                  autofocus: true,
-                  onChanged: (value) {
-                    // Логика поиска
-                  },
-                )
-              : const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text("Televibe"),
-                    Padding(
-                      padding: EdgeInsets.all(0),
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Colors.white,
+    appBar: (_selectedIndex == 1 || _isSearching)
+        ? PreferredSize(
+            preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.08),
+            child: AppBar(
+              backgroundColor: Colors.green,
+              automaticallyImplyLeading: false,
+              title: _isSearching
+                  ? TextField(
+                      controller: _searchController,
+                      decoration: const InputDecoration(
+                        hintText: 'Search chats...',
+                        border: InputBorder.none,
+                      ),
+                      style: const TextStyle(color: Colors.white, fontSize: 18),
+                      autofocus: true,
+                      onChanged: (value) {
+                        // Логика поиска
+                      },
+                    )
+                  : const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text("Televibe"),
+                        Padding(
+                          padding: EdgeInsets.all(0),
+                        ),
+                      ],
                     ),
-                  ],
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: () {
+                    // Переход на новую активность
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ChatGroupOptionsPage()), // Заменить переход на норм активность когда не в падлу будет
+                    );
+                  },
                 ),
-          actions: [
-            if (!_isSearching)
-              IconButton(
-                icon: const Icon(Icons.search),
-                onPressed: () {
-                  setState(() {
-                    _isSearching = true;
-                  });
-                },
-              ),
-            if (_isSearching)
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () {
-                  setState(() {
-                    _isSearching = false;
-                    _searchController.clear();
-                  });
-                },
-              ),
-          ],
+              ],
+            ),
+          )
+        : null,
+    body: _getSelectedScreen(), // Показ выбранного экрана
+    bottomNavigationBar: BottomNavigationBar(
+      selectedItemColor: Colors.green,
+      unselectedItemColor: Colors.grey.shade600,
+      selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+      unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+      type: BottomNavigationBarType.fixed,
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings),
+          label: "Settings",
         ),
-      ) : null,
-      body: _getSelectedScreen(), // Показ выбранного экрана
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Colors.green, // Цвет активного элемента
-        unselectedItemColor: Colors.grey.shade600,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
-        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: "Settings",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: "Chats",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: "Profile",
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-      ),
-    );
-  }
+        BottomNavigationBarItem(
+          icon: Icon(Icons.chat),
+          label: "Chats",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: "Profile",
+        ),
+      ],
+      currentIndex: _selectedIndex,
+      onTap: _onItemTapped,
+    ),
+    floatingActionButton: FloatingActionButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ChatGroupOptionsPage()),
+        );
+      },
+      child: const Icon(Icons.add),
+    ),
+  );
+}
+
 }

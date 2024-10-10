@@ -4,6 +4,8 @@ import 'chatInfo.dart';
 import 'package:tele_vibe/Widgets/UnderWidgets/messageBubble.dart';
 
 class ChatListPage extends StatefulWidget {
+  const ChatListPage({super.key});
+
   @override
   _ChatListState createState() => _ChatListState();
 }
@@ -313,7 +315,7 @@ class MessageBubble extends StatelessWidget {
   final bool showAvatar;
   final bool showUserName;
 
-  const MessageBubble({
+  const MessageBubble({super.key, 
     required this.text,
     required this.isMe,
     required this.userName,

@@ -9,7 +9,7 @@ class MessageBubble extends StatelessWidget {
   final bool showAvatar;
   final bool showUserName;
 
-  const MessageBubble({
+  const MessageBubble({super.key, 
     required this.text,
     required this.isMe,
     required this.userName,
