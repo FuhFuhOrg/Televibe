@@ -42,11 +42,11 @@ class _AllChatsClassState extends State<AllChatsPage> {
   Widget _getSelectedScreen() {
     switch (_selectedIndex) {
       case 0:
-        return Settings(); // Экран настроек
+        return const Settings(); // Экран настроек
       case 1:
         return _buildChatList(); // Список чатов
       case 2:
-        return ProfileScreen(nickname: 'YourNickname'); // Экран профиля
+        return const ProfileScreen(nickname: 'YourNickname'); // Экран профиля
       default:
         return _buildChatList(); // По умолчанию показывается список чатов
     }
@@ -66,7 +66,7 @@ class _AllChatsClassState extends State<AllChatsPage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ChatListPage()), // Переход на экран чата
+                      MaterialPageRoute(builder: (context) => const ChatListPage()), // Переход на экран чата
                     );
                   },
                   leading: const CircleAvatar(

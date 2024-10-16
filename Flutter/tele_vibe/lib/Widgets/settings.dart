@@ -55,7 +55,7 @@ class Settings extends StatelessWidget {
               // логика перехода на экран выбора языка
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LanguageSettings()),
+                MaterialPageRoute(builder: (context) => const LanguageSettings()),
               );
             },
           ),
@@ -102,7 +102,7 @@ class LanguageSettings extends StatelessWidget {
 }
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: Settings(),
   ));
 }

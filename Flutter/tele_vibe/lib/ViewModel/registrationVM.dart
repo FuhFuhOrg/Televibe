@@ -6,7 +6,7 @@ class RegistrationVM {
   void navigateToLoginPage(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
+      MaterialPageRoute(builder: (context) => const LoginPage()),
     );
   }
 

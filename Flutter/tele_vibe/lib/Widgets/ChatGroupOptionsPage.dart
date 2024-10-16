@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ChatGroupOptionsPage extends StatefulWidget {
+  const ChatGroupOptionsPage({super.key});
+
   @override
   _ChatGroupOptionsPageState createState() => _ChatGroupOptionsPageState();
 }
@@ -18,6 +20,7 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
   // Переменные для хранения данных
   String _groupName = '';
   String _groupPassword = '';
+  String _textField = '';
   String _chatPassword = '';
 
   @override
@@ -70,6 +73,16 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
                 decoration: const InputDecoration(labelText: "Пароль (если нужен)"),
                 obscureText: true,
               ),
+              TextField(
+                controller: _groupPasswordController,
+                onChanged: (value) {
+                  setState(() {
+                    _textField = value; // Сохранение пароля группы
+                  });
+                },
+                decoration: const InputDecoration(labelText: "Текстовое поле"),
+                obscureText: true,
+              ),
               SwitchListTile(
                 title: const Text("Чат/группа?"),
                 value: _isPasswordRequired,
@@ -118,10 +131,10 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
                     print("Добавление чата с паролем: $_chatPassword");
                   }
                 },
-                child: Text(_isCreatingGroup ? "Создать" : "Добавить"),
                 style: ElevatedButton.styleFrom(
-                  minimumSize: Size(double.infinity, 50), // Кнопка по ширине экрана
+                  minimumSize: const Size(double.infinity, 50), // Кнопка по ширине экрана
                 ),
+                child: Text(_isCreatingGroup ? "Создать" : "Добавить"),
               ),
             )
           : null,

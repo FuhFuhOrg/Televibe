@@ -70,7 +70,7 @@ class ChatInfo extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => EditGroupNameScreen()),
+                        builder: (context) => const EditGroupNameScreen()),
                   );
                 },
               ),
@@ -79,7 +79,7 @@ class ChatInfo extends StatelessWidget {
                 onPressed: () {
                   showModalBottomSheet(
                     context: context,
-                    builder: (context) => BottomSheetMenu(),
+                    builder: (context) => const BottomSheetMenu(),
                   );
                 },
               ),
