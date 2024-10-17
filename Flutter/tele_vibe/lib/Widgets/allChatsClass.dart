@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:tele_vibe/Data/chats.dart';
 import 'package:tele_vibe/ViewModel/allChatsVM.dart';
+import 'package:tele_vibe/Widgets/ChatGroupOptionsPage.dart';
 import 'package:tele_vibe/Widgets/chatList.dart';
 import 'package:tele_vibe/Widgets/profileScreen.dart';
 import 'package:tele_vibe/Widgets/settings.dart';
-import 'package:tele_vibe/Widgets/ChatGroupOptionsPage.dart';
 
 class AllChatsPage extends StatefulWidget {
   const AllChatsPage({super.key});
@@ -21,7 +21,7 @@ class _AllChatsClassState extends State<AllChatsPage> {
   final TextEditingController _searchController = TextEditingController(); // Контроллер для строки поиска
   final AllChatsVM _allChatsVM = AllChatsVM();
   late final StreamSubscription subscriptionChats;
-  ChatsData chatsData = ChatsData();
+  ChatCollection chatsData = ChatCollection();
   // ПРОШУ ИЛЬЯ ПИШИ ЭТО ПРОЩУ
   @override
   void initState() {

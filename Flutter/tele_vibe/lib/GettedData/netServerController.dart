@@ -105,20 +105,22 @@ class NetServerController with WidgetsBindingObserver {
 
   // Requests to the server
 
-  Future<String> createNewChat(String chatPassword, bool isPrivacy) async {
-    Completer<String> completer = Completer<String>();
+//RW
+  Future<List<String>> createNewChat(String chatPassword, bool isPrivacy) async {
+    Completer<List<String>> completer = Completer<List<String>>();
     int requestId = getK();
 
     setOnMessageReceivedListener(requestId, (parts) {
       if (parts.isNotEmpty) {
-        completer.complete(parts[0]);
+        completer.complete(parts);
       }
     });
 
-    sendRequest(requestId, "ChatCreate", "$isPrivacy $chatPassword");
+    sendRequest(requestId, "ChatCreate", "${CryptController.encryptAES(chatPassword, chatPassword)} $isPrivacy");
     return completer.future;
   }
 
+//ERROR
   Future<String> addUserToChat(String publicKey, String idChat, String chatPassword) async {
     Completer<String> completer = Completer<String>();
     int requestId = getK();
@@ -135,6 +137,7 @@ class NetServerController with WidgetsBindingObserver {
     return completer.future;
   }
 
+//ERROR
   Future<String> sendMessage(List<int> msg, int idSender, DateTime timeMsg) async {
     Completer<String> completer = Completer<String>();
     int requestId = getK();
@@ -152,6 +155,7 @@ class NetServerController with WidgetsBindingObserver {
     return completer.future;
   }
 
+//ERROR
   Future<List<String>> getMessages(String str) async {
     Completer<List<String>> completer = Completer<List<String>>();
     int requestId = getK();
@@ -168,6 +172,7 @@ class NetServerController with WidgetsBindingObserver {
     return completer.future;
   }
 
+//ERROR
   Future<String> deleteMessage(int idSender, int idMsg) async {
     Completer<String> completer = Completer<String>();
     int requestId = getK();
@@ -184,6 +189,7 @@ class NetServerController with WidgetsBindingObserver {
     return completer.future;
   }
 
+//ERROR
   Future<String> refactorMessage(int idMsg, int idSender, List<int> msg) async {
     Completer<String> completer = Completer<String>();
     int requestId = getK();
@@ -200,6 +206,7 @@ class NetServerController with WidgetsBindingObserver {
     return completer.future;
   }
 
+//OK
   Future<List<String>> login(String log, String pass) async {
     Completer<List<String>> completer = Completer<List<String>>();
     int requestId = getK();
@@ -217,6 +224,7 @@ class NetServerController with WidgetsBindingObserver {
     return completer.future;
   }
 
+//OK
   Future<List<String>> register(String log, String pass) async {
     Completer<List<String>> completer = Completer<List<String>>();
     int requestId = getK();
