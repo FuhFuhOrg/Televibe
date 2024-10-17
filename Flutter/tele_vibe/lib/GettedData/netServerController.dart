@@ -12,7 +12,7 @@ class NetServerController with WidgetsBindingObserver {
   static int k = 0;
   static Map<int, Function(List<String>)> listeners = {};
   bool _isReconnecting = false;
-  static const int reconnectDelaySeconds = 5; // Задержка в секундах
+  static const int reconnectDelaySeconds = 5;
 
   static final NetServerController _instance = NetServerController._internal();
 
@@ -24,28 +24,27 @@ class NetServerController with WidgetsBindingObserver {
 
   void start() {
     WidgetsBinding.instance.addObserver(this);
-    if (webSocketChannel == null || webSocketChannel!.closeCode != null) {
-      createWebSocketClient();
-    }
+    _connect();
   }
 
-  void createWebSocketClient() {
-    if (_isReconnecting) return; // Избегаем многократных попыток
-
+  void _connect() {
     final uri = Uri.parse("ws://$s:17825/");
-    webSocketChannel = WebSocketChannel.connect(uri);
+    try {
+      webSocketChannel = WebSocketChannel.connect(uri);
 
-    webSocketChannel!.stream.listen((message) {
-      onTextReceived(message);
-    }, onDone: () {
-      print('WebSocket closed');
-      _attemptReconnect(); // Запускаем попытку переподключения
-    }, onError: (error) {
-      print('WebSocket error: $error');
-      _attemptReconnect(); // Запускаем попытку переподключения при ошибке
-    });
-
-    sendUnregistredRequest("Hello World!");
+      webSocketChannel!.stream.listen((message) {
+        onTextReceived(message);
+      }, onDone: () {
+        print('WebSocket closed');
+        _attemptReconnect();
+      }, onError: (error) {
+        print('WebSocket error: $error');
+        _attemptReconnect();
+      });
+    } catch (e) {
+      print('Error connecting to WebSocket: $e');
+      _attemptReconnect();
+    }
   }
 
   // Функция для попытки переподключения
@@ -55,7 +54,7 @@ class NetServerController with WidgetsBindingObserver {
 
     Future.delayed(Duration(seconds: reconnectDelaySeconds), () {
       print('Attempting to reconnect...');
-      start();
+      _connect();
       _isReconnecting = false; // Сбрасываем флаг после попытки
     });
   }
@@ -79,20 +78,20 @@ class NetServerController with WidgetsBindingObserver {
   }
 
   void sendRequest(int id, String requestWord, String message) {
-    if (webSocketChannel != null) {
+    if (webSocketChannel != null && webSocketChannel!.closeCode == null) {
       webSocketChannel!.sink.add("/sql $requestWord $id $message");
-    }
-    else{
-      createWebSocketClient();
+    } else {
+      print("WebSocket is not connected. Reconnecting...");
+      _connect();
     }
   }
 
   void sendUnregistredRequest(String message) {
-    if (webSocketChannel != null) {
+    if (webSocketChannel != null && webSocketChannel!.closeCode == null) {
       webSocketChannel!.sink.add(message);
-    }
-    else{
-      createWebSocketClient();
+    } else {
+      print("WebSocket is not connected. Reconnecting...");
+      _connect();
     }
   }
 
@@ -201,38 +200,38 @@ class NetServerController with WidgetsBindingObserver {
     return completer.future;
   }
 
-  Future<String> login(String log, String pass) async {
-    Completer<String> completer = Completer<String>();
+  Future<List<String>> login(String log, String pass) async {
+    Completer<List<String>> completer = Completer<List<String>>();
     int requestId = getK();
 
     setOnMessageReceivedListener(requestId, (parts) {
       if (parts.isNotEmpty) {
-        completer.complete(parts[0]);
+        completer.complete(parts);
       } else {
         completer.complete(null);
       }
     });
 
     sendRequest(requestId, "Login", 
-    "${CryptController.encryptAES(log, "")} ${CryptController.encryptAES(pass, "")}");
+    "${CryptController.encryptAES(log, log)} ${CryptController.encryptAES(pass, pass)}");
     return completer.future;
   }
 
-  Future<bool> register(String log, String pass) async {
-    Completer<bool> completer = Completer<bool>();
+  Future<List<String>> register(String log, String pass) async {
+    Completer<List<String>> completer = Completer<List<String>>();
     int requestId = getK();
 
     setOnMessageReceivedListener(requestId, (parts) {
       if (parts.isNotEmpty) {
-        completer.complete(parts[0] == 'true');
+        completer.complete(parts);
       } else {
-        completer.complete(false);
+        completer.complete(null);
       }
     });
     String regdata = "  ";
 
     sendRequest(requestId, "AltRegister", 
-    "${CryptController.encryptAES(log, "")} ${CryptController.encryptAES(pass, "")} ${CryptController.encryptAES(regdata, "")}");
+    "${CryptController.encryptAES(log, log)} ${CryptController.encryptAES(pass, pass)} ${CryptController.encryptAES(regdata, "")}");
     return completer.future;
   }
 
