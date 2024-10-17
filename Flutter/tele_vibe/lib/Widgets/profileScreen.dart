@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ProfileScreen extends StatefulWidget {
   final String nickname;
 
-  ProfileScreen({required this.nickname});
+  const ProfileScreen({super.key, required this.nickname});
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -24,7 +24,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showEditDialog(String title, String currentText, Function(String) onSave) {
-    TextEditingController _controller = TextEditingController(text: currentText);
+    TextEditingController controller = TextEditingController(text: currentText);
 
     showDialog(
       context: context,
@@ -32,7 +32,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return AlertDialog(
           title: Text('Изменить $title'),
           content: TextField(
-            controller: _controller,
+            controller: controller,
             decoration: InputDecoration(
               hintText: 'Введите $title',
             ),
@@ -47,7 +47,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             TextButton(
               child: const Text('Сохранить'),
               onPressed: () {
-                onSave(_controller.text);
+                onSave(controller.text);
                 Navigator.of(context).pop();
               },
             ),
@@ -170,7 +170,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _showProfileOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => Container(
+      builder: (context) => SizedBox(
         height: 200,
         child: Column(
           children: <Widget>[

@@ -4,6 +4,8 @@ import 'chatInfo.dart';
 import 'package:tele_vibe/Widgets/UnderWidgets/messageBubble.dart';
 
 class ChatListPage extends StatefulWidget {
+  const ChatListPage({super.key});
+
   @override
   _ChatListState createState() => _ChatListState();
 }
@@ -68,7 +70,7 @@ class _ChatListState extends State<ChatListPage> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ChatInfo()),
+                MaterialPageRoute(builder: (context) => const ChatInfo()),
               );
             },
             child: _isSearching ? _buildSearchField() : _buildTitle(),
@@ -313,7 +315,7 @@ class MessageBubble extends StatelessWidget {
   final bool showAvatar;
   final bool showUserName;
 
-  const MessageBubble({
+  const MessageBubble({super.key, 
     required this.text,
     required this.isMe,
     required this.userName,

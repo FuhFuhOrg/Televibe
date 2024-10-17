@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:tele_vibe/ViewModel/loginVM.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginClassState createState() => _LoginClassState();
 }

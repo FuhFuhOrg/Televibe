@@ -11,7 +11,7 @@ class LoginVM {
   void navigateToRegisterPage(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => RegistrationPage()),
+      MaterialPageRoute(builder: (context) => const RegistrationPage()),
     );
   }
 
@@ -61,7 +61,7 @@ class LoginVM {
   void _navigateToAllChats(BuildContext context){
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AllChatsPage()),
+      MaterialPageRoute(builder: (context) => const AllChatsPage()),
     );
   }
 }
