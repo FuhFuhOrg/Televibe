@@ -72,7 +72,7 @@ class _AllChatsClassState extends State<AllChatsPage> {
                   leading: const CircleAvatar(
                     backgroundImage: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg'),
                   ),
-                  tileColor: Colors.grey,
+                  tileColor: Color(0xFF6200EE),
                   textColor: Colors.black,
                   title: Text('Item ${chatsData.chats[index]}'), // Название чата
                   subtitle: Text('Item ${chatsData.chats[index]}'), // Сообщение
@@ -87,7 +87,10 @@ class _AllChatsClassState extends State<AllChatsPage> {
               );
             },
           )
-        : const Center(child: Text('You don\'t have chats('));
+        : const Center(child: Text('You don\'t have chats(', style: TextStyle(
+            color: Colors.white, // Изменение цвета текста
+            fontSize: 16, // Можно изменить размер шрифта
+          ),));
   }
 
   // Метод для отображения меню с опциями
@@ -137,12 +140,12 @@ class _AllChatsClassState extends State<AllChatsPage> {
 @override
 Widget build(BuildContext context) {
   return Scaffold(
-    backgroundColor: Colors.white,
+    backgroundColor: const Color(0xFF021510),
     appBar: (_selectedIndex == 1 || _isSearching)
         ? PreferredSize(
             preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.08),
             child: AppBar(
-              backgroundColor: Colors.green,
+              backgroundColor: const Color(0xFF052018),
               automaticallyImplyLeading: false,
               title: _isSearching
                   ? TextField(
@@ -169,6 +172,7 @@ Widget build(BuildContext context) {
               actions: [
                 IconButton(
                   icon: const Icon(Icons.search),
+                  color: Colors.white,
                   onPressed: () {
                     // Переход на новую активность
                     Navigator.push(
@@ -183,8 +187,9 @@ Widget build(BuildContext context) {
         : null,
     body: _getSelectedScreen(), // Показ выбранного экрана
     bottomNavigationBar: BottomNavigationBar(
-      selectedItemColor: Colors.green,
-      unselectedItemColor: Colors.grey.shade600,
+      backgroundColor: const Color(0xFF021510),
+      selectedItemColor: const Color(0xFF368F77),
+      unselectedItemColor: Colors.white,
       selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
       unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
       type: BottomNavigationBarType.fixed,
@@ -212,7 +217,8 @@ Widget build(BuildContext context) {
           MaterialPageRoute(builder: (context) => ChatGroupOptionsPage()),
         );
       },
-      child: const Icon(Icons.add),
+      backgroundColor: const Color(0xFF052018),
+      child: const Icon(Icons.add, color: Colors.white,),
     ),
   );
 }
