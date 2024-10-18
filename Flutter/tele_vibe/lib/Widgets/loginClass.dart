@@ -13,6 +13,7 @@ class _LoginClassState extends State<LoginPage> {
   final TextEditingController _loginController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final LoginVM _loginVM = LoginVM();
+  bool _obscureTextPassword = true;
 
   @override
   void initState() {
@@ -35,11 +36,11 @@ class _LoginClassState extends State<LoginPage> {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFF021510),
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: const Color(0xFF021510),
           title: const Center(
-            child: Text('Login'),
+            child: Text('Login', style: TextStyle(color: Colors.white)),
             ),
             toolbarHeight: MediaQuery.of(context).size.height * 0.25,
             automaticallyImplyLeading: false,
@@ -53,17 +54,18 @@ class _LoginClassState extends State<LoginPage> {
                 children: <Widget>[
                   const SizedBox(height: 8),
                   TextField(
-                    cursorColor: Colors.black,
+                    style: const TextStyle(color: Colors.white),
+                    cursorColor: Colors.white,
                     controller: _loginController,
                     decoration: const InputDecoration(
                       labelText: 'Login',
-                      labelStyle: TextStyle(color: Colors.black),
+                      labelStyle: TextStyle(color: Colors.white),
                       border: OutlineInputBorder(),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
+                        borderSide: BorderSide(color: Colors.white),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
+                        borderSide: BorderSide(color: Colors.white),
                       ),
                       errorBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.red),
@@ -74,32 +76,44 @@ class _LoginClassState extends State<LoginPage> {
                   const SizedBox(height: 8),
                   TextField(
                     controller: _passwordController,
-                    decoration: const InputDecoration(
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
                       labelText: 'Password',
-                      labelStyle: TextStyle(color: Colors.black),
-                      border: OutlineInputBorder(),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
+                      labelStyle: const TextStyle(color: Colors.white),
+                      border: const OutlineInputBorder(),
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
                       ),
-                      errorBorder: OutlineInputBorder(
+                      errorBorder: const OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.red),
                       ),
-                      contentPadding: EdgeInsets.only(left: 10.0),
+                      suffix: IconButton(
+                      icon: Icon(
+                        _obscureTextPassword ? Icons.visibility : Icons.visibility_off,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureTextPassword = !_obscureTextPassword;
+                        });
+                      }
                     ),
-                    obscureText: true,
+                      contentPadding: const EdgeInsets.only(left: 10.0),
+                    ),
+                    obscureText: _obscureTextPassword,
                   ),
                   SizedBox(height: MediaQuery.of(context).size.width * 0.523), // Это уродство, но мне в падлу менять, мб найду что-то на подобии constraint layout
                   ElevatedButton(
-                    onPressed: () => _loginVM.loginAccount(context, _loginController, _passwordController),
+                    onPressed: () => _loginVM.fakeLoginAccount(context, _loginController, _passwordController),
                     style: TextButton.styleFrom(
-                      backgroundColor: const Color.fromRGBO(120, 160, 131, 1),
+                      backgroundColor: const Color(0xFF4E8F7D),
                     ),
                     child: const Text(
                       'Login',
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -109,11 +123,11 @@ class _LoginClassState extends State<LoginPage> {
                       TextButton(
                         onPressed: () => _loginVM.navigateToRegisterPage(context),
                         style: TextButton.styleFrom(
-                          backgroundColor: const Color.fromRGBO(120, 160, 131, 1),
+                          backgroundColor: const Color(0xFF4E8F7D),
                         ),
                         child: const Text(
                           'Go to Registration',
-                          style: TextStyle(color: Colors.black),
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
                     ],

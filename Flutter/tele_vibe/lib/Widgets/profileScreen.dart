@@ -30,7 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Изменить $title'),
+          title: Text('Изменить $title', style: TextStyle(color: Colors.white)),
           content: TextField(
             controller: controller,
             decoration: InputDecoration(
@@ -39,13 +39,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Отмена'),
+              child: const Text('Отмена', style: TextStyle(color: Colors.white)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Сохранить'),
+              child: const Text('Сохранить', style: TextStyle(color: Colors.white)),
               onPressed: () {
                 onSave(controller.text);
                 Navigator.of(context).pop();
@@ -60,12 +60,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF8DA18B),
+      backgroundColor: const Color(0xFF021510),
       body: CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
-            automaticallyImplyLeading: false,  // Убираем стрелку "Назад"
-            backgroundColor: const Color(0xFF3E505F),
+            automaticallyImplyLeading: false,
+            backgroundColor: const Color(0xFF021510),
             expandedHeight: MediaQuery.of(context).size.height * 3 / 7,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
@@ -121,13 +121,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Text(
                     'Аккаунт',
                     style: TextStyle(
+                      color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
                 ListTile(
-                  title: const Text('Номер телефона'),
+                  title: const Text('Номер телефона', style: TextStyle(color: Colors.white)),
                   subtitle: Text(_phoneNumber),
                   onTap: () {
                     _showEditDialog('номер телефона', _phoneNumber, (newPhoneNumber) {
@@ -138,7 +139,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   },
                 ),
                 ListTile(
-                  title: const Text('Имя пользователя'),
+                  title: const Text('Имя пользователя', style: TextStyle(color: Colors.white)),
                   subtitle: Text(_username),
                   onTap: () {
                     _showEditDialog('имя пользователя', _username, (newUsername) {
@@ -149,7 +150,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   },
                 ),
                 ListTile(
-                  title: const Text('О себе'),
+                  title: const Text('О себе', style: TextStyle(color: Colors.white)),
                   subtitle: Text(_about),
                   onTap: () {
                     _showEditDialog('информацию о себе', _about, (newAbout) {
@@ -176,7 +177,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: <Widget>[
             ListTile(
               leading: const Icon(Icons.photo_camera),
-              title: const Text('Добавить фотографию'),
+              title: const Text('Добавить фотографию', style: TextStyle(color: Colors.white)),
               onTap: () {
                 Navigator.pop(context);
                 // Логика добавления фотографии
@@ -184,7 +185,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.delete),
-              title: const Text('Удалить фотографию'),
+              title: const Text('Удалить фотографию', style: TextStyle(color: Colors.white)),
               onTap: () {
                 Navigator.pop(context);
                 // Логика удаления фотографии
@@ -192,7 +193,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.info),
-              title: const Text('Изменить информацию о себе'),
+              title: const Text('Изменить информацию о себе', style: TextStyle(color: Colors.white)),
               onTap: () {
                 Navigator.pop(context);
                 _showEditDialog('информацию о себе', _about, (newAbout) {

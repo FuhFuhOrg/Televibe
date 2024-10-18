@@ -6,7 +6,7 @@ import 'package:tele_vibe/ViewModel/allChatsVM.dart';
 import 'package:tele_vibe/Widgets/chatList.dart';
 import 'package:tele_vibe/Widgets/profileScreen.dart';
 import 'package:tele_vibe/Widgets/settings.dart';
-import 'package:tele_vibe/Widgets/ChatGroupOptionsPage.dart';
+import 'package:tele_vibe/Widgets/chatGroupOptionsPage.dart';
 
 class AllChatsPage extends StatefulWidget {
   const AllChatsPage({super.key});
@@ -22,7 +22,7 @@ class _AllChatsClassState extends State<AllChatsPage> {
   final AllChatsVM _allChatsVM = AllChatsVM();
   late final StreamSubscription subscriptionChats;
   ChatsData chatsData = ChatsData();
-  // ПРОШУ ИЛЬЯ ПИШИ ЭТО ПРОЩУ
+
   @override
   void initState() {
     subscriptionChats = Chats.onValueChanged.listen((newValue) {
@@ -31,7 +31,7 @@ class _AllChatsClassState extends State<AllChatsPage> {
     });
     super.initState();
   }
-  // ПРОШУ ИЛЬЯ ПИШИ ЭТО ПРОЩУ, ЭТО ТОЖЕ
+
   @override
   void dispose() {
     _allChatsVM.dispose();
@@ -70,9 +70,9 @@ class _AllChatsClassState extends State<AllChatsPage> {
                     );
                   },
                   leading: const CircleAvatar(
-                    backgroundImage: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg'),
+                    backgroundImage: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg'), // Заменить на фотографию из бд
                   ),
-                  tileColor: Color(0xFF6200EE),
+                  tileColor: const Color(0xFF6200EE),
                   textColor: Colors.black,
                   title: Text('Item ${chatsData.chats[index]}'), // Название чата
                   subtitle: Text('Item ${chatsData.chats[index]}'), // Сообщение
@@ -163,7 +163,9 @@ Widget build(BuildContext context) {
                   : const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text("Televibe"),
+                        Text("Televibe", style: TextStyle(
+                          color: Colors.white,
+                        )),
                         Padding(
                           padding: EdgeInsets.all(0),
                         ),
@@ -177,7 +179,7 @@ Widget build(BuildContext context) {
                     // Переход на новую активность
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ChatGroupOptionsPage()), // Заменить переход на норм активность когда не в падлу будет
+                      MaterialPageRoute(builder: (context) => const ChatGroupOptionsPage()), // Заменить переход на норм активность когда не в падлу будет
                     );
                   },
                 ),
@@ -214,7 +216,7 @@ Widget build(BuildContext context) {
       onPressed: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ChatGroupOptionsPage()),
+          MaterialPageRoute(builder: (context) => const ChatGroupOptionsPage()),
         );
       },
       backgroundColor: const Color(0xFF052018),

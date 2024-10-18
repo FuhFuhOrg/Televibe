@@ -11,17 +11,25 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
   bool _isCreatingGroup = false;
   bool _isAddingChat = false;
 
+  // Переменные для хранения данных
+  String _groupName = '';
+  String _groupPassword = '';
+  String _textField = "";
+  String _chatPassword = '';
+
   // Контроллеры для текстовых полей
   final TextEditingController _groupNameController = TextEditingController();
   final TextEditingController _groupPasswordController = TextEditingController();
   final TextEditingController _chatPasswordController = TextEditingController();
   bool _isPasswordRequired = false;
 
-  // Переменные для хранения данных
-  String _groupName = '';
-  String _groupPassword = '';
-  String _textField = '';
-  String _chatPassword = '';
+  @override
+  void dispose() {
+    _groupNameController.dispose();
+    _groupPasswordController.dispose();
+    _chatPasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
