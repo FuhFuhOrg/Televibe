@@ -124,7 +124,7 @@ class LanguageSettings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFF021510),
       appBar: AppBar(
         title: const Text('Выбор языка', style: TextStyle(color: Colors.white)),
         backgroundColor: const Color(0xFF3E505F),
@@ -132,19 +132,19 @@ class LanguageSettings extends StatelessWidget {
       body: ListView(
         children: [
           ListTile(
-            title: const Text('Русский', style: TextStyle(color: Colors.black)),
+            title: const Text('Русский', style: TextStyle(color: Colors.white)),
             onTap: () {
               // логика изменения языка на русский
             },
           ),
           ListTile(
-            title: const Text('Английский', style: TextStyle(color: Colors.black)),
+            title: const Text('Английский', style: TextStyle(color: Colors.white)),
             onTap: () {
               // логика изменения языка на английский
             },
           ),
           ListTile(
-            title: const Text('Немецкий', style: TextStyle(color: Colors.black)),
+            title: const Text('Немецкий', style: TextStyle(color: Colors.white)),
             onTap: () {
               // логика изменения языка на немецкий
             },

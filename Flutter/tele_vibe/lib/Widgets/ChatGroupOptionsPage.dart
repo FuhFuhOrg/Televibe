@@ -34,31 +34,44 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Создание/Добавление чата")),
+      backgroundColor: const Color(0xFF021510),
+      appBar: AppBar(
+        title: const Text(
+          "Создание/Добавление чата",
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: const Color(0xFF021510),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start, // Прижимаем к верхней части
-          crossAxisAlignment: CrossAxisAlignment.center, // Центрируем по ширине
+          crossAxisAlignment: CrossAxisAlignment.center, // Центрирование по ширине
+          mainAxisAlignment: MainAxisAlignment.start, // Прижимаем все к верху
           children: [
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _isCreatingGroup = true;
-                  _isAddingChat = false;
-                });
-              },
-              child: const Text("Создать чат/группу"),
+            Center( // Центрируем первую кнопку
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _isCreatingGroup = true;
+                    _isAddingChat = false;
+                  });
+                },
+                child: const Text("Создать чат/группу"),
+              ),
             ),
             const SizedBox(height: 16), // Отступ между кнопками
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _isAddingChat = true;
-                  _isCreatingGroup = false;
-                });
-              },
-              child: const Text("Добавить чат/группу"),
+            Center( // Центрируем вторую кнопку
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _isAddingChat = true;
+                    _isCreatingGroup = false;
+                  });
+                },
+                child: const Text("Добавить чат/группу"),
+              ),
             ),
             const SizedBox(height: 32), // Отступ перед полями ввода
             if (_isCreatingGroup) ...[
@@ -85,14 +98,14 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
                 controller: _groupPasswordController,
                 onChanged: (value) {
                   setState(() {
-                    _textField = value; // Сохранение пароля группы
+                    _textField = value; // Сохранение текста
                   });
                 },
                 decoration: const InputDecoration(labelText: "Текстовое поле"),
                 obscureText: true,
               ),
               SwitchListTile(
-                title: const Text("Чат/группа?"),
+                title: const Text("Чат/группа?", style: TextStyle(color: Colors.white)),
                 value: _isPasswordRequired,
                 onChanged: (value) {
                   setState(() {
@@ -113,7 +126,7 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
                 obscureText: true,
               ),
               SwitchListTile(
-                title: const Text("Чат/группа?"),
+                title: const Text("Чат/группа?", style: TextStyle(color: Colors.white)),
                 value: _isPasswordRequired,
                 onChanged: (value) {
                   setState(() {
@@ -125,17 +138,16 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
           ],
         ),
       ),
-      // Кнопка внизу экрана
       bottomNavigationBar: _isCreatingGroup || _isAddingChat
           ? Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
                   if (_isCreatingGroup) {
-                    // Логика создания группы с сохраненными данными
+                    // Логика создания группы
                     print("Создание группы: $_groupName с паролем: $_groupPassword");
                   } else if (_isAddingChat) {
-                    // Логика добавления чата с сохраненными данными
+                    // Логика добавления чата
                     print("Добавление чата с паролем: $_chatPassword");
                   }
                 },
