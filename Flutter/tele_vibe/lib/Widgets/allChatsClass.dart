@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 import 'package:tele_vibe/Data/chats.dart';
@@ -23,14 +24,130 @@ class _AllChatsClassState extends State<AllChatsPage> {
   late final StreamSubscription subscriptionChats;
   ChatsData chatsData = ChatsData();
 
+
+
+
+
+
+// ВЕЛИКИЙ КОСТЫЛЬ, ПОКА НЕТ БД
+
+
+  // 
+//          ТЫ, СИН ШЛЮХИ ЕБАНОЙ
+//          ЕСЛИ ТЫ ЭТО УБЕРЕШЬ
+//          Я ВСЮ ТВОЮ РОДОСЛОВНУЮ
+//          С ПЕЧКОЙ ПОЗНАКОМЛЮ
+  //
+  final List<ChatData> _initialChats = [
+    ChatData(
+      chatName: 'Chat 1',
+      message: 'куплю пива возьму в рот?',
+      time: DateTime.now().subtract(const Duration(minutes: 5)),
+      nowQueueId: 1,
+    ),
+    ChatData(
+      chatName: 'Chat 2',
+      message: 'шлома??',
+      time: DateTime.now().subtract(const Duration(minutes: 10)),
+      nowQueueId: 2,
+    ),
+    ChatData(
+      chatName: 'Chat 3',
+      message: 'Don’t forget to send the report.',
+      time: DateTime.now().subtract(const Duration(hours: 1)),
+      nowQueueId: 3,
+    ),
+    ChatData(
+      chatName: 'Chat 1',
+      message: 'Hello, how are you?',
+      time: DateTime.now().subtract(const Duration(minutes: 5)),
+      nowQueueId: 1,
+    ),
+    ChatData(
+      chatName: 'Chat 2',
+      message: 'Are we still on for the meeting?',
+      time: DateTime.now().subtract(const Duration(minutes: 10)),
+      nowQueueId: 2,
+    ),
+    ChatData(
+      chatName: 'Chat 3',
+      message: 'Don’t forget to send the report.',
+      time: DateTime.now().subtract(const Duration(hours: 1)),
+      nowQueueId: 3,
+    ),
+    ChatData(
+      chatName: 'Chat 1',
+      message: 'Hello, how are you?',
+      time: DateTime.now().subtract(const Duration(minutes: 5)),
+      nowQueueId: 1,
+    ),
+    ChatData(
+      chatName: 'Chat 2',
+      message: 'Are we still on for the meeting?',
+      time: DateTime.now().subtract(const Duration(minutes: 10)),
+      nowQueueId: 2,
+    ),
+    ChatData(
+      chatName: 'Chat 3',
+      message: 'Don’t forget to send the report.',
+      time: DateTime.now().subtract(const Duration(hours: 1)),
+      nowQueueId: 3,
+    ),
+    ChatData(
+      chatName: 'Chat 1',
+      message: 'Hello, how are you?',
+      time: DateTime.now().subtract(const Duration(minutes: 5)),
+      nowQueueId: 1,
+    ),
+    ChatData(
+      chatName: 'Chat 2',
+      message: 'Are we still on for the meeting?',
+      time: DateTime.now().subtract(const Duration(minutes: 10)),
+      nowQueueId: 2,
+    ),
+    ChatData(
+      chatName: 'Chat 3',
+      message: 'Don’t forget to send the report.',
+      time: DateTime.now().subtract(const Duration(hours: 1)),
+      nowQueueId: 3,
+    ),
+  ];
+
   @override
   void initState() {
+    super.initState();
+    // Инициализируем chatsData начальными значениями
+    chatsData = ChatsData(chats: _initialChats);
     subscriptionChats = Chats.onValueChanged.listen((newValue) {
       chatsData = newValue;
       _getSelectedScreen();
     });
-    super.initState();
   }
+
+
+  // 
+//          ТЫ, СИН ШЛЮХИ ЕБАНОЙ
+//          ЕСЛИ ТЫ ЭТО УБЕРЕШЬ
+//          Я ВСЮ ТВОЮ РОДОСЛОВНУЮ
+//          С ПЕЧКОЙ ПОЗНАКОМЛЮ
+  //
+
+
+
+
+
+
+
+
+
+  // @override
+  // void initState() {
+  //   subscriptionChats = Chats.onValueChanged.listen((newValue) {
+  //     chatsData = newValue;
+  //     _getSelectedScreen();
+  //   });
+  //   super.initState();
+  // }
 
   @override
   void dispose() {
@@ -54,44 +171,53 @@ class _AllChatsClassState extends State<AllChatsPage> {
 
   // Строим список чатов как отдельный метод
   Widget _buildChatList() {
-    return chatsData.chats.isNotEmpty
-        ? ListView.builder(
-            itemCount: chatsData.chats.length,
-            itemBuilder: (BuildContext context, int index) {
-              return GestureDetector(
-                onLongPress: () {
-                  _showChatOptions(context);
+  return chatsData.chats.isNotEmpty
+      ? ListView.builder(
+          itemCount: chatsData.chats.length,
+          itemBuilder: (BuildContext context, int index) {
+            final chat = chatsData.chats[index]; // Ссылка на текущий чат
+            return GestureDetector(
+              onLongPress: () {
+                _showChatOptions(context);
+              },
+              child: ListTile(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ChatListPage()), // Переход на экран чата
+                  );
                 },
-                child: ListTile(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const ChatListPage()), // Переход на экран чата
-                    );
-                  },
-                  leading: const CircleAvatar(
-                    backgroundImage: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg'), // Заменить на фотографию из бд
-                  ),
-                  tileColor: const Color(0xFF6200EE),
-                  textColor: Colors.black,
-                  title: Text('Item ${chatsData.chats[index]}'), // Название чата
-                  subtitle: Text('Item ${chatsData.chats[index]}'), // Сообщение
-                  trailing: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 32), // Отступ сверху
-                      Text('Item ${chatsData.chats[index]}'), // Время
-                    ],
-                  ),
+                leading: const CircleAvatar(
+                  backgroundImage: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg'), // Заменить на фотографию из БД
                 ),
-              );
-            },
-          )
-        : const Center(child: Text('You don\'t have chats(', style: TextStyle(
-            color: Colors.white, // Изменение цвета текста
-            fontSize: 16, // Можно изменить размер шрифта
-          ),));
-  }
+                tileColor: const Color(0xFF021510),
+                textColor: Colors.white,
+                title: Text(chat.chatName), // Название чата
+                subtitle: Text(chat.message), // Сообщение
+                trailing: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 32), // Отступ сверху
+                    Text(
+                      DateFormat.jm().format(chat.time), // Форматирование времени
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        )
+      : const Center(
+          child: Text(
+            'You don\'t have chats(',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
+        );
+}
+
 
   // Метод для отображения меню с опциями
   void _showChatOptions(BuildContext context) {

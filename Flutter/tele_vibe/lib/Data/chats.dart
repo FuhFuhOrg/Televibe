@@ -40,14 +40,25 @@ class ChatsData {
 
 class ChatData {
   late String chatName;
+  late String message;
+  late DateTime time;
+
   late int nowQueueId;
 
-  ChatData({required this.chatName, required this.nowQueueId});
+  // Конструктор
+  ChatData({
+    required this.chatName,
+    required this.message,
+    required this.time,
+    required this.nowQueueId,
+  });
 
   // Преобразование в JSON
   Map<String, dynamic> toJson() {
     return {
       'chatName': chatName,
+      'message': message,
+      'time': time.toIso8601String(), // Преобразование даты в строку
       'nowQueueId': nowQueueId,
     };
   }
@@ -56,6 +67,8 @@ class ChatData {
   factory ChatData.fromJson(Map<String, dynamic> json) {
     return ChatData(
       chatName: json['chatName'],
+      message: json['message'],
+      time: DateTime.parse(json['time']), // Преобразование строки обратно в DateTime
       nowQueueId: json['nowQueueId'],
     );
   }

@@ -10,7 +10,7 @@ class ChatInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF8DA18B),
+      backgroundColor: const Color(0xFF021510),
       body: CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
@@ -42,7 +42,7 @@ class ChatInfo extends StatelessWidget {
                           Text(
                             'Название группы',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
@@ -51,7 +51,7 @@ class ChatInfo extends StatelessWidget {
                           Text(
                             '5 участников',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 16,
                             ),
                           ),
@@ -100,9 +100,9 @@ class ChatInfo extends StatelessWidget {
                       // Логика добавления участников
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3E505F),
+                      backgroundColor: const Color(0xFF052018),
                     ),
-                    child: const Text('Добавить участников'),
+                    child: const Text('Добавить участников', style: TextStyle(color: Colors.white),),
                   ),
                 ),
                 // Перечень участников группы
@@ -132,12 +132,12 @@ class ChatInfo extends StatelessWidget {
                               'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png',
                             ), // Укажите URL фотографии участника
                           ),
-                          title: Text('Никнейм ${index + 1}'),
-                          subtitle: const Text('Описание участника'),
+                          title: Text('Никнейм ${index + 1}', style: const TextStyle(color: Colors.white)),
+                          subtitle: const Text('Описание участника', style: TextStyle(color: Colors.white)),
                           trailing: Text(
                             _getUserRole(index),
-                            style: TextStyle(
-                              color: Colors.grey[700],
+                            style: const TextStyle(
+                              color: Colors.white,
                               fontSize: 12,
                             ),
                           ),
@@ -155,7 +155,6 @@ class ChatInfo extends StatelessWidget {
   }
 
   String _getUserRole(int index) {
-    // Пример логики для назначения роли 
     switch (index) {
       case 0:
         return 'Владелец';
