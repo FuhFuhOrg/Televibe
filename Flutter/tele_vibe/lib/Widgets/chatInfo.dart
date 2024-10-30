@@ -10,7 +10,7 @@ class ChatInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF021510),
+      backgroundColor: const Color(0xFF052018),
       body: CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
@@ -100,7 +100,7 @@ class ChatInfo extends StatelessWidget {
                       // Логика добавления участников
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF052018),
+                      backgroundColor: const Color(0xFF021510),
                     ),
                     child: const Text('Добавить участников', style: TextStyle(color: Colors.white),),
                   ),
@@ -262,6 +262,7 @@ class BottomSheetMenu extends StatelessWidget {
   }
 }
 
+// ЭТО ПИЗДЕЦ, ЧТО ЗА ХУЙНЮ Я СДЕЛАЛ
 class EditGroupNameScreen extends StatelessWidget {
   const EditGroupNameScreen({super.key});
 
