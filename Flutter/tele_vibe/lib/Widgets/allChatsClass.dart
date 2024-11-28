@@ -8,6 +8,7 @@ import 'package:tele_vibe/Widgets/chatList.dart';
 import 'package:tele_vibe/Widgets/profileScreen.dart';
 import 'package:tele_vibe/Widgets/settings.dart';
 import 'package:tele_vibe/Widgets/chatGroupOptionsPage.dart';
+import 'package:tele_vibe/Widgets/searchScreen.dart';
 
 class AllChatsPage extends StatefulWidget {
   const AllChatsPage({super.key});
@@ -305,7 +306,7 @@ Widget build(BuildContext context) {
                     // Переход на новую активность
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const ChatGroupOptionsPage()), // Заменить переход на норм активность когда не в падлу будет
+                      MaterialPageRoute(builder: (context) => const SearchScreen()), // Заменить переход на норм активность когда не в падлу будет
                     );
                   },
                 ),
