@@ -39,6 +39,10 @@ class _AllChatsClassState extends State<AllChatsPage> {
 //          Я ВСЮ ТВОЮ РОДОСЛОВНУЮ
 //          С ПЕЧКОЙ ПОЗНАКОМЛЮ
   //
+
+
+
+
   final List<ChatData> _initialChats = [
     ChatData(
       chatName: 'Chat 1',
@@ -179,7 +183,7 @@ class _AllChatsClassState extends State<AllChatsPage> {
             final chat = chatsData.chats[index]; // Ссылка на текущий чат
             return GestureDetector(
               onLongPress: () {
-                _showChatOptions(context);
+                _showParticipantOptions(context, index);
               },
               child: ListTile(
                 onTap: () {
@@ -217,9 +221,60 @@ class _AllChatsClassState extends State<AllChatsPage> {
             ),
           ),
         );
-}
+  }
 
+  void _showParticipantOptions(BuildContext context, int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.black,
+          title: const Text(
+            'Чат',
+            style: TextStyle(color: Colors.white), 
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.copy, color: Colors.white),
+                title: const Text(
+                  'Очистить историю',
+                  style: TextStyle(color: Colors.white), 
+                ),
+                onTap: () {
+                  _allChatsVM.clearChatHistory();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.edit, color: Colors.white),
+                title: const Text(
+                  'Выйти из группы',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () {
+                  _allChatsVM.leaveGroup();
+                },
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'Отмена',
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
+/*
   // Метод для отображения меню с опциями
   void _showChatOptions(BuildContext context) {
     // Убираем создание нового экземпляра AllChatsVM
@@ -256,6 +311,7 @@ class _AllChatsClassState extends State<AllChatsPage> {
       }
     });
   }
+*/
 
   void _onItemTapped(int index) {
     setState(() {

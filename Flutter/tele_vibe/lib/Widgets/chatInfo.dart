@@ -3,9 +3,40 @@ import 'profileScreen.dart'; // Экран профиля
 import 'renameScreen.dart'; // Экран переименования
 import 'permissionsScreen.dart'; // Экран изменения разрешений
 import 'addParticipantScreen.dart';
+import 'renameTextField.dart';
 
-class ChatInfo extends StatelessWidget {
-  const ChatInfo({super.key});
+class ChatInfo extends StatefulWidget {
+  const ChatInfo({super.key, required this.initialGroupName});
+
+  final String initialGroupName;
+
+  @override
+  _ChatInfoState createState() => _ChatInfoState();
+}
+
+class _ChatInfoState extends State<ChatInfo>{
+  late String _groupName;
+
+  @override
+  void initState() {
+    super.initState();
+    // Инициализация поля _groupName значением из конструктора
+    _groupName = widget.initialGroupName;
+  }
+
+  // Метод для перехода на экран изменения текста
+  void _navigateToEditScreen(BuildContext context, String title, String currentText, Function(String) onSave) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RenameTextField(title: title, currentText: currentText),
+      ),
+    );
+    if (result != null) {
+      onSave(result);
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -67,20 +98,17 @@ class ChatInfo extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.edit),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const EditGroupNameScreen()),
-                  );
+                  _navigateToEditScreen(context, 'название группы', _groupName, (newName) {
+                    setState(() {
+                      _groupName = newName;
+                    });
+                  });
                 },
               ),
               IconButton(
                 icon: const Icon(Icons.more_vert),
                 onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (context) => const BottomSheetMenu(),
-                  );
+                  _showProfileOptions(context);
                 },
               ),
             ],
@@ -88,7 +116,7 @@ class ChatInfo extends StatelessWidget {
           SliverList(
             delegate: SliverChildListDelegate(
               <Widget>[
-                // Кнопка "Добавить участников"
+                // Кнопка "Добавить участника"
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ElevatedButton(
@@ -170,13 +198,20 @@ class ChatInfo extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Опции участника'),
+          backgroundColor: Colors.black,
+          title: const Text(
+            'Опции участника',
+            style: TextStyle(color: Colors.white), 
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               ListTile(
-                leading: const Icon(Icons.edit),
-                title: const Text('Переименовать'),
+                leading: const Icon(Icons.edit, color: Colors.white),
+                title: const Text(
+                  'Переименовать',
+                  style: TextStyle(color: Colors.white),
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -189,16 +224,22 @@ class ChatInfo extends StatelessWidget {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.delete),
-                title: const Text('Удалить'),
+                leading: const Icon(Icons.delete, color: Colors.white),
+                title: const Text(
+                  'Удалить',
+                  style: TextStyle(color: Colors.white),
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   // Логика удаления участника
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.security),
-                title: const Text('Изменить разрешения'),
+                leading: const Icon(Icons.security, color: Colors.white),
+                title: const Text(
+                  'Изменить разрешения',
+                  style: TextStyle(color: Colors.white), 
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -214,7 +255,10 @@ class ChatInfo extends StatelessWidget {
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Отмена'),
+              child: const Text(
+                'Отмена',
+                style: TextStyle(color: Colors.white), 
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -262,36 +306,62 @@ class BottomSheetMenu extends StatelessWidget {
   }
 }
 
-// ЭТО ПИЗДЕЦ, ЧТО ЗА ХУЙНЮ Я СДЕЛАЛ
-class EditGroupNameScreen extends StatelessWidget {
-  const EditGroupNameScreen({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF8DA18B),
-      appBar: AppBar(
-        title: const Text('Редактировать название группы'),
-        backgroundColor: const Color(0xFF3E505F),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.check),
-            onPressed: () {
-              // Логика сохранения нового названия группы
+
+
+void _showProfileOptions(BuildContext context) {
+    final RenderBox button = context.findRenderObject() as RenderBox;
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+
+    double offsetX = 10.0;
+    double offsetY = 70.0; 
+
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromPoints(
+        button.localToGlobal(Offset.zero, ancestor: overlay) + Offset(offsetX, offsetY), // Смещение для верхнего левого угла
+        button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay) + Offset(offsetX, offsetY), // Смещение для нижнего правого угла
+      ),
+      Offset.zero & overlay.size,  
+    );
+
+    showMenu(
+      context: context,
+      position: position,
+      items: <PopupMenuEntry>[
+        PopupMenuItem(
+          child: ListTile(
+            leading: const Icon(Icons.photo_camera, color: Colors.white),
+            title: const Text('Изменить фото группы', style: TextStyle(color: Colors.white)),
+            onTap: () {
               Navigator.pop(context);
+              // Логика для поиска участников
             },
           ),
-        ],
-      ),
-      body: const Padding(
-        padding: EdgeInsets.all(16.0),
-        child: TextField(
-          decoration: InputDecoration(
-            labelText: 'Название группы',
-            border: OutlineInputBorder(),
+        ),
+        PopupMenuItem(
+          child: ListTile(
+            leading: const Icon(Icons.delete, color: Colors.white),
+            title: const Text('Удалить группу', style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context);
+              // Логика для удаления группы
+            },
           ),
         ),
+        PopupMenuItem(
+          child: ListTile(
+            leading: const Icon(Icons.mood_bad_rounded, color: Colors.white),
+            title: const Text('Покинуть группу', style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context);
+              // Логика для покидания группы
+            },
+          ),
+        ),
+      ],
+      color: Colors.black, 
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(0),
       ),
     );
   }
-}

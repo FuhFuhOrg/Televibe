@@ -70,7 +70,7 @@ class _ChatListState extends State<ChatListPage> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ChatInfo()),
+                MaterialPageRoute(builder: (context) => const ChatInfo(initialGroupName: 'Название группы')), // Здесь передаем название группы, когда переходим в группу чата
               );
             },
             child: _isSearching ? _buildSearchField() : _buildTitle(),
@@ -111,7 +111,7 @@ class _ChatListState extends State<ChatListPage> {
                   }
 
                   return GestureDetector(
-                    onLongPress: () => _showMessageOptions(context, index),
+                    onLongPress: () => _showParticipantOptions(context, index), // ЙОУ
                     child: MessageBubble(
                       text: filteredEntries[index]['text'],
                       isMe: filteredEntries[index]['isMe'],
@@ -228,39 +228,66 @@ class _ChatListState extends State<ChatListPage> {
     }
   }
 
-  void _showMessageOptions(BuildContext context, int index) {
-    FocusScope.of(context).unfocus();
 
-    showModalBottomSheet(
+  void _showParticipantOptions(BuildContext context, int index) {
+    showDialog(
       context: context,
       builder: (BuildContext context) {
-        return Wrap(
-          children: <Widget>[
-            ListTile(
-              leading: const Icon(Icons.copy),
-              title: const Text('Копировать'),
-              onTap: () {
-                Clipboard.setData(ClipboardData(text: filteredEntries[index]['text']));
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('Изменить'),
-              onTap: () {
-                Navigator.pop(context);
-                _showEditDialog(context, index);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete),
-              title: const Text('Удалить'),
-              onTap: () {
-                setState(() {
-                  entries.removeAt(index);
-                  _filterMessages();  // Обновляем результаты поиска после удаления сообщения
-                });
-                Navigator.pop(context);
+        return AlertDialog(
+          backgroundColor: Colors.black,
+          title: const Text(
+            'Сообщение',
+            style: TextStyle(color: Colors.white), 
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.copy, color: Colors.white),
+                title: const Text(
+                  'Копировать',
+                  style: TextStyle(color: Colors.white), 
+                ),
+                onTap: () {
+                  Clipboard.setData(ClipboardData(text: filteredEntries[index]['text']));
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.edit, color: Colors.white),
+                title: const Text(
+                  'Изменить',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showEditDialog(context, index);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.delete, color: Colors.white), 
+                title: const Text(
+                  'Удалить',
+                  style: TextStyle(color: Colors.white), 
+                ),
+                onTap: () {
+                  setState(() {
+                    entries.removeAt(index);
+                    _filterMessages();  // Обновляем результаты поиска после удаления сообщения
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'Отмена',
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -269,6 +296,7 @@ class _ChatListState extends State<ChatListPage> {
     );
   }
 
+
   void _showEditDialog(BuildContext context, int index) {
     TextEditingController editController = TextEditingController(text: filteredEntries[index]['text']);
 
@@ -276,22 +304,37 @@ class _ChatListState extends State<ChatListPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Изменить сообщение'),
+          backgroundColor: Colors.black,  
+          title: const Text(
+            'Изменить сообщение',
+            style: TextStyle(color: Colors.white),  
+          ),
           content: TextField(
             controller: editController,
+            style: const TextStyle(color: Colors.white), 
             decoration: const InputDecoration(
               hintText: 'Введите текст сообщения',
+              hintStyle: TextStyle(color: Colors.white60), 
+              border: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white), 
+              ),
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Отмена'),
+              child: const Text(
+                'Отмена',
+                style: TextStyle(color: Colors.white),  
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Сохранить'),
+              child: const Text(
+                'Сохранить',
+                style: TextStyle(color: Colors.white),  
+              ),
               onPressed: () {
                 setState(() {
                   entries[index]['text'] = editController.text;
