@@ -320,92 +320,71 @@ class _AllChatsClassState extends State<AllChatsPage> {
     });
   }
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: const Color(0xFF021510),
-    appBar: (_selectedIndex == 1 || _isSearching)
-        ? PreferredSize(
-            preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.08),
-            child: AppBar(
-              backgroundColor: const Color(0xFF052018),
-              automaticallyImplyLeading: false,
-              title: _isSearching
-                  ? TextField(
-                      controller: _searchController,
-                      decoration: const InputDecoration(
-                        hintText: 'Search chats...',
-                        border: InputBorder.none,
-                      ),
-                      style: const TextStyle(color: Colors.white, fontSize: 18),
-                      autofocus: true,
-                      onChanged: (value) {
-                        // Логика поиска
-                      },
-                    )
-                  : const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text("Televibe", style: TextStyle(
-                          color: Colors.white,
-                        )),
-                        Padding(
-                          padding: EdgeInsets.all(0),
-                        ),
-                      ],
-                    ),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.search),
-                  color: Colors.white,
-                  onPressed: () {
-                    // Переход на новую активность
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const SearchScreen()), // Заменить переход на норм активность когда не в падлу будет
-                    );
-                  },
-                ),
-              ],
-            ),
-          )
-        : null,
-    body: _getSelectedScreen(), // Показ выбранного экрана
-    bottomNavigationBar: BottomNavigationBar(
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
       backgroundColor: const Color(0xFF021510),
-      selectedItemColor: const Color(0xFF368F77),
-      unselectedItemColor: Colors.white,
-      selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
-      unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
-      type: BottomNavigationBarType.fixed,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          label: "Settings",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.chat),
-          label: "Chats",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: "Profile",
-        ),
-      ],
-      currentIndex: _selectedIndex,
-      onTap: _onItemTapped,
-    ),
-    floatingActionButton: FloatingActionButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const ChatGroupOptionsPage()),
-        );
-      },
-      backgroundColor: const Color(0xFF052018),
-      child: const Icon(Icons.add, color: Colors.white,),
-    ),
-  );
-}
-
+      appBar: (_selectedIndex == 1)
+          ? PreferredSize(
+              preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.08),
+              child: AppBar(
+                backgroundColor: const Color(0xFF052018),
+                automaticallyImplyLeading: false,
+                title: const Text(
+                  "Televibe", 
+                  style: TextStyle(color: Colors.white),
+                ),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.search),
+                    color: Colors.white,
+                    onPressed: () {
+                      // Переход на новую активность
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const SearchScreen()),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            )
+          : null,
+      body: _getSelectedScreen(), // Показ выбранного экрана
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xFF021510),
+        selectedItemColor: const Color(0xFF368F77),
+        unselectedItemColor: Colors.white,
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: "Settings",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: "Chats",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: "Profile",
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ChatGroupOptionsPage()),
+          );
+        },
+        backgroundColor: const Color(0xFF052018),
+        child: const Icon(Icons.add, color: Colors.white,),
+      ),
+    );
+  }
 }
