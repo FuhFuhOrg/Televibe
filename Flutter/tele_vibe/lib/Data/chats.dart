@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:pointycastle/asymmetric/api.dart';
+
 class Chats {
   // Это локальная переменная
   static ChatCollection _chats = ChatCollection();
@@ -21,16 +23,15 @@ class Chats {
   }
 }
 
-// Переименованный класс
 class ChatCollection {
-  late List<ChatData> chats;
+  List<ChatData> chats;
 
-  ChatCollection({this.chats = const []});
+  ChatCollection({List<ChatData>? chats}) : chats = chats ?? [];
 
   // Преобразование в JSON
   Map<String, dynamic> toJson() {
     return {
-      'chats': chats.map((chat) => chat.toJson()).toList(),
+      'chats': this.chats.map((chat) => chat.toJson()).toList(),
     };
   }
 
@@ -92,10 +93,12 @@ class ChatData {
 class Users {
   late int id;
   late String username;
+  late (RSAPublicKey pub, RSAPrivateKey priv) keyPair;
 
   Users({
     required this.id,
     required this.username,
+    required this.keyPair,
   });
 
   // Преобразование в JSON
@@ -103,6 +106,7 @@ class Users {
     return {
       'id': id,
       'username': username,
+      'keyPair': keyPair,
     };
   }
 
@@ -111,6 +115,7 @@ class Users {
     return Users(
       id: json['id'],
       username: json['username'],
+      keyPair: json['keyPair'],
     );
   }
 }

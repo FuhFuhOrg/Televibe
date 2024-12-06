@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:pointycastle/asymmetric/api.dart';
 import 'package:tele_vibe/GettedData/cryptController.dart';
 import 'package:web_socket_channel/status.dart' as status;
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -105,6 +106,7 @@ class NetServerController with WidgetsBindingObserver {
 
   // Requests to the server
 
+
 //RW
   Future<List<String>> createNewChat(String chatPassword, bool isPrivacy) async {
     Completer<List<String>> completer = Completer<List<String>>();
@@ -116,26 +118,49 @@ class NetServerController with WidgetsBindingObserver {
       }
     });
 
+    print("${CryptController.encryptAES(chatPassword, chatPassword)} $isPrivacy");
     sendRequest(requestId, "ChatCreate", "${CryptController.encryptAES(chatPassword, chatPassword)} $isPrivacy");
     return completer.future;
   }
 
-//ERROR
-  Future<String> addUserToChat(String publicKey, String idChat, String chatPassword) async {
-    Completer<String> completer = Completer<String>();
+
+//RW
+  Future<List<String>> addUserToChat(RSAPublicKey publicKey, RSAPrivateKey privateKey, 
+    String idChat, String chatPassword, int? anonId, String? password) async 
+  {
+    Completer<List<String>> completer = Completer<List<String>>();
     int requestId = getK();
+
+    // Шифруем ключи через CryptController
+    String encryptedPublicKey = CryptController.encryptPublicKey(publicKey.toString(), idChat, chatPassword);
+    String encryptedPrivateKey = CryptController.encryptPrivateKey(privateKey.toString(), idChat, chatPassword, anonId!, password!);
+    String encryptedAnonId = CryptController.encryptAnonId(anonId.toString(), idChat, chatPassword, password!);
 
     setOnMessageReceivedListener(requestId, (parts) {
       if (parts.isNotEmpty) {
-        completer.complete(parts[0]);
+        completer.complete(parts);
       } else {
         completer.complete(null);
       }
     });
 
-    sendRequest(requestId, "addUserToChat", "$publicKey $idChat $chatPassword");
+    sendRequest(requestId, "AddUserToChat", 
+    "$encryptedPublicKey $encryptedPrivateKey $idChat $encryptedAnonId");
     return completer.future;
   }
+
+  String xorEncrypt(String data, String key) {
+    List<int> dataBytes = utf8.encode(data);
+    List<int> keyBytes = utf8.encode(key);
+    List<int> encryptedBytes = [];
+
+    for (int i = 0; i < dataBytes.length; i++) {
+      encryptedBytes.add(dataBytes[i] ^ keyBytes[i % keyBytes.length]);
+    }
+
+    return base64Encode(encryptedBytes);
+  }
+
 
 //ERROR
   Future<String> sendMessage(List<int> msg, int idSender, DateTime timeMsg) async {
@@ -155,6 +180,7 @@ class NetServerController with WidgetsBindingObserver {
     return completer.future;
   }
 
+
 //ERROR
   Future<List<String>> getMessages(String str) async {
     Completer<List<String>> completer = Completer<List<String>>();
@@ -171,6 +197,7 @@ class NetServerController with WidgetsBindingObserver {
     sendRequest(requestId, "GetMessages", str);
     return completer.future;
   }
+
 
 //ERROR
   Future<String> deleteMessage(int idSender, int idMsg) async {
@@ -189,6 +216,7 @@ class NetServerController with WidgetsBindingObserver {
     return completer.future;
   }
 
+
 //ERROR
   Future<String> refactorMessage(int idMsg, int idSender, List<int> msg) async {
     Completer<String> completer = Completer<String>();
@@ -205,6 +233,7 @@ class NetServerController with WidgetsBindingObserver {
     sendRequest(requestId, "RefactorMessage", "$idMsg $idSender ${base64Encode(msg)}");
     return completer.future;
   }
+
 
 //OK
   Future<List<String>> login(String log, String pass) async {
@@ -224,6 +253,7 @@ class NetServerController with WidgetsBindingObserver {
     return completer.future;
   }
 
+
 //OK
   Future<List<String>> register(String log, String pass) async {
     Completer<List<String>> completer = Completer<List<String>>();
@@ -242,6 +272,7 @@ class NetServerController with WidgetsBindingObserver {
     "${CryptController.encryptAES(log, log)} ${CryptController.encryptAES(pass, pass)} ${CryptController.encryptAES(regdata, "")}");
     return completer.future;
   }
+
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {

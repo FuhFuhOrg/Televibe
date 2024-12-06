@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tele_vibe/Data/chats.dart';
 import 'package:tele_vibe/Data/user.dart';
 import 'package:tele_vibe/GettedData/MessageHandler.dart';
 import 'package:tele_vibe/GettedData/localDataSaveController.dart';
@@ -41,7 +42,8 @@ class LoginVM {
       if (goin != " " && goin != "") {
         print('Return Login ${goin}');
         if(goin[0] == "true") {
-          User.anonId = int.tryParse(goin[1]);
+          Anon.anonId = int.tryParse(goin[1]);
+          Anon.anonPassword = password;
           _startChatsAddiction();
           _navigateToAllChats(context);
         }
@@ -54,8 +56,12 @@ class LoginVM {
 
   void _startChatsAddiction(){
     // Код вызывающий подгрузку Json и WS чатов
-    LocalDataSave.loadChatsData();
-    
+    LocalDataSave.loadChatsData().then((goin) {
+      if (goin != null){
+        Chats.setValue(goin);
+      }
+    });
+
   }
 
   void _navigateToAllChats(BuildContext context){

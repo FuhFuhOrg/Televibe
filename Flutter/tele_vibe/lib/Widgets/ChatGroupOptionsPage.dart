@@ -140,9 +140,6 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
               child: ElevatedButton(
                 onPressed: () {
                   if (_isCreatingGroup) {
-                    String _groupName = '';
-                    String _groupPassword = '';
-                    String _groupHost = '';
                     _chatGroupOptionVM.createChat(context, _groupName, _groupPassword, _groupHost, true);
                     // Логика создания группы с сохраненными данными
                     print("Создание группы: $_groupName с паролем: $_groupPassword");

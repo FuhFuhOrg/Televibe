@@ -2,8 +2,12 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:pointycastle/asymmetric/api.dart';
 import 'package:tele_vibe/Data/chats.dart';
+import 'package:tele_vibe/Data/user.dart';
 import 'package:tele_vibe/GettedData/MessageHandler.dart';
+import 'package:tele_vibe/GettedData/cryptController.dart';
+import 'package:tele_vibe/GettedData/localDataSaveController.dart';
 import 'package:tele_vibe/GettedData/netServerController.dart';
 
 class ChatGroupOptionVM
@@ -25,8 +29,8 @@ class ChatGroupOptionVM
       if (goin != " " && goin != "") {
         print('Return Login ${goin}');
         if(goin[0] == "true") {
-          Chats.addChat(ChatData(chatName: name, chatId: goin[1], password: password, nowQueueId: -1, chatIp: serverId));
-          MessageHandler.showAlertDialog(context, 'Добавлен чат ${goin[1]}');
+          MessageHandler.showAlertDialog(context, 'Создан чат: ${goin[1]}');
+          enterInChat(context, name, goin[1], password, serverId);
         }
         else{
           MessageHandler.showAlertDialog(context, '${goin.join(" ")}');
@@ -35,8 +39,27 @@ class ChatGroupOptionVM
     });
   }
 
-  void addChat(){
+  void enterInChat(BuildContext context, 
+    String name, String chatId, String password, String serverId) {
 
+    (RSAPublicKey pub, RSAPrivateKey priv) _keyPair = CryptController.generateRSAKeyPair();
+
+    if (Anon.anonIdGet != null && Anon.anonPasswordGet != null) {
+      NetServerController()
+          .addUserToChat(_keyPair.$1, _keyPair.$2, chatId, password, Anon.anonIdGet, Anon.anonPasswordGet)
+          .then((goin) {
+        if (goin != " " && goin != "") {
+          print('Return Login ${goin}');
+          if (goin[0] == "true") {
+            Chats.addChat(ChatData(chatName: name, chatId: chatId, password: password, nowQueueId: -1, chatIp: serverId));
+            MessageHandler.showAlertDialog(context, 'Добавлен пользователь в чат: ${goin[1]}');
+            LocalDataSave.saveChatsData();
+          } else {
+            MessageHandler.showAlertDialog(context, '${goin.join(" ")}');
+          }
+        }
+      });
+    }
   }
   
   void dispose() {
