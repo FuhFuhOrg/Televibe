@@ -334,7 +334,7 @@ void _showProfileOptions(BuildContext context) {
           onTap: () async {
             Navigator.pop(context); // Закрываем меню
 
-            final pickedImage = await FileUtils.pickMedia();
+            final pickedImage = await FileUtils.pickImage();
 
             if (pickedImage != null) {
               // Сохраняем путь к изображению (например, в локальную переменную или через другой метод)

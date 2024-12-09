@@ -198,7 +198,7 @@ class _ChatListState extends State<ChatListPage> {
           IconButton(
             icon: const Icon(Icons.attach_file, color: Colors.white),
             onPressed: () async {
-              final pickedImage = await FileUtils.pickMedia();
+              final pickedImage = await FileUtils.pickImage();
 
               if (pickedImage != null) {
                 setState(() {

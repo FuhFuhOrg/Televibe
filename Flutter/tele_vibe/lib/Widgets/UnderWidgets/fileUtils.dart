@@ -27,12 +27,12 @@ class FileUtils {
   // Выбор фото и видео
   static Future<File?> pickMedia() async {
     final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['jpg', 'jpeg', 'png', 'mp4', 'mov', 'avi'],
+      type: FileType.media,
     );
     if (result != null && result.files.single.path != null) {
       return File(result.files.single.path!);
     }
     return null;
   }
+
 }
