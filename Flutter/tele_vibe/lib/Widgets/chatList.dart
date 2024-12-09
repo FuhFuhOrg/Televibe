@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'chatInfo.dart';
 import 'package:tele_vibe/Widgets/UnderWidgets/messageBubble.dart';
+import 'fileUtils.dart';
 
 class ChatListPage extends StatefulWidget {
   const ChatListPage({super.key});
@@ -27,6 +28,7 @@ class _ChatListState extends State<ChatListPage> {
   final ScrollController _scrollController = ScrollController();
   final FocusNode _focusNode = FocusNode();
   bool _isSearching = false;
+  String? _profileImagePath;
 
   @override
   void initState() {
@@ -188,6 +190,7 @@ class _ChatListState extends State<ChatListPage> {
     );
   }
 
+
   Widget _buildMessageInput() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -195,6 +198,24 @@ class _ChatListState extends State<ChatListPage> {
       color: const Color(0xFF021510),
       child: Row(
         children: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.attach_file, color: Colors.white),
+            onPressed: () async {
+              final pickedImage = await FileUtils.pickMedia();
+
+              if (pickedImage != null) {
+                setState(() {
+                  // Логика сохранения пути к изображению
+                  // Например, добавьте поле _profileImagePath
+                  _profileImagePath = pickedImage.path;
+                });
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Изображение не выбрано')), // Если изображение не выбрано
+                );
+              }
+            },
+          ),
           Expanded(
             child: TextField(
               focusNode: _focusNode,
@@ -203,7 +224,7 @@ class _ChatListState extends State<ChatListPage> {
               enableSuggestions: true,
               controller: _textController,
               decoration: const InputDecoration(
-                hintText: 'Введите ваше сообщение... ',
+                hintText: 'Введите ваше сообщение...',
                 hintStyle: TextStyle(color: Colors.white54),
                 border: InputBorder.none,
               ),
@@ -216,7 +237,7 @@ class _ChatListState extends State<ChatListPage> {
               if (message.isNotEmpty) {
                 setState(() {
                   entries.add({'text': message, 'isMe': true, 'userName': 'Я', 'time': '12:05'});
-                  _filterMessages(); 
+                  _filterMessages();
                 });
                 _textController.clear();
                 _focusNode.requestFocus();
@@ -228,6 +249,8 @@ class _ChatListState extends State<ChatListPage> {
       ),
     );
   }
+
+
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
