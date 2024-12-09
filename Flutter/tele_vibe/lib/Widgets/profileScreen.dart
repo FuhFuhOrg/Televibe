@@ -170,30 +170,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
       position: position,
       items: <PopupMenuEntry>[
         PopupMenuItem(
-  child: ListTile(
-    leading: const Icon(Icons.photo_camera, color: Colors.white),
-    title: const Text('Добавить фотографию', style: TextStyle(color: Colors.white)),
-    onTap: () async {
-      Navigator.pop(context);
+          child: ListTile(
+            leading: const Icon(Icons.photo_camera, color: Colors.white),
+            title: const Text('Добавить фотографию', style: TextStyle(color: Colors.white)),
+            onTap: () async {
+              Navigator.pop(context);
 
-      // Вызов метода выбора изображения
-      final pickedImage = await FileUtils.pickImage();
+              // Вызов метода выбора изображения
+              final pickedImage = await FileUtils.pickImage();
 
-      if (pickedImage != null) {
-        setState(() {
-          // Логика сохранения пути к изображению
-          // Например, добавьте поле _profileImagePath
-          _profileImagePath = pickedImage.path;
-        });
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Изображение не выбрано')), // Если изображение не выбрано
-        );
-      }
-    },
-  ),
-),
-
+              if (pickedImage != null) {
+                setState(() {
+                  // Логика сохранения пути к изображению
+                  // Например, добавьте поле _profileImagePath
+                  _profileImagePath = pickedImage.path;
+                });
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Изображение не выбрано')), // Если изображение не выбрано
+                );
+              }
+            },
+          ),
+        ),
         PopupMenuItem(
           child: ListTile(
             leading: const Icon(Icons.delete, color: Colors.white),
