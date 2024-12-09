@@ -56,7 +56,6 @@ class _ChatListState extends State<ChatListPage> {
     super.dispose();
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -70,7 +69,7 @@ class _ChatListState extends State<ChatListPage> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ChatInfo(initialGroupName: 'Название группы')), // Здесь передаем название группы, когда переходим в группу чата
+                MaterialPageRoute(builder: (context) => const ChatInfo(initialGroupName: 'Название группы')),
               );
             },
             child: _isSearching ? _buildSearchField() : _buildTitle(),
@@ -96,40 +95,52 @@ class _ChatListState extends State<ChatListPage> {
         onTap: () {
           FocusScope.of(context).unfocus();
         },
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: ListView.builder(
-                controller: _scrollController,
-                padding: const EdgeInsets.all(10.0),
-                itemCount: filteredEntries.length,
-                itemBuilder: (BuildContext context, int index) {
-                  bool showAvatar = false;
+        child: SafeArea(
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: (ScrollNotification scrollInfo) {
+                    return true;
+                  },
+                  child: ListView.builder(
+                    reverse: true,
+                    itemCount: filteredEntries.length,
+                    controller: _scrollController,
+                                      physics: const BouncingScrollPhysics(),
+                    itemBuilder: (BuildContext context, int index) {
+                      final messageIndex = filteredEntries.length - 1 - index;
+                      final entry = filteredEntries[messageIndex];
+                      bool showAvatar = false;
 
-                  if (index == filteredEntries.length - 1 || filteredEntries[index]['userName'] != filteredEntries[index + 1]['userName']) {
-                    showAvatar = !filteredEntries[index]['isMe'];
-                  }
+                      if (messageIndex == 0 || 
+                          entry['userName'] != filteredEntries[messageIndex - 1]['userName']) {
+                        showAvatar = !entry['isMe'];
+                      }
 
-                  return GestureDetector(
-                    onLongPress: () => _showParticipantOptions(context, index), // ЙОУ
-                    child: MessageBubble(
-                      text: filteredEntries[index]['text'],
-                      isMe: filteredEntries[index]['isMe'],
-                      userName: filteredEntries[index]['userName'],
-                      time: filteredEntries[index]['time'],
-                      showAvatar: showAvatar,
-                      showUserName: !filteredEntries[index]['isMe'],
-                    ),
-                  );
-                },
+                      return GestureDetector(
+                        onLongPress: () => _showParticipantOptions(context, messageIndex),
+                        child: MessageBubble(
+                          text: entry['text'],
+                          isMe: entry['isMe'],
+                          userName: entry['userName'],
+                          time: entry['time'],
+                          showAvatar: showAvatar,
+                          showUserName: !entry['isMe'],
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
-            ),
-            _buildMessageInput(),
-          ],
+              _buildMessageInput(),
+            ],
+          ),
         ),
       ),
     );
   }
+
 
   Widget _buildSearchField() {
     return TextField(
@@ -205,7 +216,7 @@ class _ChatListState extends State<ChatListPage> {
               if (message.isNotEmpty) {
                 setState(() {
                   entries.add({'text': message, 'isMe': true, 'userName': 'Я', 'time': '12:05'});
-                  _filterMessages();  // Обновляем результаты поиска после добавления нового сообщения
+                  _filterMessages(); 
                 });
                 _textController.clear();
                 _focusNode.requestFocus();
@@ -220,14 +231,9 @@ class _ChatListState extends State<ChatListPage> {
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
+      _scrollController.jumpTo(_scrollController.position.minScrollExtent);
     }
   }
-
 
   void _showParticipantOptions(BuildContext context, int index) {
     showDialog(
