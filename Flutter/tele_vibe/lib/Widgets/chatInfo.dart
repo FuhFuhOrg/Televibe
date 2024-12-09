@@ -4,6 +4,7 @@ import 'renameScreen.dart'; // Экран переименования
 import 'permissionsScreen.dart'; // Экран изменения разрешений
 import 'addParticipantScreen.dart';
 import 'renameTextField.dart';
+import 'UnderWidgets/fileUtils.dart';
 
 class ChatInfo extends StatefulWidget {
   const ChatInfo({super.key, required this.initialGroupName});
@@ -306,62 +307,77 @@ class BottomSheetMenu extends StatelessWidget {
   }
 }
 
-
-
-
 void _showProfileOptions(BuildContext context) {
-    final RenderBox button = context.findRenderObject() as RenderBox;
-    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+  final RenderBox button = context.findRenderObject() as RenderBox;
+  final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+  String? _profileImagePath;
 
-    double offsetX = 10.0;
-    double offsetY = 70.0; 
+  double offsetX = 10.0;
+  double offsetY = 70.0; // Смещение по вертикали
 
-    final RelativeRect position = RelativeRect.fromRect(
-      Rect.fromPoints(
-        button.localToGlobal(Offset.zero, ancestor: overlay) + Offset(offsetX, offsetY), // Смещение для верхнего левого угла
-        button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay) + Offset(offsetX, offsetY), // Смещение для нижнего правого угла
+  final RelativeRect position = RelativeRect.fromRect(
+    Rect.fromPoints(
+      button.localToGlobal(Offset.zero, ancestor: overlay) + Offset(offsetX, offsetY),
+      button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay) + Offset(offsetX, offsetY),
+    ),
+    Offset.zero & overlay.size,
+  );
+
+  showMenu(
+    context: context,
+    position: position,
+    items: <PopupMenuEntry>[
+      PopupMenuItem(
+        child: ListTile(
+          leading: const Icon(Icons.photo_camera, color: Colors.white),
+          title: const Text('Изменить фото группы', style: TextStyle(color: Colors.white)),
+          onTap: () async {
+            Navigator.pop(context); // Закрываем меню
+
+            final pickedImage = await FileUtils.pickMedia();
+
+            if (pickedImage != null) {
+              // Сохраняем путь к изображению (например, в локальную переменную или через другой метод)
+              _updateProfileImagePath(pickedImage.path, _profileImagePath);
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Изображение не выбрано')),
+              );
+            }
+          },
+        ),
       ),
-      Offset.zero & overlay.size,  
-    );
-
-    showMenu(
-      context: context,
-      position: position,
-      items: <PopupMenuEntry>[
-        PopupMenuItem(
-          child: ListTile(
-            leading: const Icon(Icons.photo_camera, color: Colors.white),
-            title: const Text('Изменить фото группы', style: TextStyle(color: Colors.white)),
-            onTap: () {
-              Navigator.pop(context);
-              // Логика для поиска участников
-            },
-          ),
+      PopupMenuItem(
+        child: ListTile(
+          leading: const Icon(Icons.delete, color: Colors.white),
+          title: const Text('Удалить группу', style: TextStyle(color: Colors.white)),
+          onTap: () {
+            Navigator.pop(context); // Закрываем меню
+            // Логика для удаления группы
+          },
         ),
-        PopupMenuItem(
-          child: ListTile(
-            leading: const Icon(Icons.delete, color: Colors.white),
-            title: const Text('Удалить группу', style: TextStyle(color: Colors.white)),
-            onTap: () {
-              Navigator.pop(context);
-              // Логика для удаления группы
-            },
-          ),
-        ),
-        PopupMenuItem(
-          child: ListTile(
-            leading: const Icon(Icons.mood_bad_rounded, color: Colors.white),
-            title: const Text('Покинуть группу', style: TextStyle(color: Colors.white)),
-            onTap: () {
-              Navigator.pop(context);
-              // Логика для покидания группы
-            },
-          ),
-        ),
-      ],
-      color: Colors.black, 
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(0),
       ),
-    );
-  }
+      PopupMenuItem(
+        child: ListTile(
+          leading: const Icon(Icons.mood_bad_rounded, color: Colors.white),
+          title: const Text('Покинуть группу', style: TextStyle(color: Colors.white)),
+          onTap: () {
+            Navigator.pop(context); // Закрываем меню
+            // Логика для покидания группы
+          },
+        ),
+      ),
+    ],
+    color: Colors.black, // Фон меню
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(8), // Округлённые края
+    ),
+  );
+}
+
+// Метод для обновления пути к изображению
+void _updateProfileImagePath(String newPath, String? _profileImagePath) {
+  // Можно обновить переменную или использовать какой-то другой механизм (например, управление состоянием)
+  _profileImagePath = newPath;
+  // Обновление интерфейса, если требуется, например, через отдельный виджет или обновление списка
+}

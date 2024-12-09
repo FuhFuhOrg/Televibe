@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'chatInfo.dart';
-import 'package:tele_vibe/Widgets/UnderWidgets/messageBubble.dart';
-import 'fileUtils.dart';
+import 'UnderWidgets/messageBubble.dart';
+import 'UnderWidgets/fileUtils.dart';
+import 'searchMessagesScreen.dart';
 
 class ChatListPage extends StatefulWidget {
   const ChatListPage({super.key});
@@ -78,17 +79,13 @@ class _ChatListState extends State<ChatListPage> {
           ),
           actions: <Widget>[
             IconButton(
-              icon: Icon(_isSearching ? Icons.clear : Icons.search, color: Colors.white),
+              icon: const Icon(Icons.search, color: Colors.white),
               onPressed: () {
-                setState(() {
-                  if (_isSearching) {
-                    _searchController.clear();
-                    _isSearching = false;
-                  } else {
-                    _isSearching = true;
-                  }
-                });
-              },
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SearchMessagesScreen(messages: entries)),
+                );
+              }
             ),
           ],
         ),

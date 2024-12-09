@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'renameTextField.dart';
-import 'fileUtils.dart';
+import 'UnderWidgets/fileUtils.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String nickname;
