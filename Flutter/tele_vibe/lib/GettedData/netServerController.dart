@@ -61,18 +61,22 @@ class NetServerController with WidgetsBindingObserver {
   }
 
   void onTextReceived(String message) {
-    List<String> parts = message.split(" ");
-    try {
-      int id = int.parse(parts[0]);
-      var listener = listeners[id];
-      if (listener != null) {
-        listener(parts.sublist(1));
-        listeners.remove(id);
-      }
-    } catch (e) {
-      print('Error: $e');
-    }
+  List<String> parts = message.split(" ");
+  if (parts.isEmpty || int.tryParse(parts[0]) == null) {
+    print('Invalid message format: $message');
+    return;
   }
+  try {
+    int id = int.parse(parts[0]);
+    var listener = listeners[id];
+    if (listener != null) {
+      listener(parts.sublist(1));
+      listeners.remove(id);
+    }
+  } catch (e) {
+    print('Error: $e');
+  }
+}
 
   void setOnMessageReceivedListener(int id, Function(List<String>) listener) {
     listeners[id] = listener;
