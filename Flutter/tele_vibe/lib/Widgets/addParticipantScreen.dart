@@ -4,6 +4,8 @@ class AddParticipantScreen extends StatelessWidget {
   final TextEditingController _idController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
+  AddParticipantScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

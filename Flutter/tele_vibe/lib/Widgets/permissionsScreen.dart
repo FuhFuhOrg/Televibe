@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class PermissionsScreen extends StatelessWidget {
   final String nickname;
 
-  PermissionsScreen({required this.nickname});
+  const PermissionsScreen({super.key, required this.nickname});
 
   @override
   Widget build(BuildContext context) {

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:tele_vibe/GettedData/MessageHandler.dart';
 import 'package:tele_vibe/GettedData/netServerController.dart';
+import 'package:tele_vibe/ViewModel/loginVM.dart';
 import 'package:tele_vibe/Widgets/loginClass.dart';
 
 class RegistrationVM {
   void navigateToLoginPage(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
+      MaterialPageRoute(builder: (context) => const LoginPage()),
     );
   }
 
@@ -22,10 +24,19 @@ class RegistrationVM {
     print('Password: $password');
     print('Re-Password: $rePassword');
 
-    NetServerController().register(login, password).then((goin) {
-      if (goin) {
-        print('Return Registration');
-      }
-    });
+    if (password == rePassword){
+      NetServerController().register(login, password).then((goin) {
+        if (goin[0] == "true") {
+          print('Return Registration');
+          LoginVM().loginAccount(context, loginController, passwordController);
+        }
+        else{
+          MessageHandler.showAlertDialog(context, '${goin.join(" ")}');
+        }
+      });
+    }
+    else{
+          MessageHandler.showAlertDialog(context, 'У вас не совпадает пароль');
+    }
   }
 }

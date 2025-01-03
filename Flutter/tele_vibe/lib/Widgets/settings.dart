@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Settings extends StatelessWidget {
+  const Settings({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,7 +55,7 @@ class Settings extends StatelessWidget {
               // логика перехода на экран выбора языка
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LanguageSettings()),
+                MaterialPageRoute(builder: (context) => const LanguageSettings()),
               );
             },
           ),
@@ -64,6 +66,8 @@ class Settings extends StatelessWidget {
 }
 
 class LanguageSettings extends StatelessWidget {
+  const LanguageSettings({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,7 +102,7 @@ class LanguageSettings extends StatelessWidget {
 }
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: Settings(),
   ));
 }

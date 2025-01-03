@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:pointycastle/asymmetric/api.dart';
 import 'package:tele_vibe/GettedData/cryptController.dart';
 import 'package:web_socket_channel/status.dart' as status;
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -12,7 +13,7 @@ class NetServerController with WidgetsBindingObserver {
   static int k = 0;
   static Map<int, Function(List<String>)> listeners = {};
   bool _isReconnecting = false;
-  static const int reconnectDelaySeconds = 5; // Задержка в секундах
+  static const int reconnectDelaySeconds = 5;
 
   static final NetServerController _instance = NetServerController._internal();
 
@@ -24,28 +25,27 @@ class NetServerController with WidgetsBindingObserver {
 
   void start() {
     WidgetsBinding.instance.addObserver(this);
-    if (webSocketChannel == null || webSocketChannel!.closeCode != null) {
-      createWebSocketClient();
-    }
+    _connect();
   }
 
-  void createWebSocketClient() {
-    if (_isReconnecting) return; // Избегаем многократных попыток
-
+  void _connect() {
     final uri = Uri.parse("ws://$s:17825/");
-    webSocketChannel = WebSocketChannel.connect(uri);
+    try {
+      webSocketChannel = WebSocketChannel.connect(uri);
 
-    webSocketChannel!.stream.listen((message) {
-      onTextReceived(message);
-    }, onDone: () {
-      print('WebSocket closed');
-      _attemptReconnect(); // Запускаем попытку переподключения
-    }, onError: (error) {
-      print('WebSocket error: $error');
-      _attemptReconnect(); // Запускаем попытку переподключения при ошибке
-    });
-
-    sendUnregistredRequest("Hello World!");
+      webSocketChannel!.stream.listen((message) {
+        onTextReceived(message);
+      }, onDone: () {
+        print('WebSocket closed');
+        _attemptReconnect();
+      }, onError: (error) {
+        print('WebSocket error: $error');
+        _attemptReconnect();
+      });
+    } catch (e) {
+      print('Error connecting to WebSocket: $e');
+      _attemptReconnect();
+    }
   }
 
   // Функция для попытки переподключения
@@ -53,9 +53,9 @@ class NetServerController with WidgetsBindingObserver {
     if (_isReconnecting) return; // Проверяем, уже ли идет попытка переподключения
     _isReconnecting = true;
 
-    Future.delayed(Duration(seconds: reconnectDelaySeconds), () {
+    Future.delayed(const Duration(seconds: reconnectDelaySeconds), () {
       print('Attempting to reconnect...');
-      start();
+      _connect();
       _isReconnecting = false; // Сбрасываем флаг после попытки
     });
   }
@@ -79,20 +79,20 @@ class NetServerController with WidgetsBindingObserver {
   }
 
   void sendRequest(int id, String requestWord, String message) {
-    if (webSocketChannel != null) {
+    if (webSocketChannel != null && webSocketChannel!.closeCode == null) {
       webSocketChannel!.sink.add("/sql $requestWord $id $message");
-    }
-    else{
-      createWebSocketClient();
+    } else {
+      print("WebSocket is not connected. Reconnecting...");
+      _connect();
     }
   }
 
   void sendUnregistredRequest(String message) {
-    if (webSocketChannel != null) {
+    if (webSocketChannel != null && webSocketChannel!.closeCode == null) {
       webSocketChannel!.sink.add(message);
-    }
-    else{
-      createWebSocketClient();
+    } else {
+      print("WebSocket is not connected. Reconnecting...");
+      _connect();
     }
   }
 
@@ -106,36 +106,63 @@ class NetServerController with WidgetsBindingObserver {
 
   // Requests to the server
 
-  Future<String> createNewChat(String chatPassword, bool isPrivacy) async {
-    Completer<String> completer = Completer<String>();
+
+//RW
+  Future<List<String>> createNewChat(String chatPassword, bool isPrivacy) async {
+    Completer<List<String>> completer = Completer<List<String>>();
     int requestId = getK();
 
     setOnMessageReceivedListener(requestId, (parts) {
       if (parts.isNotEmpty) {
-        completer.complete(parts[0]);
+        completer.complete(parts);
       }
     });
 
-    sendRequest(requestId, "ChatCreate", "$isPrivacy $chatPassword");
+    print("${CryptController.encryptAES(chatPassword, chatPassword)} $isPrivacy");
+    sendRequest(requestId, "ChatCreate", "${CryptController.encryptAES(chatPassword, chatPassword)} $isPrivacy");
     return completer.future;
   }
 
-  Future<String> addUserToChat(String publicKey, String idChat, String chatPassword) async {
-    Completer<String> completer = Completer<String>();
+
+//RW
+  Future<List<String>> addUserToChat(RSAPublicKey publicKey, RSAPrivateKey privateKey, 
+    String idChat, String chatPassword, int? anonId, String? password) async 
+  {
+    Completer<List<String>> completer = Completer<List<String>>();
     int requestId = getK();
+
+    // Шифруем ключи через CryptController
+    String encryptedPublicKey = CryptController.encryptPublicKey(publicKey.toString(), idChat, chatPassword);
+    String encryptedPrivateKey = CryptController.encryptPrivateKey(privateKey.toString(), idChat, chatPassword, anonId!, password!);
+    String encryptedAnonId = CryptController.encryptAnonId(anonId.toString(), idChat, chatPassword, password!);
 
     setOnMessageReceivedListener(requestId, (parts) {
       if (parts.isNotEmpty) {
-        completer.complete(parts[0]);
+        completer.complete(parts);
       } else {
         completer.complete(null);
       }
     });
 
-    sendRequest(requestId, "addUserToChat", "$publicKey $idChat $chatPassword");
+    sendRequest(requestId, "AddUserToChat", 
+    "$encryptedPublicKey $encryptedPrivateKey $idChat $encryptedAnonId");
     return completer.future;
   }
 
+  String xorEncrypt(String data, String key) {
+    List<int> dataBytes = utf8.encode(data);
+    List<int> keyBytes = utf8.encode(key);
+    List<int> encryptedBytes = [];
+
+    for (int i = 0; i < dataBytes.length; i++) {
+      encryptedBytes.add(dataBytes[i] ^ keyBytes[i % keyBytes.length]);
+    }
+
+    return base64Encode(encryptedBytes);
+  }
+
+
+//ERROR
   Future<String> sendMessage(List<int> msg, int idSender, DateTime timeMsg) async {
     Completer<String> completer = Completer<String>();
     int requestId = getK();
@@ -153,6 +180,8 @@ class NetServerController with WidgetsBindingObserver {
     return completer.future;
   }
 
+
+//ERROR
   Future<List<String>> getMessages(String str) async {
     Completer<List<String>> completer = Completer<List<String>>();
     int requestId = getK();
@@ -169,6 +198,8 @@ class NetServerController with WidgetsBindingObserver {
     return completer.future;
   }
 
+
+//ERROR
   Future<String> deleteMessage(int idSender, int idMsg) async {
     Completer<String> completer = Completer<String>();
     int requestId = getK();
@@ -185,6 +216,8 @@ class NetServerController with WidgetsBindingObserver {
     return completer.future;
   }
 
+
+//ERROR
   Future<String> refactorMessage(int idMsg, int idSender, List<int> msg) async {
     Completer<String> completer = Completer<String>();
     int requestId = getK();
@@ -201,40 +234,45 @@ class NetServerController with WidgetsBindingObserver {
     return completer.future;
   }
 
-  Future<String> login(String log, String pass) async {
-    Completer<String> completer = Completer<String>();
+
+//OK
+  Future<List<String>> login(String log, String pass) async {
+    Completer<List<String>> completer = Completer<List<String>>();
     int requestId = getK();
 
     setOnMessageReceivedListener(requestId, (parts) {
       if (parts.isNotEmpty) {
-        completer.complete(parts[0]);
+        completer.complete(parts);
       } else {
         completer.complete(null);
       }
     });
 
     sendRequest(requestId, "Login", 
-    "${CryptController.encryptAES(log, "")} ${CryptController.encryptAES(pass, "")}");
+    "${CryptController.encryptAES(log, log)} ${CryptController.encryptAES(pass, pass)}");
     return completer.future;
   }
 
-  Future<bool> register(String log, String pass) async {
-    Completer<bool> completer = Completer<bool>();
+
+//OK
+  Future<List<String>> register(String log, String pass) async {
+    Completer<List<String>> completer = Completer<List<String>>();
     int requestId = getK();
 
     setOnMessageReceivedListener(requestId, (parts) {
       if (parts.isNotEmpty) {
-        completer.complete(parts[0] == 'true');
+        completer.complete(parts);
       } else {
-        completer.complete(false);
+        completer.complete(null);
       }
     });
     String regdata = "  ";
 
     sendRequest(requestId, "AltRegister", 
-    "${CryptController.encryptAES(log, "")} ${CryptController.encryptAES(pass, "")} ${CryptController.encryptAES(regdata, "")}");
+    "${CryptController.encryptAES(log, log)} ${CryptController.encryptAES(pass, pass)} ${CryptController.encryptAES(regdata, "")}");
     return completer.future;
   }
+
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {

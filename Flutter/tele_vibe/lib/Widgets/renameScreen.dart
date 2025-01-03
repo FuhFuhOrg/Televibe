@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class RenameScreen extends StatelessWidget {
   final String nickname;
 
-  RenameScreen({required this.nickname});
+  const RenameScreen({super.key, required this.nickname});
 
   @override
   Widget build(BuildContext context) {

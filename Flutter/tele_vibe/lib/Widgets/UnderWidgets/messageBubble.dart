@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class MessageBubble extends StatelessWidget {
   final String text;
@@ -9,7 +8,7 @@ class MessageBubble extends StatelessWidget {
   final bool showAvatar;
   final bool showUserName;
 
-  const MessageBubble({
+  const MessageBubble({super.key, 
     required this.text,
     required this.isMe,
     required this.userName,
