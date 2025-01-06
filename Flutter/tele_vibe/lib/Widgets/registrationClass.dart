@@ -21,9 +21,9 @@ class _RegisterClassState extends State<RegistrationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF021510),
+      backgroundColor: const Color(0xFF141414),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF021510),
+        backgroundColor: const Color(0xFF141414),
         title: const Center(
           child: Text('Registration', style: TextStyle(color: Colors.white)),
           ),
@@ -146,7 +146,7 @@ class _RegisterClassState extends State<RegistrationPage> {
                   onPressed: () => _registrationVM.registerNewAccount(context, _mailController, 
                   _loginController, _passwordController, _rePasswordController),
                   style: TextButton.styleFrom(
-                    backgroundColor: const Color(0xFF4E8F7D),
+                    backgroundColor: const Color(0xFF222222),
                   ),
                   child: const Text(
                     'Register',
@@ -160,7 +160,7 @@ class _RegisterClassState extends State<RegistrationPage> {
                     TextButton(
                       onPressed: () => _registrationVM.navigateToLoginPage(context),
                       style: TextButton.styleFrom(
-                        backgroundColor: const Color(0xFF4E8F7D),
+                        backgroundColor: const Color(0xFF222222),
                       ),
                       child: const Text(
                         'Go to Login',

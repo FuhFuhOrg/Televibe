@@ -42,7 +42,7 @@ class _ChatInfoState extends State<ChatInfo>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF052018),
+      backgroundColor: const Color(0xFF141414),
       body: CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
@@ -129,7 +129,7 @@ class _ChatInfoState extends State<ChatInfo>{
                       // Логика добавления участников
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF021510),
+                      backgroundColor: const Color(0xFF222222),
                     ),
                     child: const Text('Добавить участников', style: TextStyle(color: Colors.white),),
                   ),
@@ -267,42 +267,6 @@ class _ChatInfoState extends State<ChatInfo>{
           ],
         );
       },
-    );
-  }
-}
-
-class BottomSheetMenu extends StatelessWidget {
-  const BottomSheetMenu({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 200,
-      child: Column(
-        children: <Widget>[
-          ListTile(
-            leading: const Icon(Icons.search),
-            title: const Text('Поиск участников'),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.delete),
-            title: const Text('Удалить группу'),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.exit_to_app),
-            title: const Text('Покинуть группу'),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
     );
   }
 }

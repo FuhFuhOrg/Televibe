@@ -62,11 +62,11 @@ class _ChatListState extends State<ChatListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: const Color(0xFF021510),
+      backgroundColor: const Color(0xFF141414),
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.08),
         child: AppBar(
-          backgroundColor: const Color(0xFF052018),
+          backgroundColor: const Color(0xFF222222),
           automaticallyImplyLeading: false,
           title: GestureDetector(
             onTap: () {
@@ -192,7 +192,7 @@ class _ChatListState extends State<ChatListPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       height: 58.0,
-      color: const Color(0xFF021510),
+      color: const Color(0xFF141414),
       child: Row(
         children: <Widget>[
           IconButton(
@@ -417,7 +417,7 @@ class MessageBubble extends StatelessWidget {
             margin: const EdgeInsets.symmetric(vertical: 5.0),
             padding: const EdgeInsets.all(10.0),
             decoration: BoxDecoration(
-              color: isMe ? const Color(0xFF052018) : const Color(0xFF052018), // Также изменить. 
+              color: isMe ? const Color(0xFF222222) : const Color(0xFF222222), // Также изменить. 
               borderRadius: BorderRadius.only(
                 topLeft: const Radius.circular(12.0),
                 topRight: const Radius.circular(12.0),

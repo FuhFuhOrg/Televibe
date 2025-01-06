@@ -40,7 +40,7 @@ class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF021510),
+      backgroundColor: const Color(0xFF141414),
       body: ListView(
         children: [
           ExpansionTile(
@@ -49,7 +49,7 @@ class _SettingsState extends State<Settings> {
             children: <Widget>[
               SwitchListTile(
                 activeTrackColor: Colors.white,
-                activeColor: const Color(0xFF4E8F7D),
+                activeColor: const Color(0xFF222222),
                 title: const Text('Показывать данные при входе', style: TextStyle(color: Colors.white)),
                 value: _showDataOnLogin,
                 onChanged: (bool value) {
@@ -61,7 +61,7 @@ class _SettingsState extends State<Settings> {
               ),
               SwitchListTile(
                 activeTrackColor: Colors.white,
-                activeColor: const Color(0xFF4E8F7D),
+                activeColor: const Color(0xFF222222),
                 title: const Text('Номер телефона', style: TextStyle(color: Colors.white)),
                 value: _showPhoneNumber,
                 onChanged: (bool value) {
@@ -79,7 +79,7 @@ class _SettingsState extends State<Settings> {
             children: <Widget>[
               SwitchListTile(
                 activeTrackColor: Colors.white,
-                activeColor: const Color(0xFF4E8F7D),
+                activeColor: const Color(0xFF222222),
                 title: const Text('Уведомления', style: TextStyle(color: Colors.white)),
                 value: _notificationsEnabled,
                 onChanged: (bool value) {
@@ -91,7 +91,7 @@ class _SettingsState extends State<Settings> {
               ),
               SwitchListTile(
                 activeTrackColor: Colors.white,
-                activeColor: const Color(0xFF4E8F7D),
+                activeColor: const Color(0xFF222222),
                 title: const Text('Звук', style: TextStyle(color: Colors.white)),
                 value: _soundEnabled,
                 onChanged: (bool value) {
@@ -124,10 +124,10 @@ class LanguageSettings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF021510),
+      backgroundColor: const Color(0xFF141414),
       appBar: AppBar(
         title: const Text('Выбор языка', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFF3E505F),
+        backgroundColor: const Color(0xFF222222),
       ),
       body: ListView(
         children: [

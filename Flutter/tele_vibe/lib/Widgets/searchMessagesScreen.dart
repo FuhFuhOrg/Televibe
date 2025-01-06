@@ -48,7 +48,7 @@ class _SearchMessagesScreenState extends State<SearchMessagesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF052018),
+        backgroundColor: const Color(0xFF222222),
         iconTheme: const IconThemeData(color: Colors.white),
         title: TextField(
           controller: _searchController,
@@ -60,7 +60,7 @@ class _SearchMessagesScreenState extends State<SearchMessagesScreen> {
           style: const TextStyle(color: Colors.white),
         ),
       ),
-      backgroundColor: const Color(0xFF021510),
+      backgroundColor: const Color(0xFF141414),
       body: _filteredMessages.isNotEmpty
           ? ListView.builder(
               itemCount: _filteredMessages.length,

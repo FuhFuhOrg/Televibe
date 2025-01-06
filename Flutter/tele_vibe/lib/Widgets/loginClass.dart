@@ -36,9 +36,9 @@ class _LoginClassState extends State<LoginPage> {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: Scaffold(
-        backgroundColor: const Color(0xFF021510),
+        backgroundColor: const Color(0xFF141414),
         appBar: AppBar(
-          backgroundColor: const Color(0xFF021510),
+          backgroundColor: const Color(0xFF141414),
           title: const Center(
             child: Text('Login', style: TextStyle(color: Colors.white)),
             ),
@@ -109,7 +109,7 @@ class _LoginClassState extends State<LoginPage> {
                   ElevatedButton(
                     onPressed: () => _loginVM.fakeLoginAccount(context, _loginController, _passwordController),
                     style: TextButton.styleFrom(
-                      backgroundColor: const Color(0xFF4E8F7D),
+                      backgroundColor: const Color(0xFF222222),
                     ),
                     child: const Text(
                       'Login',
@@ -123,7 +123,7 @@ class _LoginClassState extends State<LoginPage> {
                       TextButton(
                         onPressed: () => _loginVM.navigateToRegisterPage(context),
                         style: TextButton.styleFrom(
-                          backgroundColor: const Color(0xFF4E8F7D),
+                          backgroundColor: const Color(0xFF222222),
                         ),
                         child: const Text(
                           'Go to Registration',

@@ -10,10 +10,10 @@ class AddParticipantScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF021510),
+      backgroundColor: const Color(0xFF141414),
       appBar: AppBar(
         title: const Text('Добавить участника', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFF052018),
+        backgroundColor: const Color(0xFF222222),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -44,7 +44,7 @@ class AddParticipantScreen extends StatelessWidget {
                 Navigator.pop(context); // Возвращаемся на предыдущий экран
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF052018),
+                backgroundColor: const Color(0xFF222222),
               ),
               child: const Text('OK', style: TextStyle(color: Colors.white)),
             ),

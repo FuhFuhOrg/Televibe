@@ -59,7 +59,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF052018),
+        backgroundColor: const Color(0xFF222222),
         iconTheme: const IconThemeData(color: Colors.white),
         title: TextField(
           controller: _searchController,
@@ -72,7 +72,7 @@ class _SearchScreenState extends State<SearchScreen> {
           onChanged: _searchChats,
         ),
       ),
-      backgroundColor: const Color(0xFF021510),
+      backgroundColor: const Color(0xFF141414),
       body: _filteredChats.isNotEmpty
           ? ListView.builder(
               itemCount: _filteredChats.length,
@@ -82,7 +82,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   leading: const CircleAvatar(
                     backgroundImage: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg'),
                   ),
-                  tileColor: const Color(0xFF021510),
+                  tileColor: const Color(0xFF141414),
                   textColor: Colors.white,
                   title: Text(chat.chatName),
                   subtitle: Text(chat.message),

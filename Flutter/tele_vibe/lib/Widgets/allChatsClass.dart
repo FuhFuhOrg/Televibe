@@ -195,7 +195,7 @@ class _AllChatsClassState extends State<AllChatsPage> {
                 leading: const CircleAvatar(
                   backgroundImage: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg'), // Заменить на фотографию из БД
                 ),
-                tileColor: const Color(0xFF021510),
+                tileColor: const Color(0xFF141414),
                 textColor: Colors.white,
                 title: Text(chat.chatName), // Название чата
                 subtitle: Text(chat.message), // Сообщение
@@ -323,12 +323,12 @@ class _AllChatsClassState extends State<AllChatsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF021510),
+      backgroundColor: const Color(0xFF141414),
       appBar: (_selectedIndex == 1)
           ? PreferredSize(
               preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.08),
               child: AppBar(
-                backgroundColor: const Color(0xFF052018),
+                backgroundColor: const Color(0xFF222222),
                 automaticallyImplyLeading: false,
                 title: const Text(
                   "Televibe", 
@@ -352,8 +352,8 @@ class _AllChatsClassState extends State<AllChatsPage> {
           : null,
       body: _getSelectedScreen(), // Показ выбранного экрана
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFF021510),
-        selectedItemColor: const Color(0xFF368F77),
+        backgroundColor: const Color(0xFF141414),
+        selectedItemColor: const Color(0xFF02040E),
         unselectedItemColor: Colors.white,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
         unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
@@ -382,7 +382,7 @@ class _AllChatsClassState extends State<AllChatsPage> {
             MaterialPageRoute(builder: (context) => const ChatGroupOptionsPage()),
           );
         },
-        backgroundColor: const Color(0xFF052018),
+        backgroundColor: const Color(0xFF222222),
         child: const Icon(Icons.add, color: Colors.white,),
       ),
     );

@@ -34,7 +34,7 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF021510),
+      backgroundColor: const Color(0xFF141414),
       appBar: AppBar(
         title: const Text(
           "Создание/Добавление чата",
@@ -42,7 +42,7 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
             color: Colors.white,
           ),
         ),
-        backgroundColor: const Color(0xFF021510),
+        backgroundColor: const Color(0xFF141414),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

@@ -42,12 +42,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF021510),
+      backgroundColor: const Color(0xFF141414),
       body: CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
             automaticallyImplyLeading: false,
-            backgroundColor: const Color(0xFF021510),
+            backgroundColor: const Color(0xFF141414),
             expandedHeight: MediaQuery.of(context).size.height * 3 / 7,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(

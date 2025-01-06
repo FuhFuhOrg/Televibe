@@ -22,9 +22,9 @@ class _RenameTextFieldState extends State<RenameTextField> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF021510),
+      backgroundColor: const Color(0xFF141414),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF021510),
+        backgroundColor: const Color(0xFF141414),
         title: Text(
           'Изменить ${widget.title}',
           style: const TextStyle(color: Colors.white),
