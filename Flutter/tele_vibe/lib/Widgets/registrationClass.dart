@@ -21,11 +21,11 @@ class _RegisterClassState extends State<RegistrationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFF141414),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFF141414),
         title: const Center(
-          child: Text('Registration'),
+          child: Text('Registration', style: TextStyle(color: Colors.white)),
           ),
           toolbarHeight: MediaQuery.of(context).size.height * 0.25,
           automaticallyImplyLeading: false,
@@ -39,17 +39,17 @@ class _RegisterClassState extends State<RegistrationPage> {
               children: <Widget>[
                 const SizedBox(height: 8),
                 TextField(
-                  cursorColor: Colors.black,
+                  cursorColor: Colors.white,
                   controller: _mailController,
                   decoration: const InputDecoration(
                     labelText: 'Mail (необязательно)',
-                    labelStyle: TextStyle(color: Colors.black),
+                    labelStyle: TextStyle(color: Colors.white),
                     border: OutlineInputBorder(),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
+                      borderSide: BorderSide(color: Colors.white),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
+                      borderSide: BorderSide(color: Colors.white),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.red),
@@ -63,13 +63,13 @@ class _RegisterClassState extends State<RegistrationPage> {
                   controller: _loginController,
                   decoration: const InputDecoration(
                     labelText: 'Login',
-                    labelStyle: TextStyle(color: Colors.black),
+                    labelStyle: TextStyle(color: Colors.white),
                     border: OutlineInputBorder(),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
+                      borderSide: BorderSide(color: Colors.white),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
+                      borderSide: BorderSide(color: Colors.white),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.red), 
@@ -83,13 +83,13 @@ class _RegisterClassState extends State<RegistrationPage> {
                   controller: _passwordController,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    labelStyle: const TextStyle(color: Colors.black),
+                    labelStyle: const TextStyle(color: Colors.white),
                     border: const OutlineInputBorder(),
                     enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
+                      borderSide: BorderSide(color: Colors.white),
                     ),
                     focusedBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black), 
+                      borderSide: BorderSide(color: Colors.white), 
                     ),
                     errorBorder: const OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.red), 
@@ -111,17 +111,17 @@ class _RegisterClassState extends State<RegistrationPage> {
                 ),
                 const SizedBox(height: 8),
                 TextField(
-                  cursorColor: Colors.black,
+                  cursorColor: Colors.white,
                   controller: _rePasswordController,
                   decoration: InputDecoration(
                     labelText: 'Re Password',
-                    labelStyle: const TextStyle(color: Colors.black),
+                    labelStyle: const TextStyle(color: Colors.white),
                     border: const OutlineInputBorder(),
                     enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
+                      borderSide: BorderSide(color: Colors.white),
                     ),
                     focusedBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black), 
+                      borderSide: BorderSide(color: Colors.white), 
                     ),
                     errorBorder: const OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.red),
@@ -129,7 +129,7 @@ class _RegisterClassState extends State<RegistrationPage> {
                     suffix: IconButton(
                       icon: Icon(
                         _obscureTextRePassword ? Icons.visibility : Icons.visibility_off,
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                       onPressed: () {
                         setState(() {
@@ -146,11 +146,11 @@ class _RegisterClassState extends State<RegistrationPage> {
                   onPressed: () => _registrationVM.registerNewAccount(context, _mailController, 
                   _loginController, _passwordController, _rePasswordController),
                   style: TextButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(120, 160, 131, 1),
+                    backgroundColor: const Color(0xFF222222),
                   ),
                   child: const Text(
                     'Register',
-                    style: TextStyle(color: Colors.black),
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -160,11 +160,11 @@ class _RegisterClassState extends State<RegistrationPage> {
                     TextButton(
                       onPressed: () => _registrationVM.navigateToLoginPage(context),
                       style: TextButton.styleFrom(
-                        backgroundColor: const Color.fromRGBO(120, 160, 131, 1),
+                        backgroundColor: const Color(0xFF222222),
                       ),
                       child: const Text(
                         'Go to Login',
-                        style: TextStyle(color: Colors.black),
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ],

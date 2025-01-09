@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'chatInfo.dart';
-import 'package:tele_vibe/Widgets/UnderWidgets/messageBubble.dart';
+import 'UnderWidgets/messageBubble.dart';
+import 'UnderWidgets/fileUtils.dart';
+import 'searchMessagesScreen.dart';
 
 class ChatListPage extends StatefulWidget {
   const ChatListPage({super.key});
@@ -27,6 +29,7 @@ class _ChatListState extends State<ChatListPage> {
   final ScrollController _scrollController = ScrollController();
   final FocusNode _focusNode = FocusNode();
   bool _isSearching = false;
+  String? _profileImagePath;
 
   @override
   void initState() {
@@ -56,38 +59,33 @@ class _ChatListState extends State<ChatListPage> {
     super.dispose();
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: const Color(0xFF8DA18B),
+      backgroundColor: const Color(0xFF141414),
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.08),
         child: AppBar(
-          backgroundColor: const Color(0xFF3E505F),
+          backgroundColor: const Color(0xFF222222),
           automaticallyImplyLeading: false,
           title: GestureDetector(
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ChatInfo()),
+                MaterialPageRoute(builder: (context) => const ChatInfo(initialGroupName: 'Название группы')),
               );
             },
             child: _isSearching ? _buildSearchField() : _buildTitle(),
           ),
           actions: <Widget>[
             IconButton(
-              icon: Icon(_isSearching ? Icons.clear : Icons.search, color: Colors.white),
+              icon: const Icon(Icons.search, color: Colors.white),
               onPressed: () {
-                setState(() {
-                  if (_isSearching) {
-                    _searchController.clear();
-                    _isSearching = false;
-                  } else {
-                    _isSearching = true;
-                  }
-                });
-              },
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SearchMessagesScreen(messages: entries)),
+                );
+              }
             ),
           ],
         ),
@@ -96,40 +94,52 @@ class _ChatListState extends State<ChatListPage> {
         onTap: () {
           FocusScope.of(context).unfocus();
         },
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: ListView.builder(
-                controller: _scrollController,
-                padding: const EdgeInsets.all(10.0),
-                itemCount: filteredEntries.length,
-                itemBuilder: (BuildContext context, int index) {
-                  bool showAvatar = false;
+        child: SafeArea(
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: (ScrollNotification scrollInfo) {
+                    return true;
+                  },
+                  child: ListView.builder(
+                    reverse: true,
+                    itemCount: filteredEntries.length,
+                    controller: _scrollController,
+                                      physics: const BouncingScrollPhysics(),
+                    itemBuilder: (BuildContext context, int index) {
+                      final messageIndex = filteredEntries.length - 1 - index;
+                      final entry = filteredEntries[messageIndex];
+                      bool showAvatar = false;
 
-                  if (index == filteredEntries.length - 1 || filteredEntries[index]['userName'] != filteredEntries[index + 1]['userName']) {
-                    showAvatar = !filteredEntries[index]['isMe'];
-                  }
+                      if (messageIndex == 0 || 
+                          entry['userName'] != filteredEntries[messageIndex - 1]['userName']) {
+                        showAvatar = !entry['isMe'];
+                      }
 
-                  return GestureDetector(
-                    onLongPress: () => _showMessageOptions(context, index),
-                    child: MessageBubble(
-                      text: filteredEntries[index]['text'],
-                      isMe: filteredEntries[index]['isMe'],
-                      userName: filteredEntries[index]['userName'],
-                      time: filteredEntries[index]['time'],
-                      showAvatar: showAvatar,
-                      showUserName: !filteredEntries[index]['isMe'],
-                    ),
-                  );
-                },
+                      return GestureDetector(
+                        onLongPress: () => _showParticipantOptions(context, messageIndex),
+                        child: MessageBubble(
+                          text: entry['text'],
+                          isMe: entry['isMe'],
+                          userName: entry['userName'],
+                          time: entry['time'],
+                          showAvatar: showAvatar,
+                          showUserName: !entry['isMe'],
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
-            ),
-            _buildMessageInput(),
-          ],
+              _buildMessageInput(),
+            ],
+          ),
         ),
       ),
     );
   }
+
 
   Widget _buildSearchField() {
     return TextField(
@@ -177,13 +187,32 @@ class _ChatListState extends State<ChatListPage> {
     );
   }
 
+
   Widget _buildMessageInput() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       height: 58.0,
-      color: const Color(0xFF3E505F),
+      color: const Color(0xFF141414),
       child: Row(
         children: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.attach_file, color: Colors.white),
+            onPressed: () async {
+              final pickedImage = await FileUtils.pickImage();
+
+              if (pickedImage != null) {
+                setState(() {
+                  // Логика сохранения пути к изображению
+                  // Например, добавьте поле _profileImagePath
+                  _profileImagePath = pickedImage.path;
+                });
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Изображение не выбрано')), // Если изображение не выбрано
+                );
+              }
+            },
+          ),
           Expanded(
             child: TextField(
               focusNode: _focusNode,
@@ -192,7 +221,7 @@ class _ChatListState extends State<ChatListPage> {
               enableSuggestions: true,
               controller: _textController,
               decoration: const InputDecoration(
-                hintText: 'Введите ваше сообщение... ',
+                hintText: 'Введите ваше сообщение...',
                 hintStyle: TextStyle(color: Colors.white54),
                 border: InputBorder.none,
               ),
@@ -205,7 +234,7 @@ class _ChatListState extends State<ChatListPage> {
               if (message.isNotEmpty) {
                 setState(() {
                   entries.add({'text': message, 'isMe': true, 'userName': 'Я', 'time': '12:05'});
-                  _filterMessages();  // Обновляем результаты поиска после добавления нового сообщения
+                  _filterMessages();
                 });
                 _textController.clear();
                 _focusNode.requestFocus();
@@ -218,49 +247,73 @@ class _ChatListState extends State<ChatListPage> {
     );
   }
 
+
+
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
+      _scrollController.jumpTo(_scrollController.position.minScrollExtent);
     }
   }
 
-  void _showMessageOptions(BuildContext context, int index) {
-    FocusScope.of(context).unfocus();
-
-    showModalBottomSheet(
+  void _showParticipantOptions(BuildContext context, int index) {
+    showDialog(
       context: context,
       builder: (BuildContext context) {
-        return Wrap(
-          children: <Widget>[
-            ListTile(
-              leading: const Icon(Icons.copy),
-              title: const Text('Копировать'),
-              onTap: () {
-                Clipboard.setData(ClipboardData(text: filteredEntries[index]['text']));
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('Изменить'),
-              onTap: () {
-                Navigator.pop(context);
-                _showEditDialog(context, index);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete),
-              title: const Text('Удалить'),
-              onTap: () {
-                setState(() {
-                  entries.removeAt(index);
-                  _filterMessages();  // Обновляем результаты поиска после удаления сообщения
-                });
-                Navigator.pop(context);
+        return AlertDialog(
+          backgroundColor: Colors.black,
+          title: const Text(
+            'Сообщение',
+            style: TextStyle(color: Colors.white), 
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.copy, color: Colors.white),
+                title: const Text(
+                  'Копировать',
+                  style: TextStyle(color: Colors.white), 
+                ),
+                onTap: () {
+                  Clipboard.setData(ClipboardData(text: filteredEntries[index]['text']));
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.edit, color: Colors.white),
+                title: const Text(
+                  'Изменить',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showEditDialog(context, index);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.delete, color: Colors.white), 
+                title: const Text(
+                  'Удалить',
+                  style: TextStyle(color: Colors.white), 
+                ),
+                onTap: () {
+                  setState(() {
+                    entries.removeAt(index);
+                    _filterMessages();  // Обновляем результаты поиска после удаления сообщения
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'Отмена',
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -269,6 +322,7 @@ class _ChatListState extends State<ChatListPage> {
     );
   }
 
+
   void _showEditDialog(BuildContext context, int index) {
     TextEditingController editController = TextEditingController(text: filteredEntries[index]['text']);
 
@@ -276,22 +330,37 @@ class _ChatListState extends State<ChatListPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Изменить сообщение'),
+          backgroundColor: Colors.black,  
+          title: const Text(
+            'Изменить сообщение',
+            style: TextStyle(color: Colors.white),  
+          ),
           content: TextField(
             controller: editController,
+            style: const TextStyle(color: Colors.white), 
             decoration: const InputDecoration(
               hintText: 'Введите текст сообщения',
+              hintStyle: TextStyle(color: Colors.white60), 
+              border: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white), 
+              ),
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Отмена'),
+              child: const Text(
+                'Отмена',
+                style: TextStyle(color: Colors.white),  
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Сохранить'),
+              child: const Text(
+                'Сохранить',
+                style: TextStyle(color: Colors.white),  
+              ),
               onPressed: () {
                 setState(() {
                   entries[index]['text'] = editController.text;
@@ -348,7 +417,7 @@ class MessageBubble extends StatelessWidget {
             margin: const EdgeInsets.symmetric(vertical: 5.0),
             padding: const EdgeInsets.all(10.0),
             decoration: BoxDecoration(
-              color: isMe ? Colors.green : Colors.blue,
+              color: isMe ? const Color(0xFF222222) : const Color(0xFF222222), // Также изменить. 
               borderRadius: BorderRadius.only(
                 topLeft: const Radius.circular(12.0),
                 topRight: const Radius.circular(12.0),
@@ -369,7 +438,7 @@ class MessageBubble extends StatelessWidget {
                 Text(
                   text,
                   style: TextStyle(
-                    color: isMe ? Colors.black : Colors.white,
+                    color: isMe ? Colors.white : Colors.white, // Убрать позже
                     fontSize: 16.0,
                   ),
                 ),

@@ -1,58 +1,111 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Settings extends StatelessWidget {
+class Settings extends StatefulWidget {
   const Settings({super.key});
+
+  @override
+  _SettingsState createState() => _SettingsState();
+}
+
+class _SettingsState extends State<Settings> {
+  bool _showDataOnLogin = true;
+  bool _showPhoneNumber = true;
+  bool _notificationsEnabled = true;
+  bool _soundEnabled = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  // Загрузка сохраненных настроек из SharedPreferences
+  Future<void> _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _showDataOnLogin = prefs.getBool('showDataOnLogin') ?? true;
+      _showPhoneNumber = prefs.getBool('showPhoneNumber') ?? true;
+      _notificationsEnabled = prefs.getBool('notificationsEnabled') ?? true;
+      _soundEnabled = prefs.getBool('soundEnabled') ?? true;
+    });
+  }
+
+  // Сохранение настроек
+  Future<void> _saveSetting(String key, bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool(key, value);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF8DA18B),
+      backgroundColor: const Color(0xFF141414),
       body: ListView(
         children: [
           ExpansionTile(
-            title: const Text('Конфиденциальность'),
-            initiallyExpanded: true,  // Добавляем эту строку для автоматического разворачивания
+            title: const Text('Конфиденциальность', style: TextStyle(color: Colors.white)),
+            initiallyExpanded: true,
             children: <Widget>[
               SwitchListTile(
-                title: const Text('Показывать данные при входе'),
-                value: true, // можно заменить на переменную для динамического управления
+                activeTrackColor: Colors.white,
+                activeColor: const Color(0xFF222222),
+                title: const Text('Показывать данные при входе', style: TextStyle(color: Colors.white)),
+                value: _showDataOnLogin,
                 onChanged: (bool value) {
-                  // логика изменения состояния
+                  setState(() {
+                    _showDataOnLogin = value;
+                  });
+                  _saveSetting('showDataOnLogin', value); // Сохраняем настройку
                 },
               ),
               SwitchListTile(
-                title: const Text('Номер телефона'),
-                value: false, // можно заменить на переменную для динамического управления
+                activeTrackColor: Colors.white,
+                activeColor: const Color(0xFF222222),
+                title: const Text('Номер телефона', style: TextStyle(color: Colors.white)),
+                value: _showPhoneNumber,
                 onChanged: (bool value) {
-                  // логика изменения состояния
+                  setState(() {
+                    _showPhoneNumber = value;
+                  });
+                  _saveSetting('showPhoneNumber', value); // Сохраняем настройку
                 },
               ),
             ],
           ),
           ExpansionTile(
-            title: const Text('Уведомления и звуки'),
-            initiallyExpanded: true,  // Добавляем эту строку для автоматического разворачивания
+            title: const Text('Уведомления и звуки', style: TextStyle(color: Colors.white)),
+            initiallyExpanded: true,
             children: <Widget>[
               SwitchListTile(
-                title: const Text('Уведомления'),
-                value: true, // можно заменить на переменную для динамического управления
+                activeTrackColor: Colors.white,
+                activeColor: const Color(0xFF222222),
+                title: const Text('Уведомления', style: TextStyle(color: Colors.white)),
+                value: _notificationsEnabled,
                 onChanged: (bool value) {
-                  // логика изменения состояния
+                  setState(() {
+                    _notificationsEnabled = value;
+                  });
+                  _saveSetting('notificationsEnabled', value); // Сохраняем настройку
                 },
               ),
               SwitchListTile(
-                title: const Text('Звук'),
-                value: true, // можно заменить на переменную для динамического управления
+                activeTrackColor: Colors.white,
+                activeColor: const Color(0xFF222222),
+                title: const Text('Звук', style: TextStyle(color: Colors.white)),
+                value: _soundEnabled,
                 onChanged: (bool value) {
-                  // логика изменения состояния
+                  setState(() {
+                    _soundEnabled = value;
+                  });
+                  _saveSetting('soundEnabled', value); // Сохраняем настройку
                 },
               ),
             ],
           ),
           ListTile(
-            title: const Text('Язык'),
+            title: const Text('Язык', style: TextStyle(color: Colors.white)),
             onTap: () {
-              // логика перехода на экран выбора языка
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const LanguageSettings()),
@@ -71,26 +124,27 @@ class LanguageSettings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF141414),
       appBar: AppBar(
-        title: const Text('Выбор языка'),
-        backgroundColor: const Color(0xFF3E505F),
+        title: const Text('Выбор языка', style: TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xFF222222),
       ),
       body: ListView(
         children: [
           ListTile(
-            title: const Text('Русский'),
+            title: const Text('Русский', style: TextStyle(color: Colors.white)),
             onTap: () {
               // логика изменения языка на русский
             },
           ),
           ListTile(
-            title: const Text('Английский'),
+            title: const Text('Английский', style: TextStyle(color: Colors.white)),
             onTap: () {
               // логика изменения языка на английский
             },
           ),
           ListTile(
-            title: const Text('Немецкий'),
+            title: const Text('Немецкий', style: TextStyle(color: Colors.white)),
             onTap: () {
               // логика изменения языка на немецкий
             },

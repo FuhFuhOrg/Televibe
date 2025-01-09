@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'renameTextField.dart';
+import 'UnderWidgets/fileUtils.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String nickname;
@@ -14,6 +16,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String _phoneNumber = 'Введите номер телефона';
   String _username = 'Введите имя пользователя';
   String _about = 'О себе';
+  String? _profileImagePath;
 
   _ProfileScreenState() : _nickname = '';
 
@@ -23,49 +26,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _nickname = widget.nickname;
   }
 
-  void _showEditDialog(String title, String currentText, Function(String) onSave) {
-    TextEditingController controller = TextEditingController(text: currentText);
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Изменить $title'),
-          content: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              hintText: 'Введите $title',
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Отмена'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Сохранить'),
-              onPressed: () {
-                onSave(controller.text);
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
+  // Метод для перехода на экран изменения текста
+  void _navigateToEditScreen(String title, String currentText, Function(String) onSave) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RenameTextField(title: title, currentText: currentText),
+      ),
     );
+    if (result != null) {
+      onSave(result);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF8DA18B),
+      backgroundColor: const Color(0xFF141414),
       body: CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
-            automaticallyImplyLeading: false,  // Убираем стрелку "Назад"
-            backgroundColor: const Color(0xFF3E505F),
+            automaticallyImplyLeading: false,
+            backgroundColor: const Color(0xFF141414),
             expandedHeight: MediaQuery.of(context).size.height * 3 / 7,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
@@ -98,7 +80,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               IconButton(
                 icon: const Icon(Icons.edit),
                 onPressed: () {
-                  _showEditDialog('никнейм', _nickname, (newName) {
+                  _navigateToEditScreen('никнейм', _nickname, (newName) {
                     setState(() {
                       _nickname = newName;
                     });
@@ -121,16 +103,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Text(
                     'Аккаунт',
                     style: TextStyle(
+                      color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
                 ListTile(
-                  title: const Text('Номер телефона'),
+                  title: const Text('Номер телефона', style: TextStyle(color: Colors.white)),
                   subtitle: Text(_phoneNumber),
                   onTap: () {
-                    _showEditDialog('номер телефона', _phoneNumber, (newPhoneNumber) {
+                    _navigateToEditScreen('номер телефона', _phoneNumber, (newPhoneNumber) {
                       setState(() {
                         _phoneNumber = newPhoneNumber;
                       });
@@ -138,10 +121,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   },
                 ),
                 ListTile(
-                  title: const Text('Имя пользователя'),
+                  title: const Text('Имя пользователя', style: TextStyle(color: Colors.white)),
                   subtitle: Text(_username),
                   onTap: () {
-                    _showEditDialog('имя пользователя', _username, (newUsername) {
+                    _navigateToEditScreen('имя пользователя', _username, (newUsername) {
                       setState(() {
                         _username = newUsername;
                       });
@@ -149,10 +132,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   },
                 ),
                 ListTile(
-                  title: const Text('О себе'),
+                  title: const Text('О себе', style: TextStyle(color: Colors.white)),
                   subtitle: Text(_about),
                   onTap: () {
-                    _showEditDialog('информацию о себе', _about, (newAbout) {
+                    _navigateToEditScreen('информацию о себе', _about, (newAbout) {
                       setState(() {
                         _about = newAbout;
                       });
@@ -168,42 +151,76 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showProfileOptions(BuildContext context) {
-    showModalBottomSheet(
+    final RenderBox button = context.findRenderObject() as RenderBox;
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+
+    double offsetX = 10.0;
+    double offsetY = 70.0; 
+
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromPoints(
+        button.localToGlobal(Offset.zero, ancestor: overlay) + Offset(offsetX, offsetY), // Смещение для верхнего левого угла
+        button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay) + Offset(offsetX, offsetY), // Смещение для нижнего правого угла
+      ),
+      Offset.zero & overlay.size,  
+    );
+
+    showMenu(
       context: context,
-      builder: (context) => SizedBox(
-        height: 200,
-        child: Column(
-          children: <Widget>[
-            ListTile(
-              leading: const Icon(Icons.photo_camera),
-              title: const Text('Добавить фотографию'),
-              onTap: () {
-                Navigator.pop(context);
-                // Логика добавления фотографии
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete),
-              title: const Text('Удалить фотографию'),
-              onTap: () {
-                Navigator.pop(context);
-                // Логика удаления фотографии
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.info),
-              title: const Text('Изменить информацию о себе'),
-              onTap: () {
-                Navigator.pop(context);
-                _showEditDialog('информацию о себе', _about, (newAbout) {
-                  setState(() {
-                    _about = newAbout;
-                  });
+      position: position,
+      items: <PopupMenuEntry>[
+        PopupMenuItem(
+          child: ListTile(
+            leading: const Icon(Icons.photo_camera, color: Colors.white),
+            title: const Text('Добавить фотографию', style: TextStyle(color: Colors.white)),
+            onTap: () async {
+              Navigator.pop(context);
+
+              // Вызов метода выбора изображения
+              final pickedImage = await FileUtils.pickImage();
+
+              if (pickedImage != null) {
+                setState(() {
+                  // Логика сохранения пути к изображению
+                  // Например, добавьте поле _profileImagePath
+                  _profileImagePath = pickedImage.path;
                 });
-              },
-            ),
-          ],
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Изображение не выбрано')), // Если изображение не выбрано
+                );
+              }
+            },
+          ),
         ),
+        PopupMenuItem(
+          child: ListTile(
+            leading: const Icon(Icons.delete, color: Colors.white),
+            title: const Text('Удалить фотографию', style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context);
+              // Логика удаления фотографии
+            },
+          ),
+        ),
+        PopupMenuItem(
+          child: ListTile(
+            leading: const Icon(Icons.info, color: Colors.white),
+            title: const Text('Изменить информацию о себе', style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context);
+              _navigateToEditScreen('информацию о себе', _about, (newAbout) {
+                setState(() {
+                  _about = newAbout;
+                });
+              });
+            },
+          ),
+        ),
+      ],
+      color: Colors.black, 
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(0),
       ),
     );
   }

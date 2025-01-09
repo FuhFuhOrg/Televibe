@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 import 'package:tele_vibe/Data/chats.dart';
@@ -7,6 +8,8 @@ import 'package:tele_vibe/Widgets/ChatGroupOptionsPage.dart';
 import 'package:tele_vibe/Widgets/chatList.dart';
 import 'package:tele_vibe/Widgets/profileScreen.dart';
 import 'package:tele_vibe/Widgets/settings.dart';
+import 'package:tele_vibe/Widgets/chatGroupOptionsPage.dart';
+import 'package:tele_vibe/Widgets/searchScreen.dart';
 
 class AllChatsPage extends StatefulWidget {
   const AllChatsPage({super.key});
@@ -22,16 +25,113 @@ class _AllChatsClassState extends State<AllChatsPage> {
   final AllChatsVM _allChatsVM = AllChatsVM();
   late final StreamSubscription subscriptionChats;
   ChatCollection chatsData = ChatCollection();
-  // ПРОШУ ИЛЬЯ ПИШИ ЭТО ПРОЩУ
+
+
+
+
+
+
+  final List<ChatData> _initialChats = [
+    ChatData(
+      chatName: 'Chat 1',
+      message: 'куплю пива возьму в рот?',
+      time: DateTime.now().subtract(const Duration(minutes: 5)),
+      nowQueueId: 1,
+    ),
+    ChatData(
+      chatName: 'Chat 2',
+      message: 'шлома??',
+      time: DateTime.now().subtract(const Duration(minutes: 10)),
+      nowQueueId: 2,
+    ),
+    ChatData(
+      chatName: 'Chat 3',
+      message: 'Don’t forget to send the report.',
+      time: DateTime.now().subtract(const Duration(hours: 1)),
+      nowQueueId: 3,
+    ),
+    ChatData(
+      chatName: 'Chat 1',
+      message: 'Hello, how are you?',
+      time: DateTime.now().subtract(const Duration(minutes: 5)),
+      nowQueueId: 1,
+    ),
+    ChatData(
+      chatName: 'Chat 2',
+      message: 'Are we still on for the meeting?',
+      time: DateTime.now().subtract(const Duration(minutes: 10)),
+      nowQueueId: 2,
+    ),
+    ChatData(
+      chatName: 'Chat 3',
+      message: 'Don’t forget to send the report.',
+      time: DateTime.now().subtract(const Duration(hours: 1)),
+      nowQueueId: 3,
+    ),
+    ChatData(
+      chatName: 'Chat 1',
+      message: 'Hello, how are you?',
+      time: DateTime.now().subtract(const Duration(minutes: 5)),
+      nowQueueId: 1,
+    ),
+    ChatData(
+      chatName: 'Chat 2',
+      message: 'Are we still on for the meeting?',
+      time: DateTime.now().subtract(const Duration(minutes: 10)),
+      nowQueueId: 2,
+    ),
+    ChatData(
+      chatName: 'Chat 3',
+      message: 'Don’t forget to send the report.',
+      time: DateTime.now().subtract(const Duration(hours: 1)),
+      nowQueueId: 3,
+    ),
+    ChatData(
+      chatName: 'Chat 1',
+      message: 'Hello, how are you?',
+      time: DateTime.now().subtract(const Duration(minutes: 5)),
+      nowQueueId: 1,
+    ),
+    ChatData(
+      chatName: 'Chat 2',
+      message: 'Are we still on for the meeting?',
+      time: DateTime.now().subtract(const Duration(minutes: 10)),
+      nowQueueId: 2,
+    ),
+    ChatData(
+      chatName: 'Chat 3',
+      message: 'Don’t forget to send the report.',
+      time: DateTime.now().subtract(const Duration(hours: 1)),
+      nowQueueId: 3,
+    ),
+  ];
   @override
   void initState() {
+    super.initState();
+    // Инициализируем chatsData начальными значениями
+    chatsData = ChatsData(chats: _initialChats);
     subscriptionChats = Chats.onValueChanged.listen((newValue) {
       chatsData = newValue;
       _getSelectedScreen();
     });
-    super.initState();
   }
-  // ПРОШУ ИЛЬЯ ПИШИ ЭТО ПРОЩУ, ЭТО ТОЖЕ
+
+
+
+
+
+
+
+
+  // @override
+  // void initState() {
+  //   subscriptionChats = Chats.onValueChanged.listen((newValue) {
+  //     chatsData = newValue;
+  //     _getSelectedScreen();
+  //   });
+  //   super.initState();
+  // }
+
   @override
   void dispose() {
     _allChatsVM.dispose();
@@ -54,42 +154,105 @@ class _AllChatsClassState extends State<AllChatsPage> {
 
   // Строим список чатов как отдельный метод
   Widget _buildChatList() {
-    return chatsData.chats.isNotEmpty
-        ? ListView.builder(
-            itemCount: chatsData.chats.length,
-            itemBuilder: (BuildContext context, int index) {
-              return GestureDetector(
-                onLongPress: () {
-                  _showChatOptions(context);
+  return chatsData.chats.isNotEmpty
+      ? ListView.builder(
+          itemCount: chatsData.chats.length,
+          itemBuilder: (BuildContext context, int index) {
+            final chat = chatsData.chats[index]; // Ссылка на текущий чат
+            return GestureDetector(
+              onLongPress: () {
+                _showParticipantOptions(context, index);
+              },
+              child: ListTile(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ChatListPage()), // Переход на экран чата
+                  );
                 },
-                child: ListTile(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const ChatListPage()), // Переход на экран чата
-                    );
-                  },
-                  leading: const CircleAvatar(
-                    backgroundImage: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg'),
-                  ),
-                  tileColor: Colors.grey,
-                  textColor: Colors.black,
-                  title: Text('Item ${chatsData.chats[index]}'), // Название чата
-                  subtitle: Text('Item ${chatsData.chats[index]}'), // Сообщение
-                  trailing: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 32), // Отступ сверху
-                      Text('Item ${chatsData.chats[index]}'), // Время
-                    ],
-                  ),
+                leading: const CircleAvatar(
+                  backgroundImage: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg'), // Заменить на фотографию из БД
                 ),
-              );
-            },
-          )
-        : const Center(child: Text('You don\'t have chats('));
+                tileColor: const Color(0xFF141414),
+                textColor: Colors.white,
+                title: Text(chat.chatName), // Название чата
+                subtitle: Text(chat.message), // Сообщение
+                trailing: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 32), // Отступ сверху
+                    Text(
+                      DateFormat.jm().format(chat.time), // Форматирование времени
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        )
+      : const Center(
+          child: Text(
+            'You don\'t have chats(',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
+        );
   }
 
+  void _showParticipantOptions(BuildContext context, int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.black,
+          title: const Text(
+            'Чат',
+            style: TextStyle(color: Colors.white), 
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.copy, color: Colors.white),
+                title: const Text(
+                  'Очистить историю',
+                  style: TextStyle(color: Colors.white), 
+                ),
+                onTap: () {
+                  _allChatsVM.clearChatHistory();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.edit, color: Colors.white),
+                title: const Text(
+                  'Выйти из группы',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () {
+                  _allChatsVM.leaveGroup();
+                },
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'Отмена',
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+/*
   // Метод для отображения меню с опциями
   void _showChatOptions(BuildContext context) {
     // Убираем создание нового экземпляра AllChatsVM
@@ -126,6 +289,7 @@ class _AllChatsClassState extends State<AllChatsPage> {
       }
     });
   }
+*/
 
   void _onItemTapped(int index) {
     setState(() {
@@ -134,87 +298,71 @@ class _AllChatsClassState extends State<AllChatsPage> {
     });
   }
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: Colors.white,
-    appBar: (_selectedIndex == 1 || _isSearching)
-        ? PreferredSize(
-            preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.08),
-            child: AppBar(
-              backgroundColor: Colors.green,
-              automaticallyImplyLeading: false,
-              title: _isSearching
-                  ? TextField(
-                      controller: _searchController,
-                      decoration: const InputDecoration(
-                        hintText: 'Search chats...',
-                        border: InputBorder.none,
-                      ),
-                      style: const TextStyle(color: Colors.white, fontSize: 18),
-                      autofocus: true,
-                      onChanged: (value) {
-                        // Логика поиска
-                      },
-                    )
-                  : const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text("Televibe"),
-                        Padding(
-                          padding: EdgeInsets.all(0),
-                        ),
-                      ],
-                    ),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: () {
-                    // Переход на новую активность
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ChatGroupOptionsPage()), // Заменить переход на норм активность когда не в падлу будет
-                    );
-                  },
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF141414),
+      appBar: (_selectedIndex == 1)
+          ? PreferredSize(
+              preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.08),
+              child: AppBar(
+                backgroundColor: const Color(0xFF222222),
+                automaticallyImplyLeading: false,
+                title: const Text(
+                  "Televibe", 
+                  style: TextStyle(color: Colors.white),
                 ),
-              ],
-            ),
-          )
-        : null,
-    body: _getSelectedScreen(), // Показ выбранного экрана
-    bottomNavigationBar: BottomNavigationBar(
-      selectedItemColor: Colors.green,
-      unselectedItemColor: Colors.grey.shade600,
-      selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
-      unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
-      type: BottomNavigationBarType.fixed,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          label: "Settings",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.chat),
-          label: "Chats",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: "Profile",
-        ),
-      ],
-      currentIndex: _selectedIndex,
-      onTap: _onItemTapped,
-    ),
-    floatingActionButton: FloatingActionButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ChatGroupOptionsPage()),
-        );
-      },
-      child: const Icon(Icons.add),
-    ),
-  );
-}
-
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.search),
+                    color: Colors.white,
+                    onPressed: () {
+                      // Переход на новую активность
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const SearchScreen()),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            )
+          : null,
+      body: _getSelectedScreen(), // Показ выбранного экрана
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xFF141414),
+        selectedItemColor: const Color(0xFF02040E),
+        unselectedItemColor: Colors.white,
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: "Settings",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: "Chats",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: "Profile",
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ChatGroupOptionsPage()),
+          );
+        },
+        backgroundColor: const Color(0xFF222222),
+        child: const Icon(Icons.add, color: Colors.white,),
+      ),
+    );
+  }
 }

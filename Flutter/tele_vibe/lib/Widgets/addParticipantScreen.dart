@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// Я ТАКОЕ ГОВНО СДЕЛАЛ, НО, пусть уж останется
 class AddParticipantScreen extends StatelessWidget {
   final TextEditingController _idController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
@@ -9,9 +10,10 @@ class AddParticipantScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF141414),
       appBar: AppBar(
-        title: const Text('Добавить участника'),
-        backgroundColor: const Color(0xFF3E505F),
+        title: const Text('Добавить участника', style: TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xFF222222),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -23,6 +25,7 @@ class AddParticipantScreen extends StatelessWidget {
               controller: _idController,
               focusNode: _focusNode,
               decoration: const InputDecoration(
+                fillColor: Colors.white,
                 labelText: 'Введите ID участника',
                 border: OutlineInputBorder(),
               ),
@@ -41,9 +44,9 @@ class AddParticipantScreen extends StatelessWidget {
                 Navigator.pop(context); // Возвращаемся на предыдущий экран
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF3E505F),
+                backgroundColor: const Color(0xFF222222),
               ),
-              child: const Text('OK'),
+              child: const Text('OK', style: TextStyle(color: Colors.white)),
             ),
           ],
         ),

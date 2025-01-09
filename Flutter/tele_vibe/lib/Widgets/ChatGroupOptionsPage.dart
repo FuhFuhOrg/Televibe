@@ -12,6 +12,12 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
   bool _isCreatingGroup = false;
   bool _isAddingChat = false;
 
+  // Переменные для хранения данных
+  String _groupName = '';
+  String _groupPassword = '';
+  String _textField = "";
+  String _chatPassword = '';
+
   // Контроллеры для текстовых полей
   final TextEditingController _groupNameController = TextEditingController();
   final TextEditingController _groupPasswordController = TextEditingController();
@@ -36,37 +42,53 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
   @override
   void dispose() {
     _chatGroupOptionVM.dispose();
+    _groupNameController.dispose();
+    _groupPasswordController.dispose();
+    _chatPasswordController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Создание/Добавление чата")),
+      backgroundColor: const Color(0xFF141414),
+      appBar: AppBar(
+        title: const Text(
+          "Создание/Добавление чата",
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: const Color(0xFF141414),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start, // Прижимаем к верхней части
-          crossAxisAlignment: CrossAxisAlignment.center, // Центрируем по ширине
+          crossAxisAlignment: CrossAxisAlignment.center, // Центрирование по ширине
+          mainAxisAlignment: MainAxisAlignment.start, // Прижимаем все к верху
           children: [
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _isCreatingGroup = true;
-                  _isAddingChat = false;
-                });
-              },
-              child: const Text("Создать чат/группу"),
+            Center( // Центрируем первую кнопку
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _isCreatingGroup = true;
+                    _isAddingChat = false;
+                  });
+                },
+                child: const Text("Создать чат/группу"),
+              ),
             ),
             const SizedBox(height: 16), // Отступ между кнопками
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _isAddingChat = true;
-                  _isCreatingGroup = false;
-                });
-              },
-              child: const Text("Добавить чат/группу"),
+            Center( // Центрируем вторую кнопку
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _isAddingChat = true;
+                    _isCreatingGroup = false;
+                  });
+                },
+                child: const Text("Добавить чат/группу"),
+              ),
             ),
             const SizedBox(height: 32), // Отступ перед полями ввода
             if (_isCreatingGroup) ...[
@@ -100,7 +122,7 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
                 obscureText: true,
               ),
               SwitchListTile(
-                title: const Text("Чат/группа?"),
+                title: const Text("Чат/группа?", style: TextStyle(color: Colors.white)),
                 value: _isPasswordRequired,
                 onChanged: (value) {
                   setState(() {
@@ -121,7 +143,7 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
                 obscureText: true,
               ),
               SwitchListTile(
-                title: const Text("Чат/группа?"),
+                title: const Text("Чат/группа?", style: TextStyle(color: Colors.white)),
                 value: _isPasswordRequired,
                 onChanged: (value) {
                   setState(() {
@@ -133,7 +155,6 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
           ],
         ),
       ),
-      // Кнопка внизу экрана
       bottomNavigationBar: _isCreatingGroup || _isAddingChat
           ? Padding(
               padding: const EdgeInsets.all(16.0),
