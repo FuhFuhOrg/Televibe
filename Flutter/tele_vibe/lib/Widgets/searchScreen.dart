@@ -12,7 +12,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<ChatData> _filteredChats = [];
-  ChatsData chatsData = ChatsData();
+  ChatCollection chatsData = ChatCollection();
 
 
 // Массив данных, заполняется сразу из бд или из очереди
@@ -20,26 +20,6 @@ class _SearchScreenState extends State<SearchScreen> {
   void initState() {
     super.initState();
     // Предзаполняем данные чатов, которые будут использоваться для поиска. Это временно, пока нет нормального сервера
-    chatsData = ChatsData(chats: [
-      ChatData(
-        chatName: 'Chat 1',
-        message: 'Hello, how are you?',
-        time: DateTime.now().subtract(const Duration(minutes: 5)),
-        nowQueueId: 1,
-      ),
-      ChatData(
-        chatName: 'Chat 2',
-        message: 'Are we still on for the meeting?',
-        time: DateTime.now().subtract(const Duration(minutes: 10)),
-        nowQueueId: 2,
-      ),
-      ChatData(
-        chatName: 'Chat 3',
-        message: 'Don’t forget to send the report.',
-        time: DateTime.now().subtract(const Duration(hours: 1)),
-        nowQueueId: 3,
-      ),
-    ]);
     _filteredChats = chatsData.chats; // Изначально показываем все чаты
   }
 
@@ -85,11 +65,11 @@ class _SearchScreenState extends State<SearchScreen> {
                   tileColor: const Color(0xFF141414),
                   textColor: Colors.white,
                   title: Text(chat.chatName),
-                  subtitle: Text(chat.message),
-                  trailing: Text(
-                    DateFormat.jm().format(chat.time),
-                    style: const TextStyle(color: Colors.white54),
-                  ),
+                  subtitle: Text(chat.getLastMessage()),
+                  //trailing: Text(
+                    //DateFormat.jm().format(chat.time),
+                    //style: const TextStyle(color: Colors.white54),
+                  //),
                 );
               },
             )

@@ -52,6 +52,7 @@ class ChatData {
   late int nowQueueId;
   Users? users;
   int? yourUserId;
+  List<String> queues;
 
   ChatData({
     required this.chatName,
@@ -61,6 +62,7 @@ class ChatData {
     required this.chatIp,
     this.users,
     this.yourUserId,
+    this.queues = const [],
   });
 
   // Преобразование в JSON
@@ -73,20 +75,27 @@ class ChatData {
       'chatIp': chatIp,
       'users': users?.toJson(), // Если users не null, конвертируем его в JSON
       'yourUserId': yourUserId, // Может быть null, и это нормально
+      'queues': queues, // Список всегда преобразуется, даже если он пустой
     };
   }
 
   // Преобразование из JSON
   factory ChatData.fromJson(Map<String, dynamic> json) {
     return ChatData(
-      chatName: json['chatName'],
-      chatId: json['chatId'],
-      password: json['password'],
-      nowQueueId: json['nowQueueId'],
-      chatIp: json['chatIp'],
-      users: json['users'] != null ? Users.fromJson(json['users']) : null, // Проверяем, есть ли данные для Users
-      yourUserId: json['yourUserId'] != null ? json['yourUserId'] as int : null, // Проверяем, есть ли yourUserId
+      chatName: json['chatName'] as String,
+      chatId: json['chatId'] as String,
+      password: json['password'] as String,
+      nowQueueId: json['nowQueueId'] as int,
+      chatIp: json['chatIp'] as String,
+      users: json['users'] != null ? Users.fromJson(json['users'] as Map<String, dynamic>) : null, // Проверяем, есть ли данные для Users
+      yourUserId: json['yourUserId'], // Может быть null
+      queues: (json['queues'] as List<dynamic>? ?? []).cast<String>(), // Преобразуем в список строк
     );
+  }
+
+  //RW
+  String getLastMessage(){
+    return " ";
   }
 }
 

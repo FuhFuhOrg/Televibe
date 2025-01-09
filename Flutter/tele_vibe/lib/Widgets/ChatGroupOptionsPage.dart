@@ -28,8 +28,6 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
   
 
   // Переменные для хранения данных
-  String _groupName = '';
-  String _groupPassword = '';
   String _groupHost = '';
   String _addChatPassword = '';
 

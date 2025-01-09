@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:tele_vibe/Data/chats.dart';
 import 'package:tele_vibe/ViewModel/allChatsVM.dart';
-import 'package:tele_vibe/Widgets/ChatGroupOptionsPage.dart';
 import 'package:tele_vibe/Widgets/chatList.dart';
 import 'package:tele_vibe/Widgets/profileScreen.dart';
 import 'package:tele_vibe/Widgets/settings.dart';
@@ -34,82 +33,47 @@ class _AllChatsClassState extends State<AllChatsPage> {
   final List<ChatData> _initialChats = [
     ChatData(
       chatName: 'Chat 1',
-      message: 'куплю пива возьму в рот?',
-      time: DateTime.now().subtract(const Duration(minutes: 5)),
+      chatId: '123abc',
+      password: 'password1',
       nowQueueId: 1,
+      chatIp: '',
+      users: null,
+      yourUserId: null,
     ),
     ChatData(
       chatName: 'Chat 2',
-      message: 'шлома??',
-      time: DateTime.now().subtract(const Duration(minutes: 10)),
+      chatId: '456def',
+      password: 'password2',
       nowQueueId: 2,
+      chatIp: '',
+      users: null,
+      yourUserId: null,
     ),
     ChatData(
       chatName: 'Chat 3',
-      message: 'Don’t forget to send the report.',
-      time: DateTime.now().subtract(const Duration(hours: 1)),
+      chatId: '789ghi',
+      password: 'password3',
       nowQueueId: 3,
+      chatIp: '',
+      users: null,
+      yourUserId: null,
     ),
     ChatData(
-      chatName: 'Chat 1',
-      message: 'Hello, how are you?',
-      time: DateTime.now().subtract(const Duration(minutes: 5)),
-      nowQueueId: 1,
-    ),
-    ChatData(
-      chatName: 'Chat 2',
-      message: 'Are we still on for the meeting?',
-      time: DateTime.now().subtract(const Duration(minutes: 10)),
-      nowQueueId: 2,
-    ),
-    ChatData(
-      chatName: 'Chat 3',
-      message: 'Don’t forget to send the report.',
-      time: DateTime.now().subtract(const Duration(hours: 1)),
-      nowQueueId: 3,
-    ),
-    ChatData(
-      chatName: 'Chat 1',
-      message: 'Hello, how are you?',
-      time: DateTime.now().subtract(const Duration(minutes: 5)),
-      nowQueueId: 1,
-    ),
-    ChatData(
-      chatName: 'Chat 2',
-      message: 'Are we still on for the meeting?',
-      time: DateTime.now().subtract(const Duration(minutes: 10)),
-      nowQueueId: 2,
-    ),
-    ChatData(
-      chatName: 'Chat 3',
-      message: 'Don’t forget to send the report.',
-      time: DateTime.now().subtract(const Duration(hours: 1)),
-      nowQueueId: 3,
-    ),
-    ChatData(
-      chatName: 'Chat 1',
-      message: 'Hello, how are you?',
-      time: DateTime.now().subtract(const Duration(minutes: 5)),
-      nowQueueId: 1,
-    ),
-    ChatData(
-      chatName: 'Chat 2',
-      message: 'Are we still on for the meeting?',
-      time: DateTime.now().subtract(const Duration(minutes: 10)),
-      nowQueueId: 2,
-    ),
-    ChatData(
-      chatName: 'Chat 3',
-      message: 'Don’t forget to send the report.',
-      time: DateTime.now().subtract(const Duration(hours: 1)),
-      nowQueueId: 3,
+      chatName: 'Chat 4',
+      chatId: '101jkl',
+      password: 'password4',
+      nowQueueId: 4,
+      chatIp: '',
+      users: null,
+      yourUserId: null,
     ),
   ];
+
   @override
   void initState() {
     super.initState();
     // Инициализируем chatsData начальными значениями
-    chatsData = ChatsData(chats: _initialChats);
+    chatsData = ChatCollection(chats: _initialChats);
     subscriptionChats = Chats.onValueChanged.listen((newValue) {
       chatsData = newValue;
       _getSelectedScreen();
@@ -176,14 +140,18 @@ class _AllChatsClassState extends State<AllChatsPage> {
                 tileColor: const Color(0xFF141414),
                 textColor: Colors.white,
                 title: Text(chat.chatName), // Название чата
-                subtitle: Text(chat.message), // Сообщение
+                subtitle: Text(chat.getLastMessage()), // Сообщение
                 trailing: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 32), // Отступ сверху
-                    Text(
-                      DateFormat.jm().format(chat.time), // Форматирование времени
-                    ),
+                    //Text(
+                      //DateFormat.jm().format(chat.time), // Форматирование времени
+                    //),
+
+                    // Тут что такое время вопрос жЫзненный
+
+
                   ],
                 ),
               ),
