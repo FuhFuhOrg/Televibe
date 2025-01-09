@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tele_vibe/ViewModel/chatGroupOptionVM.dart';
 
 class ChatGroupOptionsPage extends StatefulWidget {
   const ChatGroupOptionsPage({super.key});
@@ -21,10 +22,26 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
   final TextEditingController _groupNameController = TextEditingController();
   final TextEditingController _groupPasswordController = TextEditingController();
   final TextEditingController _chatPasswordController = TextEditingController();
+  final TextEditingController  _groupHostController = TextEditingController();
+  final ChatGroupOptionVM _chatGroupOptionVM = ChatGroupOptionVM();
   bool _isPasswordRequired = false;
+  
 
+  // Переменные для хранения данных
+  String _groupName = '';
+  String _groupPassword = '';
+  String _groupHost = '';
+  String _addChatPassword = '';
+
+  // ПРОШУ ИЛЬЯ ПИШИ ЭТО ПРОЩУ
+  @override
+  void initState() {
+    super.initState();
+  }
+  // ПРОШУ ИЛЬЯ ПИШИ ЭТО ПРОЩУ, ЭТО ТОЖЕ
   @override
   void dispose() {
+    _chatGroupOptionVM.dispose();
     _groupNameController.dispose();
     _groupPasswordController.dispose();
     _chatPasswordController.dispose();
@@ -95,10 +112,10 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
                 obscureText: true,
               ),
               TextField(
-                controller: _groupPasswordController,
+                controller: _groupHostController,
                 onChanged: (value) {
                   setState(() {
-                    _textField = value; // Сохранение текста
+                    _groupHost = value; // Сохранение пароля группы
                   });
                 },
                 decoration: const InputDecoration(labelText: "Текстовое поле"),
@@ -119,7 +136,7 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
                 controller: _chatPasswordController,
                 onChanged: (value) {
                   setState(() {
-                    _chatPassword = value; // Сохранение пароля чата/группы
+                    _addChatPassword = value; // Сохранение пароля чата/группы
                   });
                 },
                 decoration: const InputDecoration(labelText: "Пароль"),
@@ -144,11 +161,12 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
               child: ElevatedButton(
                 onPressed: () {
                   if (_isCreatingGroup) {
-                    // Логика создания группы
+                    _chatGroupOptionVM.createChat(context, _groupName, _groupPassword, _groupHost, true);
+                    // Логика создания группы с сохраненными данными
                     print("Создание группы: $_groupName с паролем: $_groupPassword");
                   } else if (_isAddingChat) {
-                    // Логика добавления чата
-                    print("Добавление чата с паролем: $_chatPassword");
+                    // Логика добавления чата с сохраненными данными
+                    print("Добавление чата с паролем: $_addChatPassword");
                   }
                 },
                 style: ElevatedButton.styleFrom(

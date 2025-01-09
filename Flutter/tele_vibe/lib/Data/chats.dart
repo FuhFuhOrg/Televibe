@@ -1,65 +1,78 @@
 import 'dart:async';
 
+import 'package:pointycastle/asymmetric/api.dart';
+
 class Chats {
   // Это локальная переменная
-  static ChatsData _chats = ChatsData();
+  static ChatCollection _chats = ChatCollection();
   // Это геттер
-  static ChatsData get value => _chats;
+  static ChatCollection get value => _chats;
   // Это контроллеры подписок
-  static final StreamController<ChatsData> _controller = StreamController<ChatsData>.broadcast();
+  static final StreamController<ChatCollection> _controller = StreamController<ChatCollection>.broadcast();
   // Это Подписки
-  static Stream<ChatsData> get onValueChanged => _controller.stream;
+  static Stream<ChatCollection> get onValueChanged => _controller.stream;
 
-  static void setValue(ChatsData newValue) {
+  static void setValue(ChatCollection newValue) {
     _chats = newValue;
+    _controller.add(_chats);
+  }
+
+  static void addChat(ChatData newValue) {
+    _chats.addChat(newValue);
     _controller.add(_chats);
   }
 }
 
+class ChatCollection {
+  List<ChatData> chats;
 
-// Тут нужно поменять названия , ато ChatsData и ChatData сливаются
-class ChatsData {
-  late List<ChatData> chats;
-
-  ChatsData({this.chats = const []});
+  ChatCollection({List<ChatData>? chats}) : chats = chats ?? [];
 
   // Преобразование в JSON
   Map<String, dynamic> toJson() {
     return {
-      'chats': chats.map((chat) => chat.toJson()).toList(),
+      'chats': this.chats.map((chat) => chat.toJson()).toList(),
     };
   }
 
   // Преобразование из JSON
-  factory ChatsData.fromJson(Map<String, dynamic> json) {
-    return ChatsData(
+  factory ChatCollection.fromJson(Map<String, dynamic> json) {
+    return ChatCollection(
       chats: (json['chats'] as List).map((data) => ChatData.fromJson(data)).toList(),
     );
+  }
+
+  void addChat(ChatData newValue) {
+    chats.add(newValue);
   }
 }
 
 class ChatData {
-  late String chatName;
-  late String message;
-  late DateTime time;
-
+  late String chatName, password, chatIp, chatId;
   late int nowQueueId;
+  Users? users;
+  int? yourUserId;
 
-  // Конструктор
   ChatData({
     required this.chatName,
-    required this.message,
-    required this.time,
+    required this.chatId,
+    required this.password,
     required this.nowQueueId,
+    required this.chatIp,
+    this.users,
+    this.yourUserId,
   });
 
   // Преобразование в JSON
   Map<String, dynamic> toJson() {
     return {
       'chatName': chatName,
-      'message': message,
-      'time': time.toIso8601String(), // Преобразование даты в строку
+      'chatId': chatId,
+      'password': password,
       'nowQueueId': nowQueueId,
+      'chatIp': chatIp,
+      'users': users?.toJson(), // Если users не null, конвертируем его в JSON
+      'yourUserId': yourUserId, // Может быть null, и это нормально
     };
   }
 
@@ -67,9 +80,42 @@ class ChatData {
   factory ChatData.fromJson(Map<String, dynamic> json) {
     return ChatData(
       chatName: json['chatName'],
-      message: json['message'],
-      time: DateTime.parse(json['time']), // Преобразование строки обратно в DateTime
+      chatId: json['chatId'],
+      password: json['password'],
       nowQueueId: json['nowQueueId'],
+      chatIp: json['chatIp'],
+      users: json['users'] != null ? Users.fromJson(json['users']) : null, // Проверяем, есть ли данные для Users
+      yourUserId: json['yourUserId'] != null ? json['yourUserId'] as int : null, // Проверяем, есть ли yourUserId
+    );
+  }
+}
+
+class Users {
+  late int id;
+  late String username;
+  late (RSAPublicKey pub, RSAPrivateKey priv) keyPair;
+
+  Users({
+    required this.id,
+    required this.username,
+    required this.keyPair,
+  });
+
+  // Преобразование в JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'username': username,
+      'keyPair': keyPair,
+    };
+  }
+
+  // Преобразование из JSON
+  factory Users.fromJson(Map<String, dynamic> json) {
+    return Users(
+      id: json['id'],
+      username: json['username'],
+      keyPair: json['keyPair'],
     );
   }
 }

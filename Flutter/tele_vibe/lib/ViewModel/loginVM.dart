@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:tele_vibe/Data/chats.dart';
+import 'package:tele_vibe/Data/user.dart';
+import 'package:tele_vibe/GettedData/MessageHandler.dart';
 import 'package:tele_vibe/GettedData/localDataSaveController.dart';
 import 'package:tele_vibe/GettedData/netServerController.dart';
 import 'package:tele_vibe/Widgets/allChatsClass.dart';
@@ -36,18 +39,29 @@ class LoginVM {
     print('Password: $password');
 
     NetServerController().login(login, password).then((goin) {
-      if (goin != " ") {
-        print('Return Login');
-        _startChatsAddiction();
-        _navigateToAllChats(context);
+      if (goin != " " && goin != "") {
+        print('Return Login ${goin}');
+        if(goin[0] == "true") {
+          Anon.anonId = int.tryParse(goin[1]);
+          Anon.anonPassword = password;
+          _startChatsAddiction();
+          _navigateToAllChats(context);
+        }
+        else{
+          MessageHandler.showAlertDialog(context, '${goin.join(" ")}');
+        }
       }
     });
   }
 
   void _startChatsAddiction(){
     // Код вызывающий подгрузку Json и WS чатов
-    LocalDataSave.loadChatsData();
-    
+    LocalDataSave.loadChatsData().then((goin) {
+      if (goin != null){
+        Chats.setValue(goin);
+      }
+    });
+
   }
 
   void _navigateToAllChats(BuildContext context){

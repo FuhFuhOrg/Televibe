@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:tele_vibe/Data/chats.dart';
 import 'package:tele_vibe/ViewModel/allChatsVM.dart';
+import 'package:tele_vibe/Widgets/ChatGroupOptionsPage.dart';
 import 'package:tele_vibe/Widgets/chatList.dart';
 import 'package:tele_vibe/Widgets/profileScreen.dart';
 import 'package:tele_vibe/Widgets/settings.dart';
@@ -23,22 +24,9 @@ class _AllChatsClassState extends State<AllChatsPage> {
   final TextEditingController _searchController = TextEditingController(); // Контроллер для строки поиска
   final AllChatsVM _allChatsVM = AllChatsVM();
   late final StreamSubscription subscriptionChats;
-  ChatsData chatsData = ChatsData();
+  ChatCollection chatsData = ChatCollection();
 
 
-
-
-
-
-// ВЕЛИКИЙ КОСТЫЛЬ, ПОКА НЕТ БД
-
-
-  // 
-//          ТЫ, СИН ШЛЮХИ ЕБАНОЙ
-//          ЕСЛИ ТЫ ЭТО УБЕРЕШЬ
-//          Я ВСЮ ТВОЮ РОДОСЛОВНУЮ
-//          С ПЕЧКОЙ ПОЗНАКОМЛЮ
-  //
 
 
 
@@ -117,7 +105,6 @@ class _AllChatsClassState extends State<AllChatsPage> {
       nowQueueId: 3,
     ),
   ];
-
   @override
   void initState() {
     super.initState();
@@ -128,15 +115,6 @@ class _AllChatsClassState extends State<AllChatsPage> {
       _getSelectedScreen();
     });
   }
-
-
-  // 
-//          ТЫ, СИН ШЛЮХИ ЕБАНОЙ
-//          ЕСЛИ ТЫ ЭТО УБЕРЕШЬ
-//          Я ВСЮ ТВОЮ РОДОСЛОВНУЮ
-//          С ПЕЧКОЙ ПОЗНАКОМЛЮ
-  //
-
 
 
 
