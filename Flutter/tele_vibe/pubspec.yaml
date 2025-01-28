@@ -36,7 +36,7 @@ dependencies:
   shared_preferences: ^2.0.15
   intl: ^0.18.0
   pointycastle: ^3.9.1
-  file_picker: ^8.1.7  # Update to the latest version
+  #file_picker: ^8.1.7  # Update to the latest version
 
 dev_dependencies:
   flutter_test:
