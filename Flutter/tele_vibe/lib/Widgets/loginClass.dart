@@ -107,7 +107,7 @@ class _LoginClassState extends State<LoginPage> {
                   ),
                   SizedBox(height: MediaQuery.of(context).size.width * 0.523), // Это уродство, но мне в падлу менять, мб найду что-то на подобии constraint layout
                   ElevatedButton(
-                    onPressed: () => _loginVM.fakeLoginAccount(context, _loginController, _passwordController),
+                    onPressed: () => _loginVM.loginAccount(context, _loginController, _passwordController),
                     style: TextButton.styleFrom(
                       backgroundColor: const Color(0xFF222222),
                     ),

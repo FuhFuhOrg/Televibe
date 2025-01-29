@@ -73,6 +73,9 @@ class _AllChatsClassState extends State<AllChatsPage> {
   void initState() {
     super.initState();
     // Инициализируем chatsData начальными значениями
+    if(Chats.getValue() != null) {
+      chatsData = Chats.getValue();
+    }
     chatsData = ChatCollection(chats: _initialChats);
     subscriptionChats = Chats.onValueChanged.listen((newValue) {
       chatsData = newValue;
@@ -108,10 +111,12 @@ class _AllChatsClassState extends State<AllChatsPage> {
       case 0:
         return const Settings(); // Экран настроек
       case 1:
+        print('Case 1: показывается.Settings');
         return _buildChatList(); // Список чатов
       case 2:
         return const ProfileScreen(nickname: 'YourNickname'); // Экран профиля
       default:
+        print('Default case: показывается список чатов');
         return _buildChatList(); // По умолчанию показывается список чатов
     }
   }

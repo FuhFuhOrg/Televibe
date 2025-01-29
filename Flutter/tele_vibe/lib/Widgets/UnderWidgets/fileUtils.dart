@@ -11,6 +11,7 @@ class FileUtils {
       return File(result.files.single.path!);
     }
     return null;*/
+    return null;
   }
 
   // Выбор видео
@@ -22,6 +23,7 @@ class FileUtils {
       return File(result.files.single.path!);
     }
     return null;*/
+    return null;
   }
 
   // Выбор фото и видео
@@ -33,6 +35,7 @@ class FileUtils {
       return File(result.files.single.path!);
     }
     return null;*/
+    return null;
   }
 
 }

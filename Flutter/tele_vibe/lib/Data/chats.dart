@@ -21,6 +21,10 @@ class Chats {
     _chats.addChat(newValue);
     _controller.add(_chats);
   }
+
+  static ChatCollection getValue() {
+    return _chats;
+  }
 }
 
 class ChatCollection {
