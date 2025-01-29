@@ -185,7 +185,7 @@ class NetServerController with WidgetsBindingObserver {
   }
 
 
-//ERROR
+//RW
   Future<List<String>> getMessages(String str) async {
     Completer<List<String>> completer = Completer<List<String>>();
     int requestId = getK();
@@ -198,7 +198,7 @@ class NetServerController with WidgetsBindingObserver {
       }
     });
 
-    sendRequest(requestId, "GetMessages", str);
+    sendRequest(requestId, "GetQueueMessages", str);
     return completer.future;
   }
 

@@ -73,10 +73,12 @@ class _AllChatsClassState extends State<AllChatsPage> {
   void initState() {
     super.initState();
     // Инициализируем chatsData начальными значениями
-    if(Chats.getValue() != null) {
+    if(Chats.getValue().chats.isEmpty) {
+      chatsData = ChatCollection(chats: _initialChats);
+    }
+    else {
       chatsData = Chats.getValue();
     }
-    chatsData = ChatCollection(chats: _initialChats);
     subscriptionChats = Chats.onValueChanged.listen((newValue) {
       chatsData = newValue;
       _getSelectedScreen();

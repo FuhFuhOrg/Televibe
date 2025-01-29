@@ -11,6 +11,7 @@ class Chats {
   static final StreamController<ChatCollection> _controller = StreamController<ChatCollection>.broadcast();
   // Это Подписки
   static Stream<ChatCollection> get onValueChanged => _controller.stream;
+  static String nowChat = "0";
 
   static void setValue(ChatCollection newValue) {
     _chats = newValue;
@@ -24,6 +25,10 @@ class Chats {
 
   static ChatCollection getValue() {
     return _chats;
+  }
+
+  static List<String> getNowChatQueue (){
+    return _chats.chats.where((chat) => chat.chatId == nowChat).first?.queues?? [];
   }
 }
 
