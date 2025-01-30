@@ -28,6 +28,9 @@ class Chats {
   }
 
   static List<String> getNowChatQueue (){
+    if(_chats.chats.isEmpty){
+      return List.empty();
+    }
     return _chats.chats.where((chat) => chat.chatId == nowChat).first?.queues?? [];
   }
 }

@@ -277,6 +277,9 @@ class NetServerController with WidgetsBindingObserver {
     return completer.future;
   }
 
+  //RW
+  tryGetChatQueue
+
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
