@@ -36,17 +36,26 @@ class _ChatListState extends State<ChatListPage> {
   @override
   void initState() {
     super.initState();
-    //filteredEntries = List.from(entries);
-    int queueId = Chats.getValue()
-    .chats
-    .where((chat) => chat.chatId == Chats.nowChat)
-    .firstOrNull
-    ?.nowQueueId ?? 0;
 
-    NetServerController().getMessages(Chats.nowChat.toString() + " " + queueId.toString());
+    int queueId = Chats.getValue()
+            .chats
+            .where((chat) => chat.chatId == Chats.nowChat)
+            .firstOrNull
+            ?.nowQueueId ?? -1;
+
     List<String> queueChat = Chats.getNowChatQueue();
-    
-    filteredEntries = queueToFiltred(queueChat);
+
+    // Запрашиваем новые сообщения и обновляем state
+    NetServerController().getMessages(Chats.nowChat, queueId).then((newMessages) {
+      if (newMessages != null && newMessages.isNotEmpty) {
+        queueChat.addAll(newMessages);
+        setState(() {
+          filteredEntries = queueToFiltred(queueChat);
+        });
+      }
+    }).catchError((error) {
+      print("Ошибка получения сообщений: $error");
+    });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom();
@@ -54,6 +63,7 @@ class _ChatListState extends State<ChatListPage> {
 
     _searchController.addListener(_filterMessages);
   }
+
 
   List<Map<String, dynamic>> queueToFiltred(List<String> queueChat){
     List<Map<String, dynamic>> messages = [];

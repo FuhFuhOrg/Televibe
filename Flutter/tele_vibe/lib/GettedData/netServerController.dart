@@ -186,7 +186,7 @@ class NetServerController with WidgetsBindingObserver {
 
 
 //RW
-  Future<List<String>> getMessages(String str) async {
+  Future<List<String>> getMessages(String chatId, int lastQueueId) async {
     Completer<List<String>> completer = Completer<List<String>>();
     int requestId = getK();
 
@@ -194,11 +194,12 @@ class NetServerController with WidgetsBindingObserver {
       if (parts.isNotEmpty) {
         completer.complete(parts);
       } else {
-        completer.complete([]);
+        completer.complete(null);
       }
     });
 
-    sendRequest(requestId, "GetQueueMessages", str);
+    sendRequest(requestId, "GetQueueMessages", 
+    "${chatId} ${lastQueueId}");
     return completer.future;
   }
 
@@ -276,9 +277,6 @@ class NetServerController with WidgetsBindingObserver {
     "${CryptController.encryptAES(log, log)} ${CryptController.encryptAES(pass, pass)} ${CryptController.encryptAES(regdata, "")}");
     return completer.future;
   }
-
-  //RW
-  tryGetChatQueue
 
 
   @override

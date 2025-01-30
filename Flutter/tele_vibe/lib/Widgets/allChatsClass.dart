@@ -1,12 +1,14 @@
 import 'dart:async';
+import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 import 'package:tele_vibe/Data/chats.dart';
 import 'package:tele_vibe/ViewModel/allChatsVM.dart';
-import 'package:tele_vibe/Widgets/chatGroupOptionsPage.dart';
+import 'package:tele_vibe/Widgets/chatList.dart';
 import 'package:tele_vibe/Widgets/profileScreen.dart';
-import 'package:tele_vibe/Widgets/searchScreen.dart';
 import 'package:tele_vibe/Widgets/settings.dart';
+import 'package:tele_vibe/Widgets/chatGroupOptionsPage.dart';
+import 'package:tele_vibe/Widgets/searchScreen.dart';
 
 class AllChatsPage extends StatefulWidget {
   const AllChatsPage({super.key});
@@ -134,7 +136,11 @@ class _AllChatsClassState extends State<AllChatsPage> {
               },
               child: ListTile(
                 onTap: () {
-                  _allChatsVM.navigateToChat(context, chat.chatId);
+                  Chats.nowChat = chat.chatId;
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ChatListPage()), // Переход на экран чата
+                  );
                 },
                 leading: const CircleAvatar(
                   backgroundImage: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg'), // Заменить на фотографию из БД
