@@ -111,7 +111,7 @@ class NetServerController with WidgetsBindingObserver {
   // Requests to the server
 
 
-//RW
+//OK
   Future<List<String>> createNewChat(String chatPassword, bool isPrivacy) async {
     Completer<List<String>> completer = Completer<List<String>>();
     int requestId = getK();
@@ -128,7 +128,7 @@ class NetServerController with WidgetsBindingObserver {
   }
 
 
-//RW
+//OK
   Future<List<String>> addUserToChat(RSAPublicKey publicKey, RSAPrivateKey privateKey, 
     String idChat, String chatPassword, int? anonId, String? password) async 
   {
@@ -166,12 +166,12 @@ class NetServerController with WidgetsBindingObserver {
   }
 
 
-//ERROR
-  Future<String> sendMessage(List<int> msg, int idSender, DateTime timeMsg) async {
+//RW
+  Future<String> sendMessage(String msg, int idSender, DateTime timeMsg, RSAPrivateKey privateKey) async {
     Completer<String> completer = Completer<String>();
     int requestId = getK();
     String timeWithoutMilliseconds = timeMsg.toIso8601String().split('.').first;
-
+    
     setOnMessageReceivedListener(requestId, (parts) {
       if (parts.isNotEmpty) {
         completer.complete(parts[0]);
@@ -180,7 +180,12 @@ class NetServerController with WidgetsBindingObserver {
       }
     });
 
-    sendRequest(requestId, "SendMessage", "$idSender $timeWithoutMilliseconds ${base64Encode(msg)}");
+    // Кодируем сообщение в base64
+    String encodedMsg = CryptController.encryptRSA(msg, );
+
+    // Формируем запрос в нужном формате: данные + id пользователя
+    sendRequest(requestId, "SendMessage", "$encodedMsg $timeWithoutMilliseconds $idSender");
+
     return completer.future;
   }
 

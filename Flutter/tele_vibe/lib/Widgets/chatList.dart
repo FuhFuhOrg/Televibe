@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tele_vibe/Data/chats.dart';
+import 'package:tele_vibe/ViewModel/chatListVM.dart';
 import 'chatInfo.dart';
 import 'UnderWidgets/messageBubble.dart';
 import 'UnderWidgets/fileUtils.dart';
@@ -30,6 +31,7 @@ class _ChatListState extends State<ChatListPage> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final FocusNode _focusNode = FocusNode();
+  final ChatListVM _chatListVM = ChatListVM();
   bool _isSearching = false;
   String? _profileImagePath;
 
@@ -45,12 +47,12 @@ class _ChatListState extends State<ChatListPage> {
 
     List<String> queueChat = Chats.getNowChatQueue();
 
-    // Запрашиваем новые сообщения и обновляем state
+    // RW
     NetServerController().getMessages(Chats.nowChat, queueId).then((newMessages) {
       if (newMessages != null && newMessages.isNotEmpty) {
         queueChat.addAll(newMessages);
         setState(() {
-          filteredEntries = queueToFiltred(queueChat);
+          filteredEntries = _chatListVM.queueToFiltred(queueChat);
         });
       }
     }).catchError((error) {
@@ -62,38 +64,6 @@ class _ChatListState extends State<ChatListPage> {
     });
 
     _searchController.addListener(_filterMessages);
-  }
-
-
-  List<Map<String, dynamic>> queueToFiltred(List<String> queueChat){
-    List<Map<String, dynamic>> messages = [];
-
-    for (String command in queueChat) {
-      if (command.startsWith('+')) {
-        // Добавление нового сообщения
-        messages.add({
-          'text': command.substring(2), // Убираем '+ ' и оставляем текст
-          'isMe': false, // По умолчанию, можно дополнительно обрабатывать
-          'userName': 'Пользователь', // Можно добавить логику определения пользователя
-          'time': '12:00' // Можно добавить актуальное время
-        });
-      } else if (command.startsWith('*')) {
-        // Изменение сообщения
-        List<String> parts = command.substring(2).split(' '); // Убираем '* ' и разделяем ID и новый текст
-        int index = int.tryParse(parts[0]) ?? -1;
-        if (index >= 0 && index < messages.length) {
-          messages[index]['text'] = parts.sublist(1).join(' '); // Соединяем оставшуюся часть в новый текст
-        }
-      } else if (command.startsWith('-')) {
-        // Удаление сообщения
-        int index = int.tryParse(command.substring(2)) ?? -1; // Убираем '- ' и парсим ID
-        if (index >= 0 && index < messages.length) {
-          messages.removeAt(index);
-        }
-      }
-    }
-
-    return messages;
   }
 
   void _filterMessages() {
