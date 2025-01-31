@@ -32,10 +32,11 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.6
   web_socket_channel: ^2.1.0
-  encrypt: ^5.0.3
+  encrypt: ^5.0.0
   shared_preferences: ^2.0.15
   intl: ^0.18.0
   pointycastle: ^3.9.1
+  asn1lib: ^1.5.3
   #file_picker: ^8.1.7  # Update to the latest version
 
 dev_dependencies:

@@ -79,16 +79,16 @@ class CryptController {
   }
 
   // Шифрование текста с использованием RSA (подписывание приватным ключом)
-  static String encryptRSA(String text, RSAPrivateKey privateKey) {
-    final encrypter = encrypt.Encrypter(encrypt.RSA(privateKey: privateKey));
+  static String encryptRSA(String text, RSAPublicKey publicKey) {
+    final encrypter = encrypt.Encrypter(encrypt.RSA(publicKey: publicKey));
     final encrypted = encrypter.encrypt(text);
     return encrypted.base64;
   }
 
   // Расшифровка текста с использованием RSA (любой с публичным ключом может расшифровать)
-  static String decryptRSA(String encrypted, RSAPublicKey publicKey) {
+  static String decryptRSA(String encrypted, RSAPrivateKey privateKey) {
     final encryptedBytes = base64.decode(encrypted);
-    final encrypter = encrypt.Encrypter(encrypt.RSA(publicKey: publicKey));
+    final encrypter = encrypt.Encrypter(encrypt.RSA(privateKey: privateKey));
     final decrypted = encrypter.decrypt(encrypt.Encrypted(encryptedBytes));
     return decrypted;
   }

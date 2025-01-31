@@ -1,6 +1,17 @@
 
 
 
+import 'dart:ffi';
+
+import 'package:tele_vibe/Data/chats.dart';
+import 'package:tele_vibe/GettedData/netServerController.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:pointycastle/api.dart'; // Импорт необходимых классов и интерфейсов
+import 'package:pointycastle/asymmetric/api.dart';
+import 'package:pointycastle/key_generators/api.dart' as keygen;
+import 'package:pointycastle/key_generators/rsa_key_generator.dart';
+import 'package:pointycastle/random/fortuna_random.dart';
+
 class ChatListVM {
 
 
@@ -33,5 +44,15 @@ class ChatListVM {
     }
 
     return messages;
+  }
+
+  void sendMessage(String message){
+    Subuser? subuser = Chats.getNowSubuser();
+    if(subuser != null){
+      NetServerController().sendMessage(message, Chats.nowChat, subuser.id, subuser.publicKey);
+      return;
+    }
+    print("subuser is not available");
+    return;
   }
 }

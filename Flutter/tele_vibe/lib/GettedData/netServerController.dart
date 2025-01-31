@@ -167,10 +167,9 @@ class NetServerController with WidgetsBindingObserver {
 
 
 //RW
-  Future<String> sendMessage(String msg, int idSender, DateTime timeMsg, RSAPrivateKey privateKey) async {
+  Future<String> sendMessage(String msg, String chatId, int idSender, RSAPublicKey publicKey) async {
     Completer<String> completer = Completer<String>();
     int requestId = getK();
-    String timeWithoutMilliseconds = timeMsg.toIso8601String().split('.').first;
     
     setOnMessageReceivedListener(requestId, (parts) {
       if (parts.isNotEmpty) {
@@ -181,10 +180,10 @@ class NetServerController with WidgetsBindingObserver {
     });
 
     // Кодируем сообщение в base64
-    String encodedMsg = CryptController.encryptRSA(msg, );
+    String encodedMsg = CryptController.encryptRSA("+ ${msg} ${idSender}", publicKey);
 
     // Формируем запрос в нужном формате: данные + id пользователя
-    sendRequest(requestId, "SendMessage", "$encodedMsg $timeWithoutMilliseconds $idSender");
+    sendRequest(requestId, "SendMessage", "$chatId $encodedMsg");
 
     return completer.future;
   }

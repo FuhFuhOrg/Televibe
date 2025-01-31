@@ -1,6 +1,15 @@
 import 'dart:async';
-
+import 'dart:convert';
+import 'package:asn1lib/asn1lib.dart';
 import 'package:pointycastle/asymmetric/api.dart';
+import 'package:pointycastle/asymmetric/rsa.dart';
+import 'package:pointycastle/export.dart';
+import 'package:pointycastle/asymmetric/api.dart';
+import 'dart:typed_data';
+import 'package:pointycastle/export.dart';
+import 'package:convert/convert.dart';
+import 'package:pointycastle/asymmetric/api.dart';
+import 'package:pointycastle/export.dart' as crypto;
 
 class Chats {
   // Это локальная переменная
@@ -32,6 +41,21 @@ class Chats {
       return List.empty();
     }
     return _chats.chats.where((chat) => chat.chatId == nowChat).first?.queues?? [];
+  }
+
+  static Subuser? getNowSubuser(){
+    int? yourUserId = _chats.chats.where((chat) => chat.chatId == nowChat).first?.yourUserId;
+    if(yourUserId != null){
+       Subuser? subuser = _chats.chats
+        .firstWhere((chat) => chat.chatId == nowChat)
+        ?.subusers
+        .firstWhere((user) => user.id == yourUserId);
+      if(subuser != null){
+        return subuser;
+      }
+      return null;
+    }
+    return null;
   }
 }
 
@@ -65,6 +89,7 @@ class ChatData {
   Users? users;
   int? yourUserId;
   List<String> queues;
+  List<Subuser> subusers; // Новый список подюзеров
 
   ChatData({
     required this.chatName,
@@ -75,6 +100,7 @@ class ChatData {
     this.users,
     this.yourUserId,
     this.queues = const [],
+    this.subusers = const [], // Инициализация пустым списком
   });
 
   // Преобразование в JSON
@@ -85,9 +111,10 @@ class ChatData {
       'password': password,
       'nowQueueId': nowQueueId,
       'chatIp': chatIp,
-      'users': users?.toJson(), // Если users не null, конвертируем его в JSON
-      'yourUserId': yourUserId, // Может быть null, и это нормально
-      'queues': queues, // Список всегда преобразуется, даже если он пустой
+      'users': users?.toJson(),
+      'yourUserId': yourUserId,
+      'queues': queues,
+      'subusers': subusers.map((subuser) => subuser.toJson()).toList(), // Преобразуем список подюзеров в JSON
     };
   }
 
@@ -99,14 +126,17 @@ class ChatData {
       password: json['password'] as String,
       nowQueueId: json['nowQueueId'] as int,
       chatIp: json['chatIp'] as String,
-      users: json['users'] != null ? Users.fromJson(json['users'] as Map<String, dynamic>) : null, // Проверяем, есть ли данные для Users
-      yourUserId: json['yourUserId'], // Может быть null
-      queues: (json['queues'] as List<dynamic>? ?? []).cast<String>(), // Преобразуем в список строк
+      users: json['users'] != null ? Users.fromJson(json['users'] as Map<String, dynamic>) : null,
+      yourUserId: json['yourUserId'],
+      queues: (json['queues'] as List<dynamic>? ?? []).cast<String>(),
+      subusers: (json['subusers'] as List<dynamic>? ?? [])
+          .map((subuserJson) => Subuser.fromJson(subuserJson as Map<String, dynamic>))
+          .toList(), // Конвертируем JSON обратно в объекты Subuser
     );
   }
 
-  //RW
-  String getLastMessage(){
+  // RW
+  String getLastMessage() {
     return " ";
   }
 }
@@ -139,4 +169,61 @@ class Users {
       keyPair: json['keyPair'],
     );
   }
+}
+
+class Subuser {
+  int id;
+  String userName;
+  RSAPublicKey publicKey;
+  RSAPrivateKey privateKey;
+
+  Subuser({
+    required this.id,
+    required this.userName,
+    required this.publicKey,
+    required this.privateKey,
+  });
+
+  // Преобразование в JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'userName': userName,
+      'publicKey': encodePublicKey(publicKey),
+      'privateKey': encodePrivateKey(privateKey),
+    };
+  }
+
+  // Преобразование из JSON
+  factory Subuser.fromJson(Map<String, dynamic> json) {
+    return Subuser(
+      id: json['id'] as int,
+      userName: json['userName'] as String? ?? 'Unknown',
+      publicKey: decodePublicKey(json['publicKey'] as String),
+      privateKey: decodePrivateKey(json['privateKey'] as String),
+    );
+  }
+}
+
+
+// Кодирование публичного ключа в PEM-формат
+String encodePublicKey(RSAPublicKey publicKey) {
+  return publicKey.toString();
+}
+
+// Кодирование приватного ключа в PEM-формат
+String encodePrivateKey(RSAPrivateKey privateKey) {
+  return privateKey.toString();
+}
+
+// Декодирование публичного ключа из PEM
+RSAPublicKey decodePublicKey(String pem) {
+  final parser = null;
+  return parser.parse(pem) as RSAPublicKey;
+}
+
+// Декодирование приватного ключа из PEM
+RSAPrivateKey decodePrivateKey(String pem) {
+  final parser = null;
+  return parser.parse(pem) as RSAPrivateKey;
 }

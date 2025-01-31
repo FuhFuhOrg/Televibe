@@ -51,7 +51,14 @@ class ChatGroupOptionVM
         if (goin != " " && goin != "") {
           print('Return Login ${goin}');
           if (goin[0] == "true") {
-            Chats.addChat(ChatData(chatName: name, chatId: chatId, password: password, nowQueueId: -1, chatIp: serverId));
+            List<Subuser> newChatUsers = [];
+            newChatUsers.add(Subuser(
+              id: int.parse(goin[1]), 
+              userName: "YOU", 
+              publicKey: _keyPair.$1, 
+              privateKey: _keyPair.$2
+            ));
+            Chats.addChat(ChatData(chatName: name, chatId: chatId, password: password, nowQueueId: -1, chatIp: serverId, yourUserId: int.parse(goin[1]), subusers: newChatUsers));
             MessageHandler.showAlertDialog(context, 'Добавлен пользователь в чат: ${goin[1]}');
             LocalDataSave.saveChatsData();
           } else {

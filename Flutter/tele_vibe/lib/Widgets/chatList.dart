@@ -47,7 +47,6 @@ class _ChatListState extends State<ChatListPage> {
 
     List<String> queueChat = Chats.getNowChatQueue();
 
-    // RW
     NetServerController().getMessages(Chats.nowChat, queueId).then((newMessages) {
       if (newMessages != null && newMessages.isNotEmpty) {
         queueChat.addAll(newMessages);
@@ -66,6 +65,7 @@ class _ChatListState extends State<ChatListPage> {
     _searchController.addListener(_filterMessages);
   }
 
+  //ПЕРЕСТАНЬ ПИСАТЬ КОД ВНЕ VM
   void _filterMessages() {
     final query = _searchController.text.toLowerCase();
     setState(() {
@@ -255,10 +255,7 @@ class _ChatListState extends State<ChatListPage> {
             onPressed: () {
               String message = _textController.text;
               if (message.isNotEmpty) {
-                setState(() {
-                  entries.add({'text': message, 'isMe': true, 'userName': 'Я', 'time': '12:05'});
-                  _filterMessages();
-                });
+                _chatListVM.sendMessage(message);
                 _textController.clear();
                 _focusNode.requestFocus();
                 _scrollToBottom();
