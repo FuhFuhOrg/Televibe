@@ -7,6 +7,7 @@ import 'UnderWidgets/messageBubble.dart';
 import 'UnderWidgets/fileUtils.dart';
 import 'searchMessagesScreen.dart';
 import 'package:tele_vibe/GettedData/netServerController.dart';
+import 'dart:convert';
 
 class ChatListPage extends StatefulWidget {
   const ChatListPage({super.key});
@@ -39,6 +40,7 @@ class _ChatListState extends State<ChatListPage> {
   void initState() {
     super.initState();
 
+    // Кинуть это в VM когда пойму как
     int queueId = Chats.getValue()
             .chats
             .where((chat) => chat.chatId == Chats.nowChat)
@@ -48,15 +50,66 @@ class _ChatListState extends State<ChatListPage> {
     List<String> queueChat = Chats.getNowChatQueue();
 
     NetServerController().getMessages(Chats.nowChat, queueId).then((newMessages) {
-      if (newMessages != null && newMessages.isNotEmpty) {
-        queueChat.addAll(newMessages);
-        setState(() {
-          filteredEntries = _chatListVM.queueToFiltred(queueChat);
-        });
+    if (newMessages != null && newMessages.isNotEmpty) {
+      List<String> newMessagesFix = [];
+      for (int i = 0; i < newMessages.length; i++) {
+        if (newMessages[i] == "[]"){
+
+        } else if (newMessages[i][0] == "[") {
+          newMessagesFix.add(newMessages[i]);
+        } else {
+          newMessagesFix[newMessagesFix.length - 1] += " " + newMessages[i];
+        }
       }
-    }).catchError((error) {
-      print("Ошибка получения сообщений: $error");
-    });
+      queueChat.addAll(newMessagesFix);
+
+      if(queueChat.isEmpty){
+        return;
+      }
+
+      int lastChangeId = -1;
+      List<dynamic> messages = jsonDecode(queueChat.last);
+      Map<String, dynamic> lastMessage = Map<String, dynamic>.from(messages[0]);
+      if (lastMessage.containsKey("changeId")) {
+        lastChangeId = lastMessage["changeId"] is int
+            ? lastMessage["changeId"]
+            : int.tryParse(lastMessage["changeId"].toString());
+      }
+
+      List<String> queues = [];
+      for (String jsonString in queueChat) {
+        try {
+          List<dynamic> decodedList = jsonDecode(jsonString);
+          Map<String, dynamic> queueMap = Map<String, dynamic>();
+          if (decodedList.isNotEmpty && decodedList[0] is Map<String, dynamic>) {
+            for (int i = 0; i < decodedList.length; i++){
+              queueMap.addAll(Map<String, dynamic>.from(decodedList[i]));
+            }
+          }
+
+          if (queueMap.containsKey("changeId") && queueMap.containsKey("changeData")) {
+            int changeId = queueMap["changeId"];
+            String changeData = queueMap["changeData"].toString();
+
+            queues.add(changeData);
+          }
+        } catch (e) {
+          print("Ошибка парсинга JSON: $e");
+        }
+      }
+
+      Chats.setNowChatQueue(queues, lastChangeId);
+
+      for (int i = 0; i < queues.length; i++) {
+        print(queues[i]);
+      }
+      setState(() {
+        filteredEntries = _chatListVM.queueToFiltred(queueChat);
+      });
+    }
+  }).catchError((error) {
+    print("Ошибка получения сообщений: $error");
+  });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom();

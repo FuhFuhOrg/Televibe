@@ -166,7 +166,7 @@ class NetServerController with WidgetsBindingObserver {
   }
 
 
-//RW
+//OK
   Future<String> sendMessage(String msg, String chatId, int idSender, RSAPublicKey publicKey) async {
     Completer<String> completer = Completer<String>();
     int requestId = getK();

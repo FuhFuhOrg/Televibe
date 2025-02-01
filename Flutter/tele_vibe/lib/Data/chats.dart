@@ -43,6 +43,21 @@ class Chats {
     return _chats.chats.where((chat) => chat.chatId == nowChat).first?.queues?? [];
   }
 
+  static void setNowChatQueue (List<String> newValue, int newQueue) {
+    if(newQueue == -1) return;
+
+    var chat = _chats.chats.firstWhere(
+      (chat) => chat.chatId == nowChat
+    );
+
+    if (chat != null) {
+      chat.queues = newValue;
+      chat.nowQueueId = newQueue;
+    }
+
+    return;
+  }
+
   static Subuser? getNowSubuser(){
     int? yourUserId = _chats.chats.where((chat) => chat.chatId == nowChat).first?.yourUserId;
     if(yourUserId != null){
@@ -208,22 +223,52 @@ class Subuser {
 
 // Кодирование публичного ключа в PEM-формат
 String encodePublicKey(RSAPublicKey publicKey) {
-  return publicKey.toString();
+  BigInt? m = publicKey.modulus;
+  BigInt? e = publicKey.exponent;
+  if(e != null && m != null){
+    return ("${m.toString()} ${e.toString()}");
+  }
+  return "";
 }
 
 // Кодирование приватного ключа в PEM-формат
 String encodePrivateKey(RSAPrivateKey privateKey) {
-  return privateKey.toString();
+  BigInt? m = privateKey.modulus;
+  BigInt? privExp = privateKey.privateExponent;
+  BigInt? p = privateKey.p;
+  BigInt? q = privateKey.q;
+  BigInt? pubExp = privateKey.publicExponent;
+  if(p != null && q != null && m != null && privExp != null && pubExp != null){
+    return ("${m.toString()} ${privExp.toString()} ${p.toString()} ${q.toString()} ${pubExp.toString()}");
+  }
+  return "";
 }
 
 // Декодирование публичного ключа из PEM
 RSAPublicKey decodePublicKey(String pem) {
-  final parser = null;
-  return parser.parse(pem) as RSAPublicKey;
+  List<String> strBigInt = pem.split(" ");
+  List<BigInt> BigInts = [];
+  for(String str in strBigInt){
+    BigInts.add(BigInt.parse(str));
+  }
+  BigInt? m = BigInts[0];
+  BigInt? e = BigInts[1];
+  RSAPublicKey RSAPK = RSAPublicKey(m, e);
+  return RSAPK;
 }
 
 // Декодирование приватного ключа из PEM
 RSAPrivateKey decodePrivateKey(String pem) {
-  final parser = null;
-  return parser.parse(pem) as RSAPrivateKey;
+  List<String> strBigInt = pem.split(" ");
+  List<BigInt> BigInts = [];
+  for(String str in strBigInt){
+    BigInts.add(BigInt.parse(str));
+  }
+  BigInt? m = BigInts[0];
+  BigInt? privExp = BigInts[1];
+  BigInt? p = BigInts[2];
+  BigInt? q = BigInts[3];
+  BigInt? pubExp = BigInts[4];
+  RSAPrivateKey RSAPK = RSAPrivateKey(m, privExp, p, q, pubExp);
+  return RSAPK;
 }
