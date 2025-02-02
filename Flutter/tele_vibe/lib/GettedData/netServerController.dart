@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:pointycastle/asymmetric/api.dart';
@@ -153,8 +154,26 @@ class NetServerController with WidgetsBindingObserver {
     return completer.future;
   }
 
+
 //OK
-  Future<List<String>> getChatUser(String chatId){
+  Future<bool> deleteGroup(String chatId) async {
+    Completer<bool> completer = Completer<bool>();
+    int requestId = getK();
+
+    setOnMessageReceivedListener(requestId, (parts) {
+      if (parts.isNotEmpty) {
+        completer.complete(true);
+      } else {
+        completer.complete(false);
+      }
+    });
+
+    sendRequest(requestId, "DeleteChat", "$chatId");
+    return completer.future;
+  }
+
+//OK
+  Future<List<String>> getChatUser(String chatId) async {
     
     Completer<List<String>> completer = Completer<List<String>>();
     int requestId = getK();

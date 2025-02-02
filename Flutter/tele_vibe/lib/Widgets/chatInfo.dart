@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tele_vibe/ViewModel/ChatInfoVM.dart';
 import 'profileScreen.dart'; // Экран профиля
 import 'renameScreen.dart'; // Экран переименования
 import 'permissionsScreen.dart'; // Экран изменения разрешений
@@ -275,6 +276,7 @@ void _showProfileOptions(BuildContext context) {
   final RenderBox button = context.findRenderObject() as RenderBox;
   final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
   String? _profileImagePath;
+  final ChatInfoVM _chatInfoVM = ChatInfoVM();
 
   double offsetX = 10.0;
   double offsetY = 70.0; // Смещение по вертикали
@@ -317,6 +319,8 @@ void _showProfileOptions(BuildContext context) {
           title: const Text('Удалить группу', style: TextStyle(color: Colors.white)),
           onTap: () {
             Navigator.pop(context); // Закрываем меню
+
+            _chatInfoVM.deleteNowGroup(context);
             // Логика для удаления группы
           },
         ),

@@ -24,7 +24,7 @@ import 'package:tele_vibe/GettedData/netServerController.dart';
 class ChatListVM {
 
 
-  List<Map<String, dynamic>> queueToFiltred(List<(String, int)> queueChat, BuildContext context){
+  Future<List<Map<String, dynamic>>> queueToFiltred(List<(String, int)> queueChat, BuildContext context) async {
     List<Map<String, dynamic>> messages = [];
 
     for ((String, int) commandUserCode in queueChat) {
@@ -32,18 +32,22 @@ class ChatListVM {
       ChatData cd = Chats.getValue().chats.firstWhere(
         (chat) => chat.chatId == Chats.nowChat
       );
-      RSAPrivateKey privateKey = cd.subusers.firstWhere(
-        (subuser) => subuser.id == commandUserCode.$2
-      ).privateKey;
 
-      String command = "";
+      String command = "ERROR READ MESSAGE";
       try{
-        String command = CryptController.decryptRSA(commandUserCode.$1, privateKey);
+        RSAPrivateKey privateKey = cd.subusers.firstWhere(
+          (subuser) => subuser.id == commandUserCode.$2
+        ).privateKey;
+        command = CryptController.decryptRSA(commandUserCode.$1, privateKey);
       }
       catch(e){
         try {
-          _getAllUsersInChat(context);
-          String command = CryptController.decryptRSA(commandUserCode.$1, privateKey);
+          bool x = await _getAllUsersInChat(context);
+
+          RSAPrivateKey privateKey = cd.subusers.firstWhere(
+            (subuser) => subuser.id == commandUserCode.$2
+          ).privateKey;
+          command = CryptController.decryptRSA(commandUserCode.$1, privateKey);
         }
         catch(e){
           print(e);
@@ -81,29 +85,36 @@ class ChatListVM {
     return messages;
   }
 
-  void _getAllUsersInChat(BuildContext context){
-    NetServerController().getChatUser(Chats.nowChat).then((goin) {
-      if (goin != " " && goin != "") {
-          print('Return Login ${goin}');
-          if (goin[0] == "true") {
+  Future<bool> _getAllUsersInChat(BuildContext context) async {
+    List<String> goin = await NetServerController().getChatUser(Chats.nowChat);
+    
+    if (goin.isNotEmpty && goin != " ") {
+      print('Return Login $goin');
+      
+      if (goin[0] == "true") {
+        for (int i = 1; i < goin.length; i += 2) {
+          int uid = int.parse(goin[i]);
+          RSAPrivateKey privateKey = CryptController.decodePrivateKey(
+            CryptController.decryptPrivateKey(goin[i + 1], Chats.nowChat, Chats.getChatPassword(Chats.nowChat))
+          );
 
-            for (int i = 1; i < goin.length; i+=2) {
-              int uid = int.parse(goin[i]);
-              RSAPrivateKey privateKey = CryptController.decodePrivateKey(CryptController.decryptPrivateKey(goin[i + 1], Chats.nowChat, Chats.getChatPassword(Chats.nowChat)));
-
-              Chats.addUserInChat(Chats.nowChat, new Subuser(
-                id: uid, 
-                userName: "", 
-                publicKey: null, 
-                privateKey: privateKey));
-            }
-            MessageHandler.showAlertDialog(context, 'Добавлен пользователь в чат: ${goin[1]}');
-            LocalDataSave.saveChatsData();
-          } else {
-            MessageHandler.showAlertDialog(context, '${goin.join(" ")}');
-          }
+          Chats.addUserInChat(
+            Chats.nowChat,
+            Subuser(
+              id: uid,
+              userName: "",
+              publicKey: null,
+              privateKey: privateKey
+            )
+          );
         }
-    });
+        LocalDataSave.saveChatsData();
+      } else {
+        MessageHandler.showAlertDialog(context, '${goin.join(" ")}');
+      }
+    }
+
+    return true;
   }
 
   void sendMessage(String message){

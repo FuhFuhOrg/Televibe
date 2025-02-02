@@ -44,6 +44,11 @@ class Chats {
     return _chats.chats.where((chat) => chat.chatId == nowChat).first?.queues?? [];
   }
 
+  static void removeChat(String chatId) {
+    ChatData chat = _chats.chats.firstWhere((chat) => chat.chatId == chatId);
+    _chats.chats.remove(chat);
+  }
+
   static void addUserInChat(String chatId, Subuser newUser) {
     ChatData chat = _chats.chats.firstWhere((chat) => chat.chatId == chatId);
     if(!chat.subusers.contains(newUser)){
