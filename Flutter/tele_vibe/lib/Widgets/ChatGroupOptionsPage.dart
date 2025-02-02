@@ -16,13 +16,14 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
   String _groupName = '';
   String _groupPassword = '';
   String _textField = "";
-  String _chatPassword = '';
+  String _chatPassword = '', _chatId = '';
 
   // Контроллеры для текстовых полей
   final TextEditingController _groupNameController = TextEditingController();
   final TextEditingController _groupPasswordController = TextEditingController();
   final TextEditingController _chatPasswordController = TextEditingController();
   final TextEditingController  _groupHostController = TextEditingController();
+  final TextEditingController  _chatIdController = TextEditingController();
   final ChatGroupOptionVM _chatGroupOptionVM = ChatGroupOptionVM();
   bool _isPasswordRequired = false;
   
@@ -130,26 +131,39 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
               ),
             ],
             if (_isAddingChat) ...[
+              // Текстовое поле для ввода ID чата
+              TextField(
+                controller: _chatIdController,
+                onChanged: (value) {
+                  setState(() {
+                    _chatId = value; // Сохранение ID чата
+                  });
+                },
+                decoration: const InputDecoration(labelText: "ID чата"),
+              ),
+              // Текстовое поле для ввода пароля
               TextField(
                 controller: _chatPasswordController,
                 onChanged: (value) {
                   setState(() {
-                    _addChatPassword = value; // Сохранение пароля чата/группы
+                    _chatPassword = value; // Сохранение пароля чата
                   });
                 },
                 decoration: const InputDecoration(labelText: "Пароль"),
                 obscureText: true,
               ),
-              SwitchListTile(
-                title: const Text("Чат/группа?", style: TextStyle(color: Colors.white)),
-                value: _isPasswordRequired,
+              // Текстовое поле для ввода пароля
+              TextField(
+                controller: _chatPasswordController,
                 onChanged: (value) {
                   setState(() {
-                    _isPasswordRequired = value;
+                    _chatPassword = value; // Сохранение пароля чата
                   });
                 },
+                decoration: const InputDecoration(labelText: "ИЛЮША БЛЯДЬ НЕ ТРОГАЙ"),
+                obscureText: true,
               ),
-            ],
+            ]
           ],
         ),
       ),
@@ -163,6 +177,7 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
                     // Логика создания группы с сохраненными данными
                     print("Создание группы: $_groupName с паролем: $_groupPassword");
                   } else if (_isAddingChat) {
+                    _chatGroupOptionVM.enterInChat(context, _groupName, _chatId, _groupPassword, _groupHost);
                     // Логика добавления чата с сохраненными данными
                     print("Добавление чата с паролем: $_addChatPassword");
                   }

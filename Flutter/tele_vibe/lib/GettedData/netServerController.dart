@@ -136,8 +136,8 @@ class NetServerController with WidgetsBindingObserver {
     int requestId = getK();
 
     // Шифруем ключи через CryptController
-    String encryptedPublicKey = CryptController.encryptPublicKey(publicKey.toString(), idChat, chatPassword);
-    String encryptedPrivateKey = CryptController.encryptPrivateKey(privateKey.toString(), idChat, chatPassword, anonId!, password!);
+    String encryptedPublicKey = CryptController.encryptPublicKey(CryptController.encodePublicKey(publicKey), idChat, chatPassword, anonId!, password!);
+    String encryptedPrivateKey = CryptController.encryptPrivateKey(CryptController.encodePrivateKey(privateKey), idChat, chatPassword);
     String encryptedAnonId = CryptController.encryptAnonId(anonId.toString(), idChat, chatPassword, password!);
 
     setOnMessageReceivedListener(requestId, (parts) {
@@ -152,6 +152,30 @@ class NetServerController with WidgetsBindingObserver {
     "$encryptedPublicKey $encryptedPrivateKey $idChat $encryptedAnonId");
     return completer.future;
   }
+
+//OK
+  Future<List<String>> getChatUser(String chatId){
+    
+    Completer<List<String>> completer = Completer<List<String>>();
+    int requestId = getK();
+
+    setOnMessageReceivedListener(requestId, (parts) {
+      if (parts.isNotEmpty) {
+        completer.complete(parts);
+      } else {
+        completer.complete(null);
+      }
+    });
+
+    sendRequest(requestId, "SendChatUsers", 
+    "$chatId");
+    return completer.future;
+  }
+
+
+
+
+
 
   String xorEncrypt(String data, String key) {
     List<int> dataBytes = utf8.encode(data);
@@ -201,7 +225,7 @@ class NetServerController with WidgetsBindingObserver {
         completer.complete(null);
       }
     });
-    
+
     sendRequest(requestId, "GetQueueMessages", 
     "${chatId} ${lastQueueId}");
     return completer.future;

@@ -114,23 +114,75 @@ class CryptController {
     return key.substring(0, length);
   }
 
-  static String encryptPublicKey(String publicKey, String chatId, String chatPassword) {
-    String combinedKey = chatId + chatPassword;
+  // Кодирование публичного ключа в PEM-формат
+  static String encodePublicKey(RSAPublicKey publicKey) {
+    BigInt? m = publicKey.modulus;
+    BigInt? e = publicKey.exponent;
+    if(e != null && m != null){
+      return ("${m.toString()} ${e.toString()}");
+    }
+    return "";
+  }
+
+  // Кодирование приватного ключа в PEM-формат
+  static String encodePrivateKey(RSAPrivateKey privateKey) {
+    BigInt? m = privateKey.modulus;
+    BigInt? privExp = privateKey.privateExponent;
+    BigInt? p = privateKey.p;
+    BigInt? q = privateKey.q;
+    BigInt? pubExp = privateKey.publicExponent;
+    if(p != null && q != null && m != null && privExp != null && pubExp != null){
+      return ("${m.toString()} ${privExp.toString()} ${p.toString()} ${q.toString()} ${pubExp.toString()}");
+    }
+    return "";
+  }
+
+  // Декодирование публичного ключа из PEM
+  static RSAPublicKey decodePublicKey(String pem) {
+    List<String> strBigInt = pem.split(" ");
+    List<BigInt> BigInts = [];
+    for(String str in strBigInt){
+      BigInts.add(BigInt.parse(str));
+    }
+    BigInt? m = BigInts[0];
+    BigInt? e = BigInts[1];
+    RSAPublicKey RSAPK = RSAPublicKey(m, e);
+    return RSAPK;
+  }
+
+  // Декодирование приватного ключа из PEM
+  static RSAPrivateKey decodePrivateKey(String pem) {
+    List<String> strBigInt = pem.split(" ");
+    List<BigInt> BigInts = [];
+    for(String str in strBigInt){
+      BigInts.add(BigInt.parse(str));
+    }
+    BigInt? m = BigInts[0];
+    BigInt? privExp = BigInts[1];
+    BigInt? p = BigInts[2];
+    BigInt? q = BigInts[3];
+    BigInt? pubExp = BigInts[4];
+    RSAPrivateKey RSAPK = RSAPrivateKey(m, privExp, p, q, pubExp);
+    return RSAPK;
+  }
+
+  static String encryptPublicKey(String publicKey, String chatId, String chatPassword, int login, String password) {
+    String combinedKey = chatId + chatPassword + login.toString() + password;
     return xorEncryptWithExtendedKey(publicKey, combinedKey);
   }
 
-  static String encryptPrivateKey(String privateKey, String chatId, String chatPassword, int login, String password) {
-    String combinedKey = chatId + chatPassword + login.toString() + password;
+  static String encryptPrivateKey(String privateKey, String chatId, String chatPassword) {
+    String combinedKey = chatId + chatPassword;
     return xorEncryptWithExtendedKey(privateKey, combinedKey);
   }
 
-  static String decryptPublicKey(String encryptedPublicKey, String chatId, String chatPassword) {
-    String combinedKey = chatId + chatPassword;
+  static String decryptPublicKey(String encryptedPublicKey, String chatId, String chatPassword, int login, String password) {
+    String combinedKey = chatId + chatPassword + login.toString() + password;
     return xorEncryptWithExtendedKey(encryptedPublicKey, combinedKey);
   }
 
-  static String decryptPrivateKey(String encryptedPrivateKey, String chatId, String chatPassword, int login, String password) {
-    String combinedKey = chatId + chatPassword + login.toString() + password;
+  static String decryptPrivateKey(String encryptedPrivateKey, String chatId, String chatPassword) {
+    String combinedKey = chatId + chatPassword;
     return xorEncryptWithExtendedKey(encryptedPrivateKey, combinedKey);
   }
 

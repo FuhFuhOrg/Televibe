@@ -50,7 +50,7 @@ class _ChatListState extends State<ChatListPage> {
     List<(String, int)> queueChatNewMessages = [];
 
     NetServerController().getMessages(Chats.nowChat, queueId).then((newMessages) {
-    if (newMessages != null && newMessages.isNotEmpty) {
+      if (newMessages != null && newMessages.isNotEmpty) {
       List<(String, int)> newMessagesFix = [];
       for (int i = 0; i < newMessages.length; i++) {
         if (newMessages[i] == "[]"){
@@ -101,7 +101,7 @@ class _ChatListState extends State<ChatListPage> {
         print(queues[i]);
       }
       setState(() {
-        filteredEntries = _chatListVM.queueToFiltred(queueChat);
+        filteredEntries = _chatListVM.queueToFiltred(queueChat, context);
       });
     }
   }).catchError((error) {

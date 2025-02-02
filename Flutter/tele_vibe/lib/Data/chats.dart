@@ -10,6 +10,7 @@ import 'package:pointycastle/export.dart';
 import 'package:convert/convert.dart';
 import 'package:pointycastle/asymmetric/api.dart';
 import 'package:pointycastle/export.dart' as crypto;
+import 'package:tele_vibe/GettedData/cryptController.dart';
 
 class Chats {
   // Это локальная переменная
@@ -41,6 +42,18 @@ class Chats {
       return [];
     }
     return _chats.chats.where((chat) => chat.chatId == nowChat).first?.queues?? [];
+  }
+
+  static void addUserInChat(String chatId, Subuser newUser) {
+    ChatData chat = _chats.chats.firstWhere((chat) => chat.chatId == chatId);
+    if(!chat.subusers.contains(newUser)){
+      chat.subusers.add(newUser);
+    }
+  }
+
+  static String getChatPassword(String chatId){
+    ChatData chat = _chats.chats.firstWhere((chat) => chat.chatId == chatId);
+    return chat.password;
   }
 
   static void setNowChatQueue (List<(String, int)> newValue, int newQueue) {
@@ -191,7 +204,7 @@ class Users {
 class Subuser {
   int id;
   String userName;
-  RSAPublicKey publicKey;
+  RSAPublicKey? publicKey;
   RSAPrivateKey privateKey;
 
   Subuser({
@@ -206,8 +219,8 @@ class Subuser {
     return {
       'id': id,
       'userName': userName,
-      'publicKey': encodePublicKey(publicKey),
-      'privateKey': encodePrivateKey(privateKey),
+      'publicKey': publicKey != null ? CryptController.encodePublicKey(publicKey!) : null,
+      'privateKey': CryptController.encodePrivateKey(privateKey),
     };
   }
 
@@ -216,61 +229,10 @@ class Subuser {
     return Subuser(
       id: json['id'] as int,
       userName: json['userName'] as String? ?? 'Unknown',
-      publicKey: decodePublicKey(json['publicKey'] as String),
-      privateKey: decodePrivateKey(json['privateKey'] as String),
+      publicKey: json['publicKey'] != null
+          ? CryptController.decodePublicKey(json['publicKey'] as String)
+          : null,
+      privateKey: CryptController.decodePrivateKey(json['privateKey'] as String),
     );
   }
-}
-
-
-// Кодирование публичного ключа в PEM-формат
-String encodePublicKey(RSAPublicKey publicKey) {
-  BigInt? m = publicKey.modulus;
-  BigInt? e = publicKey.exponent;
-  if(e != null && m != null){
-    return ("${m.toString()} ${e.toString()}");
-  }
-  return "";
-}
-
-// Кодирование приватного ключа в PEM-формат
-String encodePrivateKey(RSAPrivateKey privateKey) {
-  BigInt? m = privateKey.modulus;
-  BigInt? privExp = privateKey.privateExponent;
-  BigInt? p = privateKey.p;
-  BigInt? q = privateKey.q;
-  BigInt? pubExp = privateKey.publicExponent;
-  if(p != null && q != null && m != null && privExp != null && pubExp != null){
-    return ("${m.toString()} ${privExp.toString()} ${p.toString()} ${q.toString()} ${pubExp.toString()}");
-  }
-  return "";
-}
-
-// Декодирование публичного ключа из PEM
-RSAPublicKey decodePublicKey(String pem) {
-  List<String> strBigInt = pem.split(" ");
-  List<BigInt> BigInts = [];
-  for(String str in strBigInt){
-    BigInts.add(BigInt.parse(str));
-  }
-  BigInt? m = BigInts[0];
-  BigInt? e = BigInts[1];
-  RSAPublicKey RSAPK = RSAPublicKey(m, e);
-  return RSAPK;
-}
-
-// Декодирование приватного ключа из PEM
-RSAPrivateKey decodePrivateKey(String pem) {
-  List<String> strBigInt = pem.split(" ");
-  List<BigInt> BigInts = [];
-  for(String str in strBigInt){
-    BigInts.add(BigInt.parse(str));
-  }
-  BigInt? m = BigInts[0];
-  BigInt? privExp = BigInts[1];
-  BigInt? p = BigInts[2];
-  BigInt? q = BigInts[3];
-  BigInt? pubExp = BigInts[4];
-  RSAPrivateKey RSAPK = RSAPrivateKey(m, privExp, p, q, pubExp);
-  return RSAPK;
 }
