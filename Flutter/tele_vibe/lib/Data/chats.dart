@@ -36,14 +36,14 @@ class Chats {
     return _chats;
   }
 
-  static List<String> getNowChatQueue (){
+  static List<(String, int)> getNowChatQueue (){
     if(_chats.chats.isEmpty){
-      return List.empty();
+      return [];
     }
     return _chats.chats.where((chat) => chat.chatId == nowChat).first?.queues?? [];
   }
 
-  static void setNowChatQueue (List<String> newValue, int newQueue) {
+  static void setNowChatQueue (List<(String, int)> newValue, int newQueue) {
     if(newQueue == -1) return;
 
     var chat = _chats.chats.firstWhere(
@@ -103,7 +103,7 @@ class ChatData {
   late int nowQueueId;
   Users? users;
   int? yourUserId;
-  List<String> queues;
+  List<(String, int)> queues;
   List<Subuser> subusers; // Новый список подюзеров
 
   ChatData({
@@ -128,8 +128,8 @@ class ChatData {
       'chatIp': chatIp,
       'users': users?.toJson(),
       'yourUserId': yourUserId,
-      'queues': queues,
-      'subusers': subusers.map((subuser) => subuser.toJson()).toList(), // Преобразуем список подюзеров в JSON
+      'queues': queues.map((queue) => {'name': queue.$1, 'id': queue.$2}).toList(),
+      'subusers': subusers.map((subuser) => subuser.toJson()).toList(),
     };
   }
 
@@ -143,10 +143,12 @@ class ChatData {
       chatIp: json['chatIp'] as String,
       users: json['users'] != null ? Users.fromJson(json['users'] as Map<String, dynamic>) : null,
       yourUserId: json['yourUserId'],
-      queues: (json['queues'] as List<dynamic>? ?? []).cast<String>(),
+      queues: (json['queues'] as List<dynamic>? ?? [])
+          .map((queueJson) => (queueJson['name'] as String, queueJson['id'] as int))
+          .toList(),
       subusers: (json['subusers'] as List<dynamic>? ?? [])
           .map((subuserJson) => Subuser.fromJson(subuserJson as Map<String, dynamic>))
-          .toList(), // Конвертируем JSON обратно в объекты Subuser
+          .toList(),
     );
   }
 

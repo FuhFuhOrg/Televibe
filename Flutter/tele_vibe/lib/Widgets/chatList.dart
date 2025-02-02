@@ -47,39 +47,29 @@ class _ChatListState extends State<ChatListPage> {
             .firstOrNull
             ?.nowQueueId ?? -1;
 
-    List<String> queueChat = Chats.getNowChatQueue();
+    List<(String, int)> queueChatNewMessages = [];
 
     NetServerController().getMessages(Chats.nowChat, queueId).then((newMessages) {
     if (newMessages != null && newMessages.isNotEmpty) {
-      List<String> newMessagesFix = [];
+      List<(String, int)> newMessagesFix = [];
       for (int i = 0; i < newMessages.length; i++) {
         if (newMessages[i] == "[]"){
 
         } else if (newMessages[i][0] == "[") {
-          newMessagesFix.add(newMessages[i]);
+          newMessagesFix.add((newMessages[i], -1));
         } else {
-          newMessagesFix[newMessagesFix.length - 1] += " " + newMessages[i];
+          newMessagesFix[newMessagesFix.length - 1] = 
+          (newMessagesFix[newMessagesFix.length - 1].$1 + " " + newMessages[i],
+          -1);
         }
       }
-      queueChat.addAll(newMessagesFix);
-
-      if(queueChat.isEmpty){
-        return;
-      }
+      queueChatNewMessages.addAll(newMessagesFix);
 
       int lastChangeId = -1;
-      List<dynamic> messages = jsonDecode(queueChat.last);
-      Map<String, dynamic> lastMessage = Map<String, dynamic>.from(messages[0]);
-      if (lastMessage.containsKey("changeId")) {
-        lastChangeId = lastMessage["changeId"] is int
-            ? lastMessage["changeId"]
-            : int.tryParse(lastMessage["changeId"].toString());
-      }
-
-      List<String> queues = [];
-      for (String jsonString in queueChat) {
+      List<(String, int)> queues = [];
+      for ((String, int) jsonString in queueChatNewMessages) {
         try {
-          List<dynamic> decodedList = jsonDecode(jsonString);
+          List<dynamic> decodedList = jsonDecode(jsonString.$1);
           Map<String, dynamic> queueMap = Map<String, dynamic>();
           if (decodedList.isNotEmpty && decodedList[0] is Map<String, dynamic>) {
             for (int i = 0; i < decodedList.length; i++){
@@ -87,18 +77,25 @@ class _ChatListState extends State<ChatListPage> {
             }
           }
 
-          if (queueMap.containsKey("changeId") && queueMap.containsKey("changeData")) {
+          if (queueMap.containsKey("changeId") && queueMap.containsKey("changeData") && queueMap.containsKey("senderId")) {
             int changeId = queueMap["changeId"];
+            if(lastChangeId < changeId){
+              lastChangeId = changeId;
+            }
             String changeData = queueMap["changeData"].toString();
+            int senderid = queueMap["senderId"];
 
-            queues.add(changeData);
+            queues.add((changeData, senderid));
           }
         } catch (e) {
           print("Ошибка парсинга JSON: $e");
         }
       }
 
-      Chats.setNowChatQueue(queues, lastChangeId);
+      List<(String, int)> queueChat = Chats.getNowChatQueue();
+      queueChat.addAll(queues);
+
+      Chats.setNowChatQueue(queueChat, lastChangeId);
 
       for (int i = 0; i < queues.length; i++) {
         print(queues[i]);

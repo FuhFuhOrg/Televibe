@@ -4,6 +4,7 @@
 import 'dart:ffi';
 
 import 'package:tele_vibe/Data/chats.dart';
+import 'package:tele_vibe/GettedData/cryptController.dart';
 import 'package:tele_vibe/GettedData/netServerController.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:pointycastle/api.dart'; // Импорт необходимых классов и интерфейсов
@@ -15,15 +16,27 @@ import 'package:pointycastle/random/fortuna_random.dart';
 class ChatListVM {
 
 
-  List<Map<String, dynamic>> queueToFiltred(List<String> queueChat){
+  List<Map<String, dynamic>> queueToFiltred(List<(String, int)> queueChat){
     List<Map<String, dynamic>> messages = [];
 
-    for (String command in queueChat) {
+    for ((String, int) commandUserCode in queueChat) {
+
+      ChatData cd = Chats.getValue().chats.firstWhere(
+        (chat) => chat.chatId == Chats.nowChat
+      );
+      RSAPrivateKey privateKey = cd.subusers.firstWhere(
+        (subuser) => subuser.id == commandUserCode.$2
+      ).privateKey;
+
+      String command = CryptController.decryptRSA(commandUserCode.$1, privateKey);
       if (command.startsWith('+')) {
         // Добавление нового сообщения
         messages.add({
           'text': command.substring(2), // Убираем '+ ' и оставляем текст
-          'isMe': false, // По умолчанию, можно дополнительно обрабатывать
+          if(commandUserCode.$2 == cd.yourUserId)
+            'isMe': true
+          else
+            'isMe': false,
           'userName': 'Пользователь', // Можно добавить логику определения пользователя
           'time': '12:00' // Можно добавить актуальное время
         });

@@ -180,10 +180,10 @@ class NetServerController with WidgetsBindingObserver {
     });
 
     // Кодируем сообщение в base64
-    String encodedMsg = CryptController.encryptRSA("+ ${msg} ${idSender}", publicKey);
+    String encodedMsg = CryptController.encryptRSA("+ ${msg}", publicKey);
 
     // Формируем запрос в нужном формате: данные + id пользователя
-    sendRequest(requestId, "SendMessage", "$chatId $encodedMsg");
+    sendRequest(requestId, "SendMessage", "$chatId $idSender $encodedMsg");
 
     return completer.future;
   }
@@ -201,7 +201,7 @@ class NetServerController with WidgetsBindingObserver {
         completer.complete(null);
       }
     });
-
+    
     sendRequest(requestId, "GetQueueMessages", 
     "${chatId} ${lastQueueId}");
     return completer.future;
