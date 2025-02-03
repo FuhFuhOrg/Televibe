@@ -42,6 +42,7 @@ class _RenameTextFieldState extends State<RenameTextField> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: TextField(
+          cursorColor: Colors.white,
           controller: _controller,
           style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(

@@ -51,6 +51,7 @@ class _SearchMessagesScreenState extends State<SearchMessagesScreen> {
         backgroundColor: const Color(0xFF222222),
         iconTheme: const IconThemeData(color: Colors.white),
         title: TextField(
+          cursorColor: Colors.white,
           controller: _searchController,
           decoration: InputDecoration(
             hintText: 'Search messages...',

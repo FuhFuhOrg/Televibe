@@ -423,6 +423,7 @@ class _ChatListState extends State<ChatListPage> {
           ),
           content: TextField(
             controller: editController,
+            cursorColor: Colors.white,
             style: const TextStyle(color: Colors.white), 
             decoration: const InputDecoration(
               hintText: 'Введите текст сообщения',

@@ -31,6 +31,7 @@ class _AddParticipantScreenState extends State<AddParticipantScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             TextField(
+              cursorColor: Colors.white,
               controller: _idController,
               focusNode: _focusNode,
               decoration: const InputDecoration(
