@@ -16,7 +16,7 @@ class _RenameTextFieldState extends State<RenameTextField> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.currentText);
+    _controller = TextEditingController(text: "");
   }
 
   @override
@@ -25,15 +25,16 @@ class _RenameTextFieldState extends State<RenameTextField> {
       backgroundColor: const Color(0xFF141414),
       appBar: AppBar(
         backgroundColor: const Color(0xFF141414),
+        iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           'Изменить ${widget.title}',
           style: const TextStyle(color: Colors.white),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.save, color: Colors.white), // Белая иконка
+            icon: const Icon(Icons.save, color: Colors.white),
             onPressed: () {
-              Navigator.pop(context, _controller.text); // Возвращаем введенный текст
+              Navigator.pop(context, _controller.text);
             },
           ),
         ],
@@ -42,15 +43,15 @@ class _RenameTextFieldState extends State<RenameTextField> {
         padding: const EdgeInsets.all(16.0),
         child: TextField(
           controller: _controller,
-          style: const TextStyle(color: Colors.white), // Белый текст
+          style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
             hintText: 'Введите ${widget.title}',
-            hintStyle: const TextStyle(color: Colors.white54), // Белый текст с меньшей прозрачностью для подсказки
+            hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
             enabledBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.white), // Белая линия под полем
+              borderSide: BorderSide(color: Colors.white),
             ),
             focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.white), // Белая линия, когда фокус на поле
+              borderSide: BorderSide(color: Colors.white),
             ),
           ),
         ),

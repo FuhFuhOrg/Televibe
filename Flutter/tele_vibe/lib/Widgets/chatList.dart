@@ -289,13 +289,20 @@ class _ChatListState extends State<ChatListPage> {
                 });
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Изображение не выбрано')), // Если изображение не выбрано
+                  const SnackBar(
+                    content: Text(
+                      'Изображение не выбрано', 
+                      style: TextStyle(color: Colors.white)
+                    ),
+                    backgroundColor: Color(0xFF222222)
+                  ), // Если изображение не выбрано
                 );
               }
             },
           ),
           Expanded(
             child: TextField(
+              cursorColor: Colors.white,
               focusNode: _focusNode,
               maxLines: null,
               autocorrect: true,
@@ -306,6 +313,7 @@ class _ChatListState extends State<ChatListPage> {
                 hintStyle: TextStyle(color: Colors.white54),
                 border: InputBorder.none,
               ),
+              style: const TextStyle(color: Colors.white),
             ),
           ),
           IconButton(

@@ -8,18 +8,16 @@ import 'package:tele_vibe/GettedData/netServerController.dart';
 
 class ChatInfoVM 
 {
-  void deleteNowGroup(BuildContext context) async {
-  bool isDeleted = await NetServerController().deleteGroup(Chats.nowChat);
+  Future<bool> deleteNowGroup(BuildContext context) async 
+  {
+    bool isDeleted = await NetServerController().deleteGroup(Chats.nowChat);
 
-// Тут еще проверки можно
-  if (isDeleted) {
-    Chats.removeChat(Chats.nowChat);
+    if (isDeleted) 
+    {
+      Chats.removeChat(Chats.nowChat);
+      LocalDataSave.saveChatsData();
+    }
 
-    MessageHandler.showAlertDialog(context, 'Чат удалён');
-    
-    LocalDataSave.saveChatsData();
-  } else {
-    MessageHandler.showAlertDialog(context, 'Не удалось удалить чат');
+    return isDeleted;
   }
-}
 }

@@ -38,6 +38,7 @@ class _RegisterClassState extends State<RegistrationPage> {
               //mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 const SizedBox(height: 8),
+                /*
                 TextField(
                   cursorColor: Colors.white,
                   controller: _mailController,
@@ -57,10 +58,12 @@ class _RegisterClassState extends State<RegistrationPage> {
                     contentPadding: EdgeInsets.only(left: 10.0),
                   ),
                 ),
+                */
                 const SizedBox(height: 8),
                 TextField(
-                  cursorColor: Colors.black,
+                  cursorColor: Colors.white,
                   controller: _loginController,
+                  style: const TextStyle(color: Colors.white),
                   decoration: const InputDecoration(
                     labelText: 'Login',
                     labelStyle: TextStyle(color: Colors.white),
@@ -79,8 +82,9 @@ class _RegisterClassState extends State<RegistrationPage> {
                 ),
                 const SizedBox(height: 8),
                 TextField(
-                  cursorColor: Colors.black,
+                  cursorColor: Colors.white,
                   controller: _passwordController,
+                  style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     labelText: 'Password',
                     labelStyle: const TextStyle(color: Colors.white),
@@ -113,6 +117,7 @@ class _RegisterClassState extends State<RegistrationPage> {
                 TextField(
                   cursorColor: Colors.white,
                   controller: _rePasswordController,
+                  style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     labelText: 'Re Password',
                     labelStyle: const TextStyle(color: Colors.white),
@@ -141,9 +146,9 @@ class _RegisterClassState extends State<RegistrationPage> {
                   ),
                   obscureText: _obscureTextRePassword,
                 ),
-                SizedBox(height: MediaQuery.of(context).size.width * 0.25),
+                SizedBox(height: MediaQuery.of(context).size.width * 0.375),
                 ElevatedButton(
-                  onPressed: () => _registrationVM.registerNewAccount(context, _mailController, 
+                  onPressed: () => _registrationVM.registerNewAccount(context, /*_mailController,*/ 
                   _loginController, _passwordController, _rePasswordController),
                   style: TextButton.styleFrom(
                     backgroundColor: const Color(0xFF222222),

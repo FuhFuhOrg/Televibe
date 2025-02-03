@@ -75,8 +75,9 @@ class _LoginClassState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 8),
                   TextField(
-                    controller: _passwordController,
                     style: const TextStyle(color: Colors.white),
+                    cursorColor: Colors.white,
+                    controller: _passwordController,
                     decoration: InputDecoration(
                       labelText: 'Password',
                       labelStyle: const TextStyle(color: Colors.white),

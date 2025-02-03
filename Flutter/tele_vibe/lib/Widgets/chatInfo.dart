@@ -48,12 +48,12 @@ class _ChatInfoState extends State<ChatInfo>{
         slivers: <Widget>[
           SliverAppBar(
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
+              icon: const Icon(Icons.arrow_back, color: Colors.black),
               onPressed: () {
                 Navigator.pop(context);
               },
             ),
-            backgroundColor: const Color(0xFF3E505F),
+            backgroundColor: Colors.grey,
             expandedHeight: MediaQuery.of(context).size.height * 3 / 7,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
@@ -98,7 +98,7 @@ class _ChatInfoState extends State<ChatInfo>{
             ),
             actions: <Widget>[
               IconButton(
-                icon: const Icon(Icons.edit),
+                icon: const Icon(Icons.edit, color: Colors.black),
                 onPressed: () {
                   _navigateToEditScreen(context, 'название группы', _groupName, (newName) {
                     setState(() {
@@ -108,7 +108,7 @@ class _ChatInfoState extends State<ChatInfo>{
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.more_vert),
+                icon: const Icon(Icons.more_vert, color: Colors.black),
                 onPressed: () {
                   _showProfileOptions(context);
                 },
@@ -307,8 +307,14 @@ void _showProfileOptions(BuildContext context) {
               _updateProfileImagePath(pickedImage.path, _profileImagePath);
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Изображение не выбрано')),
-              );
+                  const SnackBar(
+                    content: Text(
+                      'Изображение не выбрано', 
+                      style: TextStyle(color: Colors.white)
+                    ),
+                    backgroundColor: Color(0xFF222222)
+                  ), // Если изображение не выбрано
+                );
             }
           },
         ),
@@ -317,10 +323,32 @@ void _showProfileOptions(BuildContext context) {
         child: ListTile(
           leading: const Icon(Icons.delete, color: Colors.white),
           title: const Text('Удалить группу', style: TextStyle(color: Colors.white)),
-          onTap: () {
+          onTap: () async {
             Navigator.pop(context); // Закрываем меню
 
-            _chatInfoVM.deleteNowGroup(context);
+            bool isDeleted = await _chatInfoVM.deleteNowGroup(context);
+
+            if (isDeleted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Чат удалён',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  backgroundColor: Color(0xFF222222),
+                ),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Не удалось удалить чат',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  backgroundColor: Color(0xFF222222),
+                ),
+              );
+            }
             // Логика для удаления группы
           },
         ),

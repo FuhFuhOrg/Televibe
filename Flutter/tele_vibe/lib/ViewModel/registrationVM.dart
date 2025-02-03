@@ -13,13 +13,14 @@ class RegistrationVM {
   }
 
   void registerNewAccount(BuildContext context,
-      TextEditingController mailController, TextEditingController loginController, TextEditingController passwordController, TextEditingController rePasswordController) {
-    String mail = mailController.text;
+      //TextEditingController mailController, 
+      TextEditingController loginController, TextEditingController passwordController, TextEditingController rePasswordController) {
+    //String mail = mailController.text;
     String login = loginController.text;
     String password = passwordController.text;
     String rePassword = rePasswordController.text;
 
-    print('Mail: $mail');
+    //print('Mail: $mail');
     print('Login: $login');
     print('Password: $password');
     print('Re-Password: $rePassword');

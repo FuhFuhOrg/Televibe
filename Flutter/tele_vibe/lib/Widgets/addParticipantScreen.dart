@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 
-// Я ТАКОЕ ГОВНО СДЕЛАЛ, НО, пусть уж останется
-class AddParticipantScreen extends StatelessWidget {
+class AddParticipantScreen extends StatefulWidget {
+  @override
+  _AddParticipantScreenState createState() => _AddParticipantScreenState();
+}
+
+class _AddParticipantScreenState extends State<AddParticipantScreen> {
   final TextEditingController _idController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
-  AddParticipantScreen({super.key});
+  @override
+  void dispose() {
+    _idController.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +36,19 @@ class AddParticipantScreen extends StatelessWidget {
               decoration: const InputDecoration(
                 fillColor: Colors.white,
                 labelText: 'Введите ID участника',
-                border: OutlineInputBorder(),
+                labelStyle: TextStyle(color: Colors.white),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
               ),
               keyboardType: TextInputType.number,
+              style: const TextStyle(color: Colors.white),
               onEditingComplete: () {
                 // Закрываем клавиатуру при завершении ввода
                 _focusNode.unfocus();
@@ -40,6 +59,7 @@ class AddParticipantScreen extends StatelessWidget {
               onPressed: () {
                 String participantId = _idController.text;
                 // Логика для обработки ID участника
+                print("Введенный ID участника: $participantId");
 
                 Navigator.pop(context); // Возвращаемся на предыдущий экран
               },
@@ -53,4 +73,10 @@ class AddParticipantScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: AddParticipantScreen(),
+  ));
 }

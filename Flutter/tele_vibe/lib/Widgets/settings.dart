@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tele_vibe/ViewModel/registrationVM.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -13,6 +14,7 @@ class _SettingsState extends State<Settings> {
   bool _showPhoneNumber = true;
   bool _notificationsEnabled = true;
   bool _soundEnabled = true;
+  final RegistrationVM _registrationVM = RegistrationVM();
 
   @override
   void initState() {
@@ -45,11 +47,10 @@ class _SettingsState extends State<Settings> {
         children: [
           ExpansionTile(
             title: const Text('Конфиденциальность', style: TextStyle(color: Colors.white)),
+            iconColor: Colors.white,
             initiallyExpanded: true,
             children: <Widget>[
               SwitchListTile(
-                activeTrackColor: Colors.white,
-                activeColor: const Color(0xFF222222),
                 title: const Text('Показывать данные при входе', style: TextStyle(color: Colors.white)),
                 value: _showDataOnLogin,
                 onChanged: (bool value) {
@@ -58,10 +59,12 @@ class _SettingsState extends State<Settings> {
                   });
                   _saveSetting('showDataOnLogin', value); // Сохраняем настройку
                 },
+                activeColor: Colors.black,
+                activeTrackColor: Colors.white,
+                inactiveThumbColor: Colors.black,
+                inactiveTrackColor: Colors.white
               ),
               SwitchListTile(
-                activeTrackColor: Colors.white,
-                activeColor: const Color(0xFF222222),
                 title: const Text('Номер телефона', style: TextStyle(color: Colors.white)),
                 value: _showPhoneNumber,
                 onChanged: (bool value) {
@@ -70,16 +73,19 @@ class _SettingsState extends State<Settings> {
                   });
                   _saveSetting('showPhoneNumber', value); // Сохраняем настройку
                 },
+                activeColor: Colors.black,
+                activeTrackColor: Colors.white,
+                inactiveThumbColor: Colors.black,
+                inactiveTrackColor: Colors.white
               ),
             ],
           ),
           ExpansionTile(
             title: const Text('Уведомления и звуки', style: TextStyle(color: Colors.white)),
+            iconColor: Colors.white,
             initiallyExpanded: true,
             children: <Widget>[
               SwitchListTile(
-                activeTrackColor: Colors.white,
-                activeColor: const Color(0xFF222222),
                 title: const Text('Уведомления', style: TextStyle(color: Colors.white)),
                 value: _notificationsEnabled,
                 onChanged: (bool value) {
@@ -88,10 +94,12 @@ class _SettingsState extends State<Settings> {
                   });
                   _saveSetting('notificationsEnabled', value); // Сохраняем настройку
                 },
+                activeColor: Colors.black,
+                activeTrackColor: Colors.white,
+                inactiveThumbColor: Colors.black,
+                inactiveTrackColor: Colors.white
               ),
               SwitchListTile(
-                activeTrackColor: Colors.white,
-                activeColor: const Color(0xFF222222),
                 title: const Text('Звук', style: TextStyle(color: Colors.white)),
                 value: _soundEnabled,
                 onChanged: (bool value) {
@@ -100,6 +108,10 @@ class _SettingsState extends State<Settings> {
                   });
                   _saveSetting('soundEnabled', value); // Сохраняем настройку
                 },
+                activeColor: Colors.black,
+                activeTrackColor: Colors.white,
+                inactiveThumbColor: Colors.black,
+                inactiveTrackColor: Colors.white
               ),
             ],
           ),
@@ -110,6 +122,12 @@ class _SettingsState extends State<Settings> {
                 context,
                 MaterialPageRoute(builder: (context) => const LanguageSettings()),
               );
+            },
+          ),
+          ListTile(
+            title: const Text('Выйти из приложения', style: TextStyle(color: Colors.white)),
+            onTap: () {
+              _registrationVM.navigateToLoginPage(context); // просто вызываю метод navigateToLoginPage
             },
           ),
         ],
@@ -135,18 +153,21 @@ class LanguageSettings extends StatelessWidget {
             title: const Text('Русский', style: TextStyle(color: Colors.white)),
             onTap: () {
               // логика изменения языка на русский
+              Navigator.pop(context);
             },
           ),
           ListTile(
             title: const Text('Английский', style: TextStyle(color: Colors.white)),
             onTap: () {
               // логика изменения языка на английский
+              Navigator.pop(context);
             },
           ),
           ListTile(
             title: const Text('Немецкий', style: TextStyle(color: Colors.white)),
             onTap: () {
               // логика изменения языка на немецкий
+              Navigator.pop(context);
             },
           ),
         ],

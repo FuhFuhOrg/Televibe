@@ -47,7 +47,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         slivers: <Widget>[
           SliverAppBar(
             automaticallyImplyLeading: false,
-            backgroundColor: const Color(0xFF141414),
+            backgroundColor: Colors.grey,
             expandedHeight: MediaQuery.of(context).size.height * 3 / 7,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
@@ -78,7 +78,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             actions: <Widget>[
               IconButton(
-                icon: const Icon(Icons.edit),
+                icon: const Icon(Icons.edit, color: Colors.black),
                 onPressed: () {
                   _navigateToEditScreen('никнейм', _nickname, (newName) {
                     setState(() {
@@ -88,7 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.more_vert),
+                icon: const Icon(Icons.more_vert, color: Colors.black),
                 onPressed: () {
                   _showProfileOptions(context);
                 },
@@ -111,7 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 ListTile(
                   title: const Text('Номер телефона', style: TextStyle(color: Colors.white)),
-                  subtitle: Text(_phoneNumber),
+                  subtitle: Text(_phoneNumber, style: TextStyle(color: Colors.white.withOpacity(0.5))),
                   onTap: () {
                     _navigateToEditScreen('номер телефона', _phoneNumber, (newPhoneNumber) {
                       setState(() {
@@ -122,7 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 ListTile(
                   title: const Text('Имя пользователя', style: TextStyle(color: Colors.white)),
-                  subtitle: Text(_username),
+                  subtitle: Text(_username, style: TextStyle(color: Colors.white.withOpacity(0.5))),
                   onTap: () {
                     _navigateToEditScreen('имя пользователя', _username, (newUsername) {
                       setState(() {
@@ -133,7 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 ListTile(
                   title: const Text('О себе', style: TextStyle(color: Colors.white)),
-                  subtitle: Text(_about),
+                  subtitle: Text(_about, style: TextStyle(color: Colors.white.withOpacity(0.5))),
                   onTap: () {
                     _navigateToEditScreen('информацию о себе', _about, (newAbout) {
                       setState(() {
@@ -187,7 +187,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 });
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Изображение не выбрано')), // Если изображение не выбрано
+                  const SnackBar(
+                    content: Text(
+                      'Изображение не выбрано', 
+                      style: TextStyle(color: Colors.white)
+                    ),
+                    backgroundColor: Color(0xFF222222)
+                  ), // Если изображение не выбрано
                 );
               }
             },

@@ -52,9 +52,9 @@ class _SearchMessagesScreenState extends State<SearchMessagesScreen> {
         iconTheme: const IconThemeData(color: Colors.white),
         title: TextField(
           controller: _searchController,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             hintText: 'Search messages...',
-            hintStyle: TextStyle(color: Colors.white),
+            hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
             border: InputBorder.none,
           ),
           style: const TextStyle(color: Colors.white),

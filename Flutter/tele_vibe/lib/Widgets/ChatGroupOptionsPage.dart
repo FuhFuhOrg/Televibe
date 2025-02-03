@@ -59,6 +59,9 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
           ),
         ),
         backgroundColor: const Color(0xFF141414),
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -74,7 +77,12 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
                     _isAddingChat = false;
                   });
                 },
-                child: const Text("Создать чат/группу"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                ),
+                child: const Text(
+                  "Создать чат/группу",
+                  style: TextStyle(color: Colors.black)),
               ),
             ),
             const SizedBox(height: 16), // Отступ между кнопками
@@ -86,40 +94,59 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
                     _isCreatingGroup = false;
                   });
                 },
-                child: const Text("Добавить чат/группу"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                ),
+                child: const Text("Добавить чат/группу",
+                  style: TextStyle(color: Colors.black)),
               ),
             ),
             const SizedBox(height: 32), // Отступ перед полями ввода
             if (_isCreatingGroup) ...[
               TextField(
+                cursorColor: Colors.white,
                 controller: _groupNameController,
                 onChanged: (value) {
                   setState(() {
                     _groupName = value; // Сохранение названия группы
                   });
                 },
-                decoration: const InputDecoration(labelText: "Название группы"),
+                decoration: const InputDecoration(
+                  labelText: "Название группы",
+                  labelStyle: TextStyle(color: Colors.white),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white), 
+                  ),
+                  hintStyle: TextStyle(color: Colors.white),
+                ),
+                style: const TextStyle(color: Colors.white)
               ),
               TextField(
+                cursorColor: Colors.white,
                 controller: _groupPasswordController,
                 onChanged: (value) {
                   setState(() {
                     _groupPassword = value; // Сохранение пароля группы
                   });
                 },
-                decoration: const InputDecoration(labelText: "Пароль (если нужен)"),
+                decoration: const InputDecoration(
+                  labelText: "Пароль (если нужен)",
+                  labelStyle: TextStyle(color: Colors.white),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white), 
+                  ),
+                  hintStyle: TextStyle(color: Colors.white),
+                ),
+                style: const TextStyle(color: Colors.white),
                 obscureText: true,
               ),
-              TextField(
-                controller: _groupHostController,
-                onChanged: (value) {
-                  setState(() {
-                    _groupHost = value; // Сохранение пароля группы
-                  });
-                },
-                decoration: const InputDecoration(labelText: "Текстовое поле"),
-                obscureText: true,
-              ),
+
               SwitchListTile(
                 title: const Text("Чат/группа?", style: TextStyle(color: Colors.white)),
                 value: _isPasswordRequired,
@@ -128,39 +155,79 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
                     _isPasswordRequired = value;
                   });
                 },
+                activeColor: Colors.black,
+                activeTrackColor: Colors.white,
+                inactiveThumbColor: Colors.black,
+                inactiveTrackColor: Colors.white
               ),
             ],
             if (_isAddingChat) ...[
               // Текстовое поле для ввода ID чата
               TextField(
+                cursorColor: Colors.white,
                 controller: _chatIdController,
                 onChanged: (value) {
                   setState(() {
                     _chatId = value; // Сохранение ID чата
                   });
                 },
-                decoration: const InputDecoration(labelText: "ID чата"),
+                decoration: const InputDecoration(
+                  labelText: "ID чата",
+                  labelStyle: TextStyle(color: Colors.white),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white), 
+                  ),
+                  hintStyle: TextStyle(color: Colors.white),
+                ),
+                style: const TextStyle(color: Colors.white),
               ),
               // Текстовое поле для ввода пароля
               TextField(
+                cursorColor: Colors.white,
                 controller: _chatPasswordController,
                 onChanged: (value) {
                   setState(() {
                     _chatPassword = value; // Сохранение пароля чата
                   });
                 },
-                decoration: const InputDecoration(labelText: "Пароль"),
+                decoration: const InputDecoration(
+                  labelText: "Пароль",
+                  labelStyle: TextStyle(color: Colors.white),
+                  focusedBorder:  UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white), 
+                  ),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white), 
+                  ),
+                  hintStyle: TextStyle(color: Colors.white),
+                ),
+                style: const TextStyle(color: Colors.white),
                 obscureText: true,
               ),
               // Текстовое поле для ввода пароля
               TextField(
+                cursorColor: Colors.white,
                 controller: _chatPasswordController,
                 onChanged: (value) {
                   setState(() {
                     _chatPassword = value; // Сохранение пароля чата
                   });
                 },
-                decoration: const InputDecoration(labelText: "ИЛЮША БЛЯДЬ НЕ ТРОГАЙ"),
+                decoration: const InputDecoration(
+                  labelText: "ИЛЮША БЛЯДЬ НЕ ТРОГАЙ",
+                  labelStyle: TextStyle(color: Colors.white),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),  // Белая линия при фокусе
+                  ),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),  // Белая линия по умолчанию
+                  ),
+                  hintStyle: TextStyle(color: Colors.white),
+                ),
+                style: const TextStyle(color: Colors.white),
                 obscureText: true,
               ),
             ]
@@ -183,9 +250,13 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 50), // Кнопка по ширине экрана
                 ),
-                child: Text(_isCreatingGroup ? "Создать" : "Добавить"),
+                child: Text(
+                  _isCreatingGroup ? "Создать" : "Добавить",
+                  style: const TextStyle(color: Colors.black)
+                  ),
               ),
             )
           : null,

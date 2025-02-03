@@ -149,10 +149,10 @@ class _AllChatsClassState extends State<AllChatsPage> {
                 textColor: Colors.white,
                 title: Text(chat.chatName), // Название чата
                 subtitle: Text(chat.getLastMessage()), // Сообщение
-                trailing: Column(
+                trailing: const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 32), // Отступ сверху
+                    SizedBox(height: 32), // Отступ сверху
                     //Text(
                       //DateFormat.jm().format(chat.time), // Форматирование времени
                     //),
@@ -228,45 +228,6 @@ class _AllChatsClassState extends State<AllChatsPage> {
     );
   }
 
-/*
-  // Метод для отображения меню с опциями
-  void _showChatOptions(BuildContext context) {
-    // Убираем создание нового экземпляра AllChatsVM
-    showMenu<String>(
-      context: context,
-      position: RelativeRect.fromLTRB(
-        MediaQuery.of(context).size.width - 100,
-        MediaQuery.of(context).size.height - 200,
-        0,
-        0,
-      ),
-      items: <PopupMenuEntry<String>>[
-        const PopupMenuItem<String>(
-          value: 'clear_history',
-          child: Text('Очистить историю'),
-        ),
-        const PopupMenuItem<String>(
-          value: 'leave_group',
-          child: Text('Выйти из группы'),
-        ),
-      ],
-    ).then((String? value) {
-      if (value != null) {
-        switch (value) {
-          case 'clear_history':
-            // Логика для очистки истории
-            _allChatsVM.clearChatHistory();
-            break;
-          case 'leave_group':
-            // Логика для выхода из группы
-            _allChatsVM.leaveGroup(); 
-            break;
-        }
-      }
-    });
-  }
-*/
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -307,7 +268,8 @@ class _AllChatsClassState extends State<AllChatsPage> {
       body: _getSelectedScreen(), // Показ выбранного экрана
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFF141414),
-        selectedItemColor: const Color(0xFF02040E),
+        //selectedItemColor: const Color(0xFF02040E),
+        selectedItemColor: Colors.white.withOpacity(0.5),
         unselectedItemColor: Colors.white,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
         unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
