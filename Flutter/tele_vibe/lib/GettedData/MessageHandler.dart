@@ -12,29 +12,14 @@ class MessageHandler {
 
   // Метод для показа диалогового окна
   static Future<void> showAlertDialog(BuildContext context, String message) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // Окно нельзя закрыть нажатием вне диалога
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Сообщение'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text(message),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Закрытие диалога
-              },
-            ),
-          ],
-        );
-      },
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: const TextStyle(color: Colors.white),
+        ),
+        backgroundColor: const Color(0xFF222222),
+      ),
     );
   }
 }

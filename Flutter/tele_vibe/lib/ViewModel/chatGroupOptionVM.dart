@@ -26,23 +26,11 @@ class ChatGroupOptionVM
       if (goin != " " && goin != "") {
         print('Return Login ${goin}');
         if(goin[0] == "true") {
-
-          // Похуй, что ты во vm выводишь, хуй с тобой, выводи здесь, НО, выводи по этой структуре
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Создан чат: ${goin[1]}',
-                style: const TextStyle(color: Colors.white),
-              ),
-              backgroundColor: const Color(0xFF222222),
-            ),
-          );
-
-          //MessageHandler.showAlertDialog(context, 'Создан чат: ${goin[1]}');
-
+          MessageHandler.showAlertDialog(context, 'Создан чат: ${goin[1]}');
           enterInChat(context, name, goin[1], password, serverId);
         }
         else{
+          /*
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -52,7 +40,8 @@ class ChatGroupOptionVM
               backgroundColor: const Color(0xFF222222),
             ),
           );
-          //MessageHandler.showAlertDialog(context, '${goin.join(" ")}');
+          */
+          MessageHandler.showAlertDialog(context, '${goin.join(" ")}');
         }
       }
     });
@@ -79,6 +68,7 @@ class ChatGroupOptionVM
             ));
             Chats.addChat(ChatData(chatName: name, chatId: chatId, password: password, nowQueueId: -1, chatIp: serverId, yourUserId: int.parse(goin[1]), subusers: newChatUsers));
 
+            /*
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
@@ -88,7 +78,9 @@ class ChatGroupOptionVM
                 backgroundColor: const Color(0xFF222222),
               ),
             );
-            //MessageHandler.showAlertDialog(context, 'Добавлен пользователь в чат: ${goin[1]}');
+            */
+
+            MessageHandler.showAlertDialog(context, 'Добавлен пользователь в чат: ${goin[1]}');
             
             LocalDataSave.saveChatsData();
           } else {
