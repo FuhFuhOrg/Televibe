@@ -82,6 +82,7 @@ class ChatListVM {
       }
     }
 
+    //Я выполняю квоту на комиты
     return messages;
   }
 
