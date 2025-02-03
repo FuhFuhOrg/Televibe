@@ -74,9 +74,3 @@ class _AddParticipantScreenState extends State<AddParticipantScreen> {
     );
   }
 }
-
-void main() {
-  runApp(MaterialApp(
-    home: AddParticipantScreen(),
-  ));
-}

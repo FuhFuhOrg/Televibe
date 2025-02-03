@@ -153,7 +153,7 @@ class _ChatListState extends State<ChatListPage> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ChatInfo(initialGroupName: 'Название группы')),
+                MaterialPageRoute(builder: (context) => ChatInfo(initialGroupName: 'Название группы')),
               );
             },
             child: _isSearching ? _buildSearchField() : _buildTitle(),
