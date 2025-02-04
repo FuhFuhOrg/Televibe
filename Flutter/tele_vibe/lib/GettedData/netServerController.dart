@@ -210,7 +210,7 @@ class NetServerController with WidgetsBindingObserver {
 
 
 //OK
-  Future<String> sendMessage(String msg, String chatId, int idSender, RSAPublicKey publicKey) async {
+  Future<String> sendMessage(String preference, String msg, String chatId, int idSender, RSAPublicKey publicKey) async {
     Completer<String> completer = Completer<String>();
     int requestId = getK();
     
@@ -223,7 +223,7 @@ class NetServerController with WidgetsBindingObserver {
     });
 
     // Кодируем сообщение в base64
-    String encodedMsg = CryptController.encryptRSA("+ ${msg}", publicKey);
+    String encodedMsg = CryptController.encryptRSA("$preference $msg", publicKey);
 
     // Формируем запрос в нужном формате: данные + id пользователя
     sendRequest(requestId, "SendMessage", "$chatId $idSender $encodedMsg");

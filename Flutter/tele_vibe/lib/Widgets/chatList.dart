@@ -17,15 +17,15 @@ class ChatListPage extends StatefulWidget {
 }
 
 class _ChatListState extends State<ChatListPage> {
-  final List<Map<String, dynamic>> entries = [
-    {'text': 'Привет!', 'isMe': false, 'userName': 'Пользователь 1', 'time': '12:01'},
-    {'text': 'Как дела?', 'isMe': false, 'userName': 'Пользователь 1', 'time': '12:02'},
-    {'text': 'Хорошо, а у тебя?', 'isMe': true, 'userName': 'Я', 'time': '12:03'},
-    {'text': 'Тоже хорошо!', 'isMe': true, 'userName': 'Я', 'time': '12:04'},
-    {'text': 'Что нового?', 'isMe': false, 'userName': 'Пользователь 2', 'time': '12:05'},
-    {'text': 'Ничего особенного.', 'isMe': true, 'userName': 'Я', 'time': '12:06'},
-    {'text': 'Понятно.', 'isMe': false, 'userName': 'Пользователь 2', 'time': '12:07'},
-  ];
+  //final List<Map<String, dynamic>> entries = [
+  //  {'text': 'Привет!', 'isMe': false, 'userName': 'Пользователь 1', 'time': '12:01'},
+  //  {'text': 'Как дела?', 'isMe': false, 'userName': 'Пользователь 1', 'time': '12:02'},
+  //  {'text': 'Хорошо, а у тебя?', 'isMe': true, 'userName': 'Я', 'time': '12:03'},
+  //  {'text': 'Тоже хорошо!', 'isMe': true, 'userName': 'Я', 'time': '12:04'},
+  //  {'text': 'Что нового?', 'isMe': false, 'userName': 'Пользователь 2', 'time': '12:05'},
+  //  {'text': 'Ничего особенного.', 'isMe': true, 'userName': 'Я', 'time': '12:06'},
+  //  {'text': 'Понятно.', 'isMe': false, 'userName': 'Пользователь 2', 'time': '12:07'},
+  //];
 
   List<Map<String, dynamic>> filteredEntries = [];
   final TextEditingController _textController = TextEditingController();
@@ -70,22 +70,22 @@ class _ChatListState extends State<ChatListPage> {
         for ((String, int) jsonString in queueChatNewMessages) {
           try {
             List<dynamic> decodedList = jsonDecode(jsonString.$1);
-            Map<String, dynamic> queueMap = Map<String, dynamic>();
+            List<Map<String, dynamic>> queueMap = [];
             if (decodedList.isNotEmpty && decodedList[0] is Map<String, dynamic>) {
-              for (int i = 0; i < decodedList.length; i++){
-                queueMap.addAll(Map<String, dynamic>.from(decodedList[i]));
-              }
+              queueMap.addAll(List<Map<String, dynamic>>.from(decodedList));
             }
 
-            if (queueMap.containsKey("changeId") && queueMap.containsKey("changeData") && queueMap.containsKey("senderId")) {
-              int changeId = queueMap["changeId"];
-              if(lastChangeId < changeId){
-                lastChangeId = changeId;
-              }
-              String changeData = queueMap["changeData"].toString();
-              int senderid = queueMap["senderId"];
+            for(int i = 0; i < queueMap.length; i++){
+              if (queueMap[i].containsKey("changeId") && queueMap[i].containsKey("changeData") && queueMap[i].containsKey("senderId")) {
+                int changeId = queueMap[i]["changeId"];
+                if(lastChangeId < changeId){
+                  lastChangeId = changeId;
+                }
+                String changeData = queueMap[i]["changeData"].toString();
+                int senderid = queueMap[i]["senderId"];
 
-              queues.add((changeData, senderid));
+                queues.add((changeData, senderid));
+              }
             }
           } catch (e) {
             print("Ошибка парсинга JSON: $e");
@@ -112,25 +112,12 @@ class _ChatListState extends State<ChatListPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom();
     });
-
-    _searchController.addListener(_filterMessages);
   }
 
   void _updateFilteredEntries(List<(String, int)> queueChat, BuildContext context) async {
     List<Map<String, dynamic>> newEntries = await _chatListVM.queueToFiltred(queueChat, context);
     setState(() {
       filteredEntries = newEntries;
-    });
-  }
-
-  //ПЕРЕСТАНЬ ПИСАТЬ КОД ВНЕ VM
-  void _filterMessages() {
-    final query = _searchController.text.toLowerCase();
-    setState(() {
-      filteredEntries = entries.where((entry) {
-        final messageText = entry['text'].toLowerCase();
-        return messageText.contains(query);
-      }).toList();
     });
   }
 
@@ -164,7 +151,8 @@ class _ChatListState extends State<ChatListPage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SearchMessagesScreen(messages: entries)),
+                  // Я тут чото поменял 
+                  MaterialPageRoute(builder: (context) => SearchMessagesScreen(messages: filteredEntries)),
                 );
               }
             ),
@@ -384,8 +372,9 @@ class _ChatListState extends State<ChatListPage> {
                 ),
                 onTap: () {
                   setState(() {
-                    entries.removeAt(index);
-                    _filterMessages();  // Обновляем результаты поиска после удаления сообщения
+                    _chatListVM.deleteMessage(filteredEntries[index]['id']);
+                    //entries.removeAt(index);
+                    //_filterMessages();  // Обновляем результаты поиска после удаления сообщения
                   });
                   Navigator.pop(context);
                 },
@@ -450,8 +439,8 @@ class _ChatListState extends State<ChatListPage> {
               ),
               onPressed: () {
                 setState(() {
-                  entries[index]['text'] = editController.text;
-                  _filterMessages();  // Обновляем результаты поиска после изменения сообщения
+                  //entries[index]['text'] = editController.text;
+                  //_filterMessages();  // Обновляем результаты поиска после изменения сообщения
                 });
                 Navigator.of(context).pop();
               },

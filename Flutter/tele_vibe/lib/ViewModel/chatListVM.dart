@@ -26,6 +26,7 @@ class ChatListVM {
 
   Future<List<Map<String, dynamic>>> queueToFiltred(List<(String, int)> queueChat, BuildContext context) async {
     List<Map<String, dynamic>> messages = [];
+    int k = 0;
 
     for ((String, int) commandUserCode in queueChat) {
 
@@ -64,7 +65,8 @@ class ChatListVM {
           else
             'isMe': false,
           'userName': 'Пользователь', // Можно добавить логику определения пользователя
-          'time': '12:00' // Можно добавить актуальное время
+          'time': '12:00', // Можно добавить актуальное время
+          'id': k
         });
       } else if (command.startsWith('*')) {
         // Изменение сообщения
@@ -74,12 +76,11 @@ class ChatListVM {
           messages[index]['text'] = parts.sublist(1).join(' '); // Соединяем оставшуюся часть в новый текст
         }
       } else if (command.startsWith('-')) {
-        // Удаление сообщения
-        int index = int.tryParse(command.substring(2)) ?? -1; // Убираем '- ' и парсим ID
-        if (index >= 0 && index < messages.length) {
-          messages.removeAt(index);
-        }
+        int messageId = int.tryParse(command.substring(2)) ?? -1; // Убираем '- ' и парсим ID
+
+        messages.removeWhere((message) => message['id'] == messageId);
       }
+      k++;
     }
 
     //Я выполняю квоту на комиты
@@ -121,7 +122,17 @@ class ChatListVM {
   void sendMessage(String message){
     Subuser? subuser = Chats.getNowSubuser();
     if(subuser != null && subuser.publicKey != null){
-      NetServerController().sendMessage(message, Chats.nowChat, subuser.id, subuser.publicKey!);
+      NetServerController().sendMessage("+", message, Chats.nowChat, subuser.id, subuser.publicKey!);
+      return;
+    }
+    print("subuser is not available");
+    return;
+  }
+
+  void deleteMessage(int id){
+    Subuser? subuser = Chats.getNowSubuser();
+    if(subuser != null && subuser.publicKey != null){
+      NetServerController().sendMessage("-", id.toString(), Chats.nowChat, subuser.id, subuser.publicKey!);
       return;
     }
     print("subuser is not available");
