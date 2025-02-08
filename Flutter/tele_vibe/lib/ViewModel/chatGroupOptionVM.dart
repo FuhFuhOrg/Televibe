@@ -30,17 +30,6 @@ class ChatGroupOptionVM
           enterInChat(context, name, goin[1], password, serverId);
         }
         else{
-          /*
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                '${goin.join(" ")}',
-                style: const TextStyle(color: Colors.white),
-              ),
-              backgroundColor: const Color(0xFF222222),
-            ),
-          );
-          */
           MessageHandler.showAlertDialog(context, '${goin.join(" ")}');
         }
       }
@@ -68,32 +57,11 @@ class ChatGroupOptionVM
             ));
             Chats.addChat(ChatData(chatName: name, chatId: chatId, password: password, nowQueueId: -1, chatIp: serverId, yourUserId: int.parse(goin[1]), subusers: newChatUsers));
 
-            /*
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Добавлен пользователь в чат: ${goin[1]}',
-                  style: const TextStyle(color: Colors.white),
-                ),
-                backgroundColor: const Color(0xFF222222),
-              ),
-            );
-            */
-
             MessageHandler.showAlertDialog(context, 'Добавлен пользователь в чат: ${goin[1]}');
             
             LocalDataSave.saveChatsData();
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  '${goin.join(" ")}',
-                  style: const TextStyle(color: Colors.white),
-                ),
-                backgroundColor: const Color(0xFF222222),
-              ),
-            );
-            //MessageHandler.showAlertDialog(context, '${goin.join(" ")}');
+            MessageHandler.showAlertDialog(context, '${goin.join(" ")}');
           }
         }
       });
