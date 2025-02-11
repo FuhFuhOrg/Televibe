@@ -132,7 +132,21 @@ class CryptController {
     BigInt? q = privateKey.q;
     BigInt? pubExp = privateKey.publicExponent;
     if(p != null && q != null && m != null && privExp != null && pubExp != null){
-      return ("${m.toString()} ${privExp.toString()} ${p.toString()} ${q.toString()} ${pubExp.toString()}");
+      List<BigInt> numbers = [
+        m,
+        privExp,
+        p,
+        q,
+        pubExp
+      ];
+
+      String result = "";
+      //String result = numbers.map((e) => e.toString()).join('\n');  
+      for (BigInt kek in numbers){
+        result += (kek.toString() + "\n");
+      }
+
+      return result;
     }
     return "";
   }
@@ -152,7 +166,7 @@ class CryptController {
 
   // Декодирование приватного ключа из PEM
   static RSAPrivateKey decodePrivateKey(String pem) {
-    List<String> strBigInt = pem.split(" ");
+    List<String> strBigInt = pem.split("_");
     List<BigInt> BigInts = [];
     for(String str in strBigInt){
       BigInts.add(BigInt.parse(str));
