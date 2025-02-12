@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:tele_vibe/ViewModel/ChatInfoVM.dart';
 import 'profileScreen.dart'; // Экран профиля
-import 'renameScreen.dart'; // Экран переименования
-import 'permissionsScreen.dart'; // Экран изменения разрешений
+import 'package:tele_vibe/ViewModel/chatListVM.dart';
+import 'package:tele_vibe/ViewModel/ChatInfoVM.dart';
+import 'profileScreenOther.dart'; // Экран профиля
+import 'package:tele_vibe/Data/chats.dart';
 import 'addParticipantScreen.dart';
 import 'renameTextField.dart';
 import 'UnderWidgets/fileUtils.dart';
@@ -17,13 +19,16 @@ class ChatInfo extends StatefulWidget {
 }
 
 class _ChatInfoState extends State<ChatInfo>{
+  final ChatInfoVM _chatListVM = ChatInfoVM();
   late String _groupName;
+  late int kUsers;
 
   @override
   void initState() {
     super.initState();
     // Инициализация поля _groupName значением из конструктора
-    _groupName = widget.initialGroupName;
+    _groupName = _chatListVM.getNameGroup();
+    kUsers = _chatListVM.getCountUsers();
   }
 
   // Метод для перехода на экран изменения текста
@@ -41,7 +46,7 @@ class _ChatInfoState extends State<ChatInfo>{
 
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {    
     return Scaffold(
       backgroundColor: const Color(0xFF141414),
       body: CustomScrollView(
@@ -64,26 +69,30 @@ class _ChatInfoState extends State<ChatInfo>{
                     'https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg',
                     fit: BoxFit.cover,
                   ),
-                  const Align(
+                  Align(
                     alignment: Alignment.bottomLeft,
                     child: Padding(
-                      padding: EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.all(16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           Text(
-                            'Название группы',
-                            style: TextStyle(
+                            _groupName,
+                            style: const TextStyle(
                               color: Colors.black,
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 8.0),
+                          const SizedBox(height: 8.0),
                           Text(
-                            '5 участников',
-                            style: TextStyle(
+                            kUsers == 1
+                              ? "${kUsers.toString()} участник"
+                              : kUsers >= 2 && kUsers <= 4
+                                  ? "${kUsers.toString()} участника"
+                                  : "${kUsers.toString()} участников",
+                            style: const TextStyle(
                               color: Colors.black,
                               fontSize: 16,
                             ),
@@ -141,15 +150,18 @@ class _ChatInfoState extends State<ChatInfo>{
                   child: ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: 5, // Количество участников группы
+                    itemCount: kUsers, // Количество участников группы
                     itemBuilder: (context, index) {
+                      final subuser = _chatListVM.getSubusers()[index]; // Получаем подюзера из списка
+
                       return GestureDetector(
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ProfileScreen(
-                                  nickname: 'Никнейм ${index + 1}'),
+                              builder: (context) => ProfileScreenOther(
+                                nickname: subuser.userName, // Используем никнейм подюзера
+                              ),
                             ),
                           );
                         },
@@ -162,8 +174,14 @@ class _ChatInfoState extends State<ChatInfo>{
                               'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png',
                             ), // Укажите URL фотографии участника
                           ),
-                          title: Text('Никнейм ${index + 1}', style: const TextStyle(color: Colors.white)),
-                          subtitle: const Text('Описание участника', style: TextStyle(color: Colors.white)),
+                          title: Text(
+                            subuser.userName, // Выводим никнейм
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          subtitle: const Text(
+                            'Описание участника',
+                            style: TextStyle(color: Colors.white),
+                          ),
                           trailing: Text(
                             _getUserRole(index),
                             style: const TextStyle(
@@ -173,7 +191,8 @@ class _ChatInfoState extends State<ChatInfo>{
                           ),
                         ),
                       );
-                    },
+                    }
+
                   ),
                 ),
               ],
@@ -209,23 +228,6 @@ class _ChatInfoState extends State<ChatInfo>{
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               ListTile(
-                leading: const Icon(Icons.edit, color: Colors.white),
-                title: const Text(
-                  'Переименовать',
-                  style: TextStyle(color: Colors.white),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => RenameScreen(
-                          nickname: 'Никнейм ${index + 1}'),
-                    ),
-                  );
-                },
-              ),
-              ListTile(
                 leading: const Icon(Icons.delete, color: Colors.white),
                 title: const Text(
                   'Удалить',
@@ -234,23 +236,6 @@ class _ChatInfoState extends State<ChatInfo>{
                 onTap: () {
                   Navigator.pop(context);
                   // Логика удаления участника
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.security, color: Colors.white),
-                title: const Text(
-                  'Изменить разрешения',
-                  style: TextStyle(color: Colors.white), 
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PermissionsScreen(
-                          nickname: 'Никнейм ${index + 1}'),
-                    ),
-                  );
                 },
               ),
             ],

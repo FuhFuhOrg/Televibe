@@ -20,4 +20,23 @@ class ChatInfoVM
 
     return isDeleted;
   }
+
+  List<Subuser> getSubusers()
+  {
+    return Chats.getValue().chats.firstWhere(
+      (chat) => chat.chatId == Chats.nowChat
+      ).subusers;
+  }
+
+  String getNameGroup(){
+    return Chats.getValue().chats.firstWhere(
+      (chat) => chat.chatId == Chats.nowChat
+      ).chatName;
+  }
+
+  int getCountUsers(){
+    return Chats.getValue().chats.firstWhere(
+      (chat) => chat.chatId == Chats.nowChat
+      ).subusers.length;
+  }
 }

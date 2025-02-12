@@ -138,4 +138,16 @@ class ChatListVM {
     print("subuser is not available");
     return;
   }
+
+  String getNameGroup(){
+    return Chats.getValue().chats.firstWhere(
+      (chat) => chat.chatId == Chats.nowChat
+      ).chatName;
+  }
+
+  int getCountUsers(){
+    return Chats.getValue().chats.firstWhere(
+      (chat) => chat.chatId == Chats.nowChat
+      ).subusers.length;
+  }
 }

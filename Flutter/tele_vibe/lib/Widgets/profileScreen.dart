@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'renameTextField.dart';
+import 'package:flutter/services.dart';
 import 'UnderWidgets/fileUtils.dart';
+import 'package:tele_vibe/ViewModel/profileScreenVM.dart';
+import 'package:tele_vibe/GettedData/MessageHandler.dart' as myHandler;
+import 'package:tele_vibe/ViewModel/changeVeluesInProfileScreenVM.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String nickname;
@@ -13,17 +17,22 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String _nickname;
-  String _phoneNumber = 'Введите номер телефона';
-  String _username = 'Введите имя пользователя';
-  String _about = 'О себе';
+  String _phoneNumber = '';
+  String _username = '';
+  String _about = '';
   String? _profileImagePath;
+  final profileScreenVM _chatListVM = profileScreenVM();
+  final changeVeluesInProfileScreenVM changeProfileScreenVM = changeVeluesInProfileScreenVM();
 
   _ProfileScreenState() : _nickname = '';
 
   @override
   void initState() {
     super.initState();
-    _nickname = widget.nickname;
+    _nickname = _chatListVM.getUsername();
+    _phoneNumber = _chatListVM.getTelephoneNumber();
+    _username = _chatListVM.getUsername();
+    _about = _chatListVM.getInfoAboutMe();
   }
 
   // Метод для перехода на экран изменения текста
@@ -65,7 +74,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: Text(
                         _nickname,
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: Colors.black,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
@@ -80,9 +89,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               IconButton(
                 icon: const Icon(Icons.edit, color: Colors.black),
                 onPressed: () {
-                  _navigateToEditScreen('никнейм', _nickname, (newName) {
+                  _navigateToEditScreen('никнейм', _nickname, (newUserName) {
                     setState(() {
-                      _nickname = newName;
+                      _nickname = newUserName;
+                      changeProfileScreenVM.changeUsername(newUserName);
                     });
                   });
                 },
@@ -110,12 +120,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 ListTile(
+                  title: const Text(
+                    'ID пользователя',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  subtitle: GestureDetector(
+                    onLongPress: () {
+                      Clipboard.setData(ClipboardData(text: _chatListVM.getUserId().toString()));
+                      myHandler.MessageHandler.showAlertDialog(context, 'ID скопирован');
+                    },
+                    child: Text(
+                      _chatListVM.getUserId().toString(), // Вот тут это говно исправишь, которое должен был делать ты
+                      style: TextStyle(color: Colors.white.withOpacity(0.5)),
+                    ),
+                  ),
+                ),
+                ListTile(
                   title: const Text('Номер телефона', style: TextStyle(color: Colors.white)),
                   subtitle: Text(_phoneNumber, style: TextStyle(color: Colors.white.withOpacity(0.5))),
                   onTap: () {
                     _navigateToEditScreen('номер телефона', _phoneNumber, (newPhoneNumber) {
                       setState(() {
                         _phoneNumber = newPhoneNumber;
+                        changeProfileScreenVM.changePhoneNumber(newPhoneNumber);
+                        // Здесь обновление в бд
                       });
                     });
                   },
@@ -127,6 +155,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _navigateToEditScreen('имя пользователя', _username, (newUsername) {
                       setState(() {
                         _username = newUsername;
+                        changeProfileScreenVM.changeUsername(newUsername);
+                        // Здесь обновление в бд
                       });
                     });
                   },
@@ -138,6 +168,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _navigateToEditScreen('информацию о себе', _about, (newAbout) {
                       setState(() {
                         _about = newAbout;
+                        changeProfileScreenVM.changeNewAbout(newAbout);
+                        // Здесь обновление в бд
                       });
                     });
                   },
@@ -206,20 +238,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onTap: () {
               Navigator.pop(context);
               // Логика удаления фотографии
-            },
-          ),
-        ),
-        PopupMenuItem(
-          child: ListTile(
-            leading: const Icon(Icons.info, color: Colors.white),
-            title: const Text('Изменить информацию о себе', style: TextStyle(color: Colors.white)),
-            onTap: () {
-              Navigator.pop(context);
-              _navigateToEditScreen('информацию о себе', _about, (newAbout) {
-                setState(() {
-                  _about = newAbout;
-                });
-              });
             },
           ),
         ),
