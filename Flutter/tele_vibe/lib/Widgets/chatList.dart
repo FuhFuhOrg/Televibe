@@ -40,6 +40,8 @@ class _ChatListState extends State<ChatListPage> {
   void initState() {
     super.initState();
 
+    int kUsers = _chatListVM.getCountUsers();
+
     // Кинуть это в VM когда пойму как
     int queueId = Chats.getValue()
             .chats
@@ -224,27 +226,33 @@ class _ChatListState extends State<ChatListPage> {
   }
 
   Widget _buildTitle() {
-    return const Row(
+    int kUsers = _chatListVM.getCountUsers();
+    
+    return Row(
       children: <Widget>[
-        CircleAvatar(
+        const CircleAvatar(
           backgroundImage: NetworkImage(
               'https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg'),
         ),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                'Name Group',
-                style: TextStyle(
+                _chatListVM.getNameGroup(), // Название группы
+                style: const TextStyle(
                   fontSize: 20,
                   color: Colors.white,
                 ),
               ),
               Text(
-                '10 участников',
-                style: TextStyle(
+                kUsers == 1
+                  ? "${kUsers.toString()} участник"
+                  : kUsers >= 2 && kUsers <= 4
+                      ? "${kUsers.toString()} участника"
+                      : "${kUsers.toString()} участников",
+                style: const TextStyle(
                   fontSize: 13,
                   color: Colors.white70,
                 ),
