@@ -159,9 +159,9 @@ class _ChatInfoState extends State<ChatInfo>{
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ProfileScreenOther(
-                                nickname: subuser.userName, // Используем никнейм подюзера
-                              ),
+                              builder: (context) => subuser.userName == "YOU" // Ваще не надежно будто, но что поделать
+                                ? ProfileScreen(nickname: subuser.userName)
+                                : ProfileScreenOther(nickname: subuser.userName),
                             ),
                           );
                         },
@@ -179,15 +179,8 @@ class _ChatInfoState extends State<ChatInfo>{
                             style: const TextStyle(color: Colors.white),
                           ),
                           subtitle: const Text(
-                            'Описание участника',
+                            'Чурка',
                             style: TextStyle(color: Colors.white),
-                          ),
-                          trailing: Text(
-                            _getUserRole(index),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                            ),
                           ),
                         ),
                       );
@@ -201,17 +194,6 @@ class _ChatInfoState extends State<ChatInfo>{
         ],
       ),
     );
-  }
-
-  String _getUserRole(int index) {
-    switch (index) {
-      case 0:
-        return 'Владелец';
-      case 1:
-        return 'Админ';
-      default:
-        return 'Участник';
-    }
   }
 
   void _showParticipantOptions(BuildContext context, int index) {
