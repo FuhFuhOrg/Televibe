@@ -141,10 +141,20 @@ class CryptController {
       ];
 
       String result = "";
+      List<String> results = [];
       //String result = numbers.map((e) => e.toString()).join('\n');  
       for (BigInt kek in numbers){
-        result += (kek.toString() + "\n");
+        results.add(kek.toString());
       }
+
+      int suml = 0;
+      for (String res in results) {
+        suml += res.length;
+      }
+      print(suml);
+
+      result = results.join('\n');
+      print(result.length);
 
       return result;
     }
@@ -166,7 +176,7 @@ class CryptController {
 
   // Декодирование приватного ключа из PEM
   static RSAPrivateKey decodePrivateKey(String pem) {
-    List<String> strBigInt = pem.split("_");
+    List<String> strBigInt = pem.split("\n");
     List<BigInt> BigInts = [];
     for(String str in strBigInt){
       BigInts.add(BigInt.parse(str));
