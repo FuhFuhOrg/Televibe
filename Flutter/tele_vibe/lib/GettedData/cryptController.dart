@@ -166,7 +166,7 @@ class CryptController {
 
   // Декодирование приватного ключа из PEM
   static RSAPrivateKey decodePrivateKey(String pem) {
-    List<String> strBigInt = pem.split("_");
+    List<String> strBigInt = pem.split("\n");
     List<BigInt> BigInts = [];
     for(String str in strBigInt){
       BigInts.add(BigInt.parse(str));
