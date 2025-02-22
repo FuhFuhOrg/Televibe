@@ -5,11 +5,15 @@ import 'package:tele_vibe/Widgets/chatList.dart';
 
 class AllChatsVM {
   void clearChatHistory() {
-    // Логика очистки истории
+    // Логика удаления переписки чата
   }
 
   void leaveGroup() {
     // Логика выхода из группы
+  }
+
+  void deleteChat() {
+    // логика удаление чата
   }
 
   void dispose() {
