@@ -244,7 +244,7 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
                     // Логика создания группы с сохраненными данными
                     print("Создание группы: $_groupName с паролем: $_groupPassword");
                   } else if (_isAddingChat) {
-                    _chatGroupOptionVM.enterInChat(context, _groupName, _chatId, _groupPassword, _groupHost);
+                    _chatGroupOptionVM.enterInChat(context, _groupName, _chatId, _chatPassword, _groupHost);
                     // Логика добавления чата с сохраненными данными
                     print("Добавление чата с паролем: $_addChatPassword");
                   }
