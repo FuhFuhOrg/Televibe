@@ -196,18 +196,26 @@ class _AllChatsClassState extends State<AllChatsPage> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              /*
               ListTile(
                 leading: const Icon(Icons.copy, color: Colors.white),
                 title: const Text(
-                  'Очистить историю',
+                  'Удалить чат',
+                  style: TextStyle(color: Colors.white), 
+                ),
+                onTap: () {
+                  _allChatsVM.deleteChat();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.copy, color: Colors.white),
+                title: const Text(
+                  'Удаление переписки',
                   style: TextStyle(color: Colors.white), 
                 ),
                 onTap: () {
                   _allChatsVM.clearChatHistory();
                 },
               ),
-              */
               ListTile(
                 leading: const Icon(Icons.edit, color: Colors.white),
                 title: const Text(
