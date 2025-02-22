@@ -22,7 +22,7 @@ class _AllChatsClassState extends State<AllChatsPage> {
   bool _isSearching = false; // Флаг для отображения строки поиска
   final TextEditingController _searchController = TextEditingController(); // Контроллер для строки поиска
   final AllChatsVM _allChatsVM = AllChatsVM();
-  late final StreamSubscription subscriptionChats;
+  late StreamSubscription subscriptionChats;
   ChatCollection chatsData = ChatCollection();
 
 
@@ -69,11 +69,9 @@ class _AllChatsClassState extends State<AllChatsPage> {
     ),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    // Инициализируем chatsData начальными значениями
-    if(Chats.getValue().chats.isEmpty) {
+  void refresh_()
+  {
+      if(Chats.getValue().chats.isEmpty) {
       chatsData = ChatCollection(chats: _initialChats);
     }
     else {
@@ -83,6 +81,14 @@ class _AllChatsClassState extends State<AllChatsPage> {
       chatsData = newValue;
       _getSelectedScreen();
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Инициализируем chatsData начальными значениями
+
+    refresh_();
   }
 
 
@@ -190,6 +196,7 @@ class _AllChatsClassState extends State<AllChatsPage> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
+              /*
               ListTile(
                 leading: const Icon(Icons.copy, color: Colors.white),
                 title: const Text(
@@ -200,6 +207,7 @@ class _AllChatsClassState extends State<AllChatsPage> {
                   _allChatsVM.clearChatHistory();
                 },
               ),
+              */
               ListTile(
                 leading: const Icon(Icons.edit, color: Colors.white),
                 title: const Text(
@@ -292,11 +300,12 @@ class _AllChatsClassState extends State<AllChatsPage> {
         onTap: _onItemTapped,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const ChatGroupOptionsPage()),
           );
+          refresh_();
         },
         backgroundColor: const Color(0xFF222222),
         child: const Icon(Icons.add, color: Colors.white,),

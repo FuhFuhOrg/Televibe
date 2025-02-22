@@ -39,4 +39,8 @@ class ChatInfoVM
       (chat) => chat.chatId == Chats.nowChat
       ).subusers.length;
   }
+
+  String getChatId(){
+    return Chats.nowChat;
+  }
 }

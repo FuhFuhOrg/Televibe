@@ -8,6 +8,9 @@ import 'UnderWidgets/fileUtils.dart';
 import 'searchMessagesScreen.dart';
 import 'package:tele_vibe/GettedData/netServerController.dart';
 import 'dart:convert';
+import 'dart:async';
+import 'package:tele_vibe/ViewModel/chatUpdateService.dart';
+
 
 class ChatListPage extends StatefulWidget {
   const ChatListPage({super.key});
@@ -33,88 +36,39 @@ class _ChatListState extends State<ChatListPage> {
   final ScrollController _scrollController = ScrollController();
   final FocusNode _focusNode = FocusNode();
   final ChatListVM _chatListVM = ChatListVM();
+  Timer? _chatRefreshTimer;
   bool _isSearching = false;
   String? _profileImagePath;
+  late int queueId;
+
+  Future<void> _refreshChat(int queueId) async {
+    List<(String, int)> updatedQueue = await ChatUpdateService.fetchUpdatedQueue(queueId);
+    
+    List<Map<String, dynamic>> newEntries = await _chatListVM.queueToFiltred(updatedQueue, context);
+    
+    setState(() {
+      filteredEntries = newEntries;
+    });
+  }
+
 
   @override
   void initState() {
     super.initState();
 
-    int kUsers = _chatListVM.getCountUsers();
+    queueId = Chats.getValue()
+        .chats
+        .where((chat) => chat.chatId == Chats.nowChat)
+        .firstOrNull
+        ?.nowQueueId ?? -1;
 
-    // Кинуть это в VM когда пойму как
-    int queueId = Chats.getValue()
-            .chats
-            .where((chat) => chat.chatId == Chats.nowChat)
-            .firstOrNull
-            ?.nowQueueId ?? -1;
-
-    List<(String, int)> queueChatNewMessages = [];
-
-    NetServerController().getMessages(Chats.nowChat, queueId).then((newMessages) {
-      if (newMessages != null && newMessages.isNotEmpty) {
-        List<(String, int)> newMessagesFix = [];
-        for (int i = 0; i < newMessages.length; i++) {
-          if (newMessages[i] == "[]"){
-
-          } else if (newMessages[i][0] == "[") {
-            newMessagesFix.add((newMessages[i], -1));
-          } else {
-            newMessagesFix[newMessagesFix.length - 1] = 
-            (newMessagesFix[newMessagesFix.length - 1].$1 + " " + newMessages[i],
-            -1);
-          }
-        }
-        queueChatNewMessages.addAll(newMessagesFix);
-
-        int lastChangeId = -1;
-        List<(String, int)> queues = [];
-        for ((String, int) jsonString in queueChatNewMessages) {
-          try {
-            List<dynamic> decodedList = jsonDecode(jsonString.$1);
-            List<Map<String, dynamic>> queueMap = [];
-            if (decodedList.isNotEmpty && decodedList[0] is Map<String, dynamic>) {
-              queueMap.addAll(List<Map<String, dynamic>>.from(decodedList));
-            }
-
-            for(int i = 0; i < queueMap.length; i++){
-              if (queueMap[i].containsKey("changeId") && queueMap[i].containsKey("changeData") && queueMap[i].containsKey("senderId")) {
-                int changeId = queueMap[i]["changeId"];
-                if(lastChangeId < changeId){
-                  lastChangeId = changeId;
-                }
-                String changeData = queueMap[i]["changeData"].toString();
-                int senderid = queueMap[i]["senderId"];
-
-                queues.add((changeData, senderid));
-              }
-            }
-          } catch (e) {
-            print("Ошибка парсинга JSON: $e");
-          }
-        }
-
-        List<(String, int)> queueChat = Chats.getNowChatQueue();
-        if(queueChat.isEmpty) {
-          queueChat = [];
-        }
-        queueChat.addAll(queues);
-
-        Chats.setNowChatQueue(queueChat, lastChangeId);
-
-        for (int i = 0; i < queues.length; i++) {
-          print(queues[i]);
-        }
-        _updateFilteredEntries(queueChat, context);
-      }
-    }).catchError((error) {
-      print("Ошибка получения сообщений: $error");
-    });
-
+    _refreshChat(queueId);
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom();
     });
   }
+
 
   void _updateFilteredEntries(List<(String, int)> queueChat, BuildContext context) async {
     List<Map<String, dynamic>> newEntries = await _chatListVM.queueToFiltred(queueChat, context);
@@ -314,13 +268,17 @@ class _ChatListState extends State<ChatListPage> {
           ),
           IconButton(
             icon: const Icon(Icons.send, color: Colors.white),
-            onPressed: () {
+            onPressed: () async {
               String message = _textController.text;
               if (message.isNotEmpty) {
                 _chatListVM.sendMessage(message);
                 _textController.clear();
                 _focusNode.requestFocus();
                 _scrollToBottom();
+
+                await Future.delayed(const Duration(milliseconds: 200));
+
+                await _refreshChat(queueId);
               }
             },
           ),
