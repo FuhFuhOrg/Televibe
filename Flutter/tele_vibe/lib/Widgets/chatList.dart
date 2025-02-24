@@ -319,7 +319,7 @@ class _ChatListState extends State<ChatListPage> {
                   Navigator.pop(context);
                 },
               ),
-              ListTile(
+              filteredEntries[index]['isMe'] ? ListTile(
                 leading: const Icon(Icons.edit, color: Colors.white),
                 title: const Text(
                   'Изменить',
@@ -329,8 +329,8 @@ class _ChatListState extends State<ChatListPage> {
                   Navigator.pop(context);
                   _showEditDialog(context, index);
                 },
-              ),
-              ListTile(
+              ) : const SizedBox.shrink(),
+              filteredEntries[index]['isMe'] ? ListTile(
                 leading: const Icon(Icons.delete, color: Colors.white), 
                 title: const Text(
                   'Удалить',
@@ -344,7 +344,7 @@ class _ChatListState extends State<ChatListPage> {
                   });
                   Navigator.pop(context);
                 },
-              ),
+              ) : const SizedBox.shrink(),
             ],
           ),
           actions: <Widget>[
