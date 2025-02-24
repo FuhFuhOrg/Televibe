@@ -405,7 +405,7 @@ class _ChatListState extends State<ChatListPage> {
               ),
               onPressed: () {
                 setState(() {
-                  //entries[index]['text'] = editController.text;
+                  _chatListVM.changeMessage(editController.text, index);
                   //_filterMessages();  // Обновляем результаты поиска после изменения сообщения
                 });
                 Navigator.of(context).pop();

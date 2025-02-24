@@ -118,6 +118,16 @@ class ChatListVM {
     return;
   }
 
+  void changeMessage(String message, int id){
+    Subuser? subuser = Chats.getNowSubuser();
+    if(subuser != null && subuser.publicKey != null){
+      NetServerController().sendMessage("* $id", message, Chats.nowChat, subuser.id, subuser.publicKey!);
+      return;
+    }
+    print("subuser is not available");
+    return;
+  }
+
   void deleteMessage(int id){
     Subuser? subuser = Chats.getNowSubuser();
     if(subuser != null && subuser.publicKey != null){
