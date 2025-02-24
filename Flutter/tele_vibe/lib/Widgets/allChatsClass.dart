@@ -223,7 +223,7 @@ class _AllChatsClassState extends State<AllChatsPage> {
                   style: TextStyle(color: Colors.white),
                 ),
                 onTap: () {
-                  _allChatsVM.leaveGroup();
+                  _allChatsVM.leaveGroup(Chats.value.chats[index].chatId);
                 },
               ),
             ],

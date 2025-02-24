@@ -8,7 +8,8 @@ class AllChatsVM {
     // Логика удаления переписки чата
   }
 
-  void leaveGroup() {
+  void leaveGroup(String chatId) {
+    Chats.removeChat(chatId);
     // Логика выхода из группы
   }
 
