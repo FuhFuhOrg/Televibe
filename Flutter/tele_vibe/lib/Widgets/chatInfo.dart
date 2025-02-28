@@ -181,7 +181,7 @@ class _ChatInfoState extends State<ChatInfo>{
                             MaterialPageRoute(
                               builder: (context) => subuser.userName == "YOU" // Ваще не надежно будто, но что поделать
                                 ? ProfileScreen(nickname: subuser.userName)
-                                : ProfileScreenOther(nickname: subuser.userName),
+                                : ProfileScreenOther(nickname: subuser.userName, userID: subuser.id,),
                             ),
                           );
                         },

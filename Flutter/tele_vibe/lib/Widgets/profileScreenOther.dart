@@ -7,8 +7,9 @@ import 'package:tele_vibe/GettedData/MessageHandler.dart' as myHandler;
 
 class ProfileScreenOther extends StatefulWidget {
   final String nickname;
+  final int userID;
 
-  const ProfileScreenOther({super.key, required this.nickname});
+  const ProfileScreenOther({super.key, required this.nickname, required this.userID});
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
