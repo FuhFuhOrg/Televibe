@@ -37,7 +37,6 @@ class _AllChatsClassState extends State<AllChatsPage> {
       password: 'password1',
       nowQueueId: 1,
       chatIp: '',
-      users: null,
       yourUserId: null,
     ),
     ChatData(
@@ -46,7 +45,6 @@ class _AllChatsClassState extends State<AllChatsPage> {
       password: 'password2',
       nowQueueId: 2,
       chatIp: '',
-      users: null,
       yourUserId: null,
     ),
     ChatData(
@@ -55,7 +53,6 @@ class _AllChatsClassState extends State<AllChatsPage> {
       password: 'password3',
       nowQueueId: 3,
       chatIp: '',
-      users: null,
       yourUserId: null,
     ),
     ChatData(
@@ -64,7 +61,6 @@ class _AllChatsClassState extends State<AllChatsPage> {
       password: 'password4',
       nowQueueId: 4,
       chatIp: '',
-      users: null,
       yourUserId: null,
     ),
   ];
@@ -203,7 +199,7 @@ class _AllChatsClassState extends State<AllChatsPage> {
                   style: TextStyle(color: Colors.white), 
                 ),
                 onTap: () {
-                  _allChatsVM.deleteChat();
+                  _allChatsVM.deleteChat(Chats.value.chats[index].chatId);
                 },
               ),
               ListTile(

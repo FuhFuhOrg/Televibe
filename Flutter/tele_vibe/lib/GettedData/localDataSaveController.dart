@@ -8,7 +8,7 @@ class LocalDataSave {
   static Future<void> saveChatsData() async {
     ChatCollection chatsData = Chats.value;
     final prefs = await SharedPreferences.getInstance();
-    final String jsonString = jsonEncode(chatsData.toJson());
+    final String jsonString = jsonEncode(await chatsData.toJson());
     await prefs.setString('chatsData', jsonString);
   }
 

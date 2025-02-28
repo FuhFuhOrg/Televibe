@@ -4,6 +4,7 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:pointycastle/asymmetric/api.dart';
+import 'package:tele_vibe/Data/chats.dart';
 import 'package:tele_vibe/GettedData/cryptController.dart';
 import 'package:web_socket_channel/status.dart' as status;
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -131,7 +132,7 @@ class NetServerController with WidgetsBindingObserver {
 
 //OK
   Future<List<String>> addUserToChat(RSAPublicKey publicKey, RSAPrivateKey privateKey, 
-    String idChat, String chatPassword, int? anonId, String? password) async 
+    String idChat, String chatPassword, int? anonId, String? password, String? username, Image? img) async 
   {
     Completer<List<String>> completer = Completer<List<String>>();
     int requestId = getK();
@@ -149,8 +150,12 @@ class NetServerController with WidgetsBindingObserver {
       }
     });
 
-    sendRequest(requestId, "AddUserToChat", 
-    "$encryptedPublicKey $encryptedPrivateKey $idChat $encryptedAnonId");
+    if(img != null){
+      String image = await Subuser.imageToBase64(img);
+      sendRequest(requestId, "AddUserToChat", 
+      "$encryptedPublicKey $encryptedPrivateKey $idChat $encryptedAnonId $username $image");
+    }
+
     return completer.future;
   }
 

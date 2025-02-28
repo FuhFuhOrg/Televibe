@@ -46,15 +46,17 @@ class ChatListVM {
 
       if (command.startsWith('+')) {
         // Добавление нового сообщения
+        command = command.substring(2).trim(); // Удаляем первые два символа и лишние пробелы
+        List<String> parts = command.split(' ');
+        String timePart = parts[0]; // Время из команды
+        String messageText = command.substring(timePart.length).trim(); // Текст без времени
+
         messages.add({
-          'text': command.substring(2), // Убираем '+ ' и оставляем текст
-          if(commandUserCode.$2 == cd.yourUserId)
-            'isMe': true
-          else
-            'isMe': false,
-          'userName': 'Пользователь', // Можно добавить логику определения пользователя
-          'time': '12:00', // Можно добавить актуальное время
-          'id': k
+          'text': messageText,
+          'isMe': commandUserCode.$2 == cd.yourUserId, // Оптимизированная запись
+          'userName': commandUserCode.$2, // Можно добавить логику определения пользователя
+          'time': timePart, // Можно добавить актуальное время
+          'id': k,
         });
       } else if (command.startsWith('*')) {
         // Изменение сообщения
@@ -84,18 +86,21 @@ class ChatListVM {
       }
       
       if (goin[0] == "true") {
-        for (int i = 1; i < goin.length; i += 2) {
+        for (int i = 1; i < goin.length; i += 4) {
           int uid = int.parse(goin[i]);
           String item = CryptController.decryptPrivateKey(goin[i + 1], Chats.nowChat, Chats.getChatPassword(Chats.nowChat));
           RSAPrivateKey privateKey = CryptController.decodePrivateKey(item);
+          String name = goin[i + 2];
+          Image image = Subuser.imageFromBase64(goin[i + 3]);
 
           Chats.addUserInChat(
             Chats.nowChat,
             Subuser(
               id: uid,
-              userName: "",
+              userName: name,
               publicKey: null,
-              privateKey: privateKey
+              privateKey: privateKey,
+              image: image,
             )
           );
         }
@@ -111,7 +116,11 @@ class ChatListVM {
   void sendMessage(String message){
     Subuser? subuser = Chats.getNowSubuser();
     if(subuser != null && subuser.publicKey != null){
-      NetServerController().sendMessage("+", message, Chats.nowChat, subuser.id, subuser.publicKey!);
+      DateTime now = DateTime.now();
+      String formattedTime = 
+          '${now.year}:${now.month.toString().padLeft(2, '0')}:${now.day.toString().padLeft(2, '0')}:${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+    
+      NetServerController().sendMessage("+", '$formattedTime $message', Chats.nowChat, subuser.id, subuser.publicKey!);
       return;
     }
     print("subuser is not available");

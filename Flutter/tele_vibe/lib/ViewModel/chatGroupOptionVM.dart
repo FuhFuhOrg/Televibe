@@ -43,17 +43,18 @@ class ChatGroupOptionVM
 
     if (Anon.anonIdGet != null && Anon.anonPasswordGet != null) {
       NetServerController()
-          .addUserToChat(_keyPair.$1, _keyPair.$2, chatId, password, Anon.anonIdGet, Anon.anonPasswordGet)
+          .addUserToChat(_keyPair.$1, _keyPair.$2, chatId, password, Anon.anonIdGet, Anon.anonPasswordGet, Anon.username, Anon.image)
           .then((goin) {
         if (goin != " " && goin != "") {
           print('Return Login ${goin}');
           if (goin[0] == "true") {
             List<Subuser> newChatUsers = [];
             newChatUsers.add(Subuser(
-              id: int.parse(goin[1]), 
-              userName: "YOU", 
-              publicKey: _keyPair.$1, 
-              privateKey: _keyPair.$2
+              id: int.parse(goin[1]),
+              userName: Anon.username,
+              publicKey: _keyPair.$1,
+              privateKey: _keyPair.$2,
+              image: Anon.image, // Используем Image.asset
             ));
             Chats.addChat(ChatData(chatName: name, chatId: chatId, password: password, nowQueueId: -1, chatIp: serverId, yourUserId: int.parse(goin[1]), subusers: newChatUsers));
 

@@ -147,7 +147,7 @@ class _ChatListState extends State<ChatListPage> {
                         child: MessageBubble(
                           text: entry['text'],
                           isMe: entry['isMe'],
-                          userName: entry['userName'],
+                          userName: entry['userName'].toString(),
                           time: entry['time'],
                           showAvatar: showAvatar,
                           showUserName: !entry['isMe'],

@@ -25,7 +25,8 @@ class profileScreenVM {
   }
 
   String getUsername() {
-    return Chats.getValue().chats.first.users?.username ?? "У чела нет никнейма";
+    int id = Chats.getValue().chats.first.yourUserId ?? 0;
+    return Chats.getValue().chats.first.subusers[id].userName ?? "У чела нет никнейма";
   }
 
   String getTelephoneNumber() {
