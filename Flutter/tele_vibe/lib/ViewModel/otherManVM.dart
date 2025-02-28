@@ -20,20 +20,19 @@ import 'package:tele_vibe/GettedData/netServerController.dart';
 
 // Вот здесь поменяй, где ты держишь этот чертов юзер айди, потому что я в душе не чаю, какой из них именно этого пользователя
 class otherManVM {
-  int? getUserId() { // Для чужого профиля
-    return 666;
-    //Chats.getValue().chats.first.yourUserId;
+  String getUsername(int userID) { 
+    return Chats.getChatById(Chats.nowChat).subusers.firstWhere((user) => user.id == userID).userName; 
   }
 
-  String getUsername() { 
-    return "Вот тут имя пользователя Nyaaaaaaa";
+  Image? getImage(int userID) { 
+    return Chats.getChatById(Chats.nowChat).subusers.firstWhere((user) => user.id == userID).image?? null; 
   }
 
-  String getTelephoneNumber() { 
+  String getTelephoneNumber(int userID) { 
     return "+7 777 777 77 77 типо телефон Nyaaaa";
   }
 
-  String getInfoAboutMe() { 
+  String getInfoAboutMe(int userID) { 
     return "Nyaaaaaaaaaaa";
   }
 }

@@ -17,6 +17,7 @@ class ProfileScreenOther extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreenOther> {
   String _nickname;
+  late int _userID; // Добавляем переменную для хранения userID
   String _phoneNumber = 'Введите номер телефона';
   String _username = 'Введите имя пользователя';
   String _about = 'О себе';
@@ -29,6 +30,7 @@ class _ProfileScreenState extends State<ProfileScreenOther> {
   void initState() {
     super.initState();
     _nickname = widget.nickname;
+    _userID = widget.userID; // Инициализируем userID из widget
   }
 
   // Метод для перехода на экран изменения текста
@@ -103,26 +105,26 @@ class _ProfileScreenState extends State<ProfileScreenOther> {
                   ),
                   subtitle: GestureDetector(
                     onLongPress: () {
-                      Clipboard.setData(ClipboardData(text: _chatListVM.getUserId().toString()));
+                      Clipboard.setData(ClipboardData(text: _userID.toString()));
                       myHandler.MessageHandler.showAlertDialog(context, 'ID скопирован');
                     },
                     child: Text(
-                      _chatListVM.getUserId().toString(),
+                      _userID.toString(),
                       style: TextStyle(color: Colors.white.withOpacity(0.5)),
                     ),
                   ),
                 ),
                 ListTile(
                   title: const Text('Номер телефона', style: TextStyle(color: Colors.white)),
-                  subtitle: Text(_chatListVM.getTelephoneNumber(), style: TextStyle(color: Colors.white.withOpacity(0.5))),
+                  subtitle: Text(_chatListVM.getTelephoneNumber(_userID), style: TextStyle(color: Colors.white.withOpacity(0.5))),
                 ),
                 ListTile(
                   title: const Text('Имя пользователя', style: TextStyle(color: Colors.white)),
-                  subtitle: Text(_chatListVM.getUsername(), style: TextStyle(color: Colors.white.withOpacity(0.5))),
+                  subtitle: Text(_chatListVM.getUsername(_userID), style: TextStyle(color: Colors.white.withOpacity(0.5))),
                 ),
                 ListTile(
                   title: const Text('О себе', style: TextStyle(color: Colors.white)),
-                  subtitle: Text(_chatListVM.getInfoAboutMe(), style: TextStyle(color: Colors.white.withOpacity(0.5))),
+                  subtitle: Text(_chatListVM.getInfoAboutMe(_userID), style: TextStyle(color: Colors.white.withOpacity(0.5))),
                 ),
               ],
             ),

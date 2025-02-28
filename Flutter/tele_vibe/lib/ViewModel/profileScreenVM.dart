@@ -21,12 +21,12 @@ import 'package:tele_vibe/GettedData/netServerController.dart';
 // Вот здесь поменяй, где ты держишь этот чертов юзер айди, потому что я в душе не чаю, какой из них именно этого пользователя
 class profileScreenVM {
   int? getUserId() { // Для своего профиля
-    return Chats.getValue().chats.first.yourUserId;
+    return Chats.getChatById(Chats.nowChat).yourUserId;
   }
 
   String getUsername() {
-    int id = Chats.getValue().chats.first.yourUserId ?? 0;
-    return Chats.getValue().chats.first.subusers[id].userName ?? "У чела нет никнейма";
+    int id = Chats.getChatById(Chats.nowChat).yourUserId ?? 0;
+    return Chats.getChatById(Chats.nowChat).subusers[id].userName ?? "У чела нет никнейма";
   }
 
   String getTelephoneNumber() {

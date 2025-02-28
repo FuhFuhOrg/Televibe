@@ -39,6 +39,10 @@ class Chats {
     return _chats;
   }
 
+  static ChatData getChatById(String newChatId) {
+    return _chats.chats.firstWhere((chat) => chat.chatId == newChatId, orElse: () => throw Exception('Chat not found'));
+  }
+
   static List<(String, int)> getNowChatQueue (){
     if(_chats.chats.isEmpty){
       return [];
