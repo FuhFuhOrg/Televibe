@@ -114,18 +114,22 @@ class _ProfileScreenState extends State<ProfileScreenOther> {
                     ),
                   ),
                 ),
+                /*
                 ListTile(
                   title: const Text('Номер телефона', style: TextStyle(color: Colors.white)),
                   subtitle: Text(_chatListVM.getTelephoneNumber(_userID), style: TextStyle(color: Colors.white.withOpacity(0.5))),
                 ),
+                */
                 ListTile(
                   title: const Text('Имя пользователя', style: TextStyle(color: Colors.white)),
                   subtitle: Text(_chatListVM.getUsername(_userID), style: TextStyle(color: Colors.white.withOpacity(0.5))),
                 ),
+                /*
                 ListTile(
                   title: const Text('О себе', style: TextStyle(color: Colors.white)),
                   subtitle: Text(_chatListVM.getInfoAboutMe(_userID), style: TextStyle(color: Colors.white.withOpacity(0.5))),
                 ),
+                */
               ],
             ),
           ),

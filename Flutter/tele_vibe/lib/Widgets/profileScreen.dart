@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'renameTextField.dart';
 import 'package:flutter/services.dart';
 import 'UnderWidgets/fileUtils.dart';
-import 'package:tele_vibe/ViewModel/profileScreenVM.dart';
 import 'package:tele_vibe/GettedData/MessageHandler.dart' as myHandler;
 import 'package:tele_vibe/ViewModel/changeVeluesInProfileScreenVM.dart';
+import 'package:tele_vibe/Data/user.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String nickname;
@@ -21,7 +21,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String _username = '';
   String _about = '';
   String? _profileImagePath;
-  final profileScreenVM _chatListVM = profileScreenVM();
   final changeVeluesInProfileScreenVM changeProfileScreenVM = changeVeluesInProfileScreenVM();
 
   _ProfileScreenState() : _nickname = '';
@@ -29,10 +28,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _nickname = _chatListVM.getUsername();
-    _phoneNumber = _chatListVM.getTelephoneNumber();
-    _username = _chatListVM.getUsername();
-    _about = _chatListVM.getInfoAboutMe();
+    _nickname = Anon.anonIdGet?.toString() ?? 'Unknown';
+    //_phoneNumber = 'hui';
+    _username = Anon.username;
+    //_about = 'hui';
   }
 
   // Метод для перехода на экран изменения текста
@@ -126,15 +125,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   subtitle: GestureDetector(
                     onLongPress: () {
-                      Clipboard.setData(ClipboardData(text: _chatListVM.getUserId().toString()));
+                      Clipboard.setData(ClipboardData(text: Anon.anonIdGet?.toString() ?? 'Unknown'));
                       myHandler.MessageHandler.showAlertDialog(context, 'ID скопирован');
                     },
                     child: Text(
-                      _chatListVM.getUserId().toString(), // Вот тут это говно исправишь, которое должен был делать ты
+                      Anon.anonIdGet?.toString() ?? 'Unknown',
                       style: TextStyle(color: Colors.white.withOpacity(0.5)),
                     ),
                   ),
                 ),
+                /*
                 ListTile(
                   title: const Text('Номер телефона', style: TextStyle(color: Colors.white)),
                   subtitle: Text(_phoneNumber, style: TextStyle(color: Colors.white.withOpacity(0.5))),
@@ -148,6 +148,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     });
                   },
                 ),
+                */
                 ListTile(
                   title: const Text('Имя пользователя', style: TextStyle(color: Colors.white)),
                   subtitle: Text(_username, style: TextStyle(color: Colors.white.withOpacity(0.5))),
@@ -161,6 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     });
                   },
                 ),
+                /*
                 ListTile(
                   title: const Text('О себе', style: TextStyle(color: Colors.white)),
                   subtitle: Text(_about, style: TextStyle(color: Colors.white.withOpacity(0.5))),
@@ -174,6 +176,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     });
                   },
                 ),
+                */
               ],
             ),
           ),
