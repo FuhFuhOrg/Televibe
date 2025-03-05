@@ -63,12 +63,15 @@ class _ChatListState extends State<ChatListPage> {
         ?.nowQueueId ?? -1;
 
     _refreshChat(queueId);
+
+    _chatRefreshTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      _refreshChat(queueId);
+    });
     
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom();
     });
   }
-
 
   void _updateFilteredEntries(List<(String, int)> queueChat, BuildContext context) async {
     List<Map<String, dynamic>> newEntries = await _chatListVM.queueToFiltred(queueChat, context);
@@ -79,6 +82,7 @@ class _ChatListState extends State<ChatListPage> {
 
   @override
   void dispose() {
+    _chatRefreshTimer?.cancel();
     _searchController.dispose();
     super.dispose();
   }

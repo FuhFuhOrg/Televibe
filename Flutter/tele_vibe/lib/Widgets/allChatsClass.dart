@@ -65,17 +65,19 @@ class _AllChatsClassState extends State<AllChatsPage> {
     ),
   ];
 
-  void refresh_()
-  {
-      if(Chats.getValue().chats.isEmpty) {
-      chatsData = ChatCollection(chats: _initialChats);
-    }
-    else {
-      chatsData = Chats.getValue();
-    }
+  void refresh_() {
+    setState(() {
+      if (Chats.getValue().chats.isEmpty) {
+        chatsData = ChatCollection(chats: _initialChats);
+      } else {
+        chatsData = Chats.getValue();
+      }
+    });
+
     subscriptionChats = Chats.onValueChanged.listen((newValue) {
-      chatsData = newValue;
-      _getSelectedScreen();
+      setState(() {
+        chatsData = newValue;
+      });
     });
   }
 
@@ -198,8 +200,14 @@ class _AllChatsClassState extends State<AllChatsPage> {
                   'Удалить чат',
                   style: TextStyle(color: Colors.white), 
                 ),
-                onTap: () {
+                onTap: () async {
                   _allChatsVM.deleteChat(Chats.value.chats[index].chatId);
+
+                  await Future.delayed(const Duration(milliseconds: 200));
+                  
+                  setState(() {
+                    refresh_();
+                  });
                 },
               ),
               ListTile(
@@ -208,8 +216,14 @@ class _AllChatsClassState extends State<AllChatsPage> {
                   'Удаление переписки',
                   style: TextStyle(color: Colors.white), 
                 ),
-                onTap: () {
+                onTap: () async {
                   _allChatsVM.clearChatHistory();
+
+                  await Future.delayed(const Duration(milliseconds: 200));
+                  
+                  setState(() {
+                    refresh_();
+                  });
                 },
               ),
               ListTile(
@@ -218,8 +232,14 @@ class _AllChatsClassState extends State<AllChatsPage> {
                   'Выйти из группы',
                   style: TextStyle(color: Colors.white),
                 ),
-                onTap: () {
+                onTap: () async {
                   _allChatsVM.leaveGroup(Chats.value.chats[index].chatId);
+
+                  await Future.delayed(const Duration(milliseconds: 200));
+                  
+                  setState(() {
+                    refresh_();
+                  });
                 },
               ),
             ],
@@ -309,7 +329,12 @@ class _AllChatsClassState extends State<AllChatsPage> {
             context,
             MaterialPageRoute(builder: (context) => const ChatGroupOptionsPage()),
           );
-          refresh_();
+
+          await Future.delayed(const Duration(milliseconds: 200));
+
+          setState(() {
+            refresh_();
+          });
         },
         backgroundColor: const Color(0xFF222222),
         child: const Icon(Icons.add, color: Colors.white,),

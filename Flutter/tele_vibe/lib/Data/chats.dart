@@ -60,6 +60,7 @@ class Chats {
     ChatData chat = _chats.chats.firstWhere((chat) => chat.chatId == chatId);
     if(!chat.subusers.contains(newUser)){
       chat.subusers.add(newUser);
+      _controller.add(_chats);
     }
   }
 
