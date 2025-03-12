@@ -240,6 +240,7 @@ class _ChatListState extends State<ChatListPage> {
                   // Логика сохранения пути к изображению
                   // Например, добавьте поле _profileImagePath
                   _profileImagePath = pickedImage.path;
+
                 });
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -275,14 +276,16 @@ class _ChatListState extends State<ChatListPage> {
             onPressed: () async {
               String message = _textController.text;
               if (message.isNotEmpty) {
-                _chatListVM.sendMessage(message);
-                _textController.clear();
-                _focusNode.requestFocus();
-                _scrollToBottom();
+                bool buba = await _chatListVM.sendMessage(message);
+                if(buba){
+                  _textController.clear();
+                  _focusNode.requestFocus();
+                  _scrollToBottom();
 
-                await Future.delayed(const Duration(milliseconds: 200));
+                  //await Future.delayed(const Duration(milliseconds: 200));
 
-                await _refreshChat(queueId);
+                  await _refreshChat(queueId);
+                }
               }
             },
           ),

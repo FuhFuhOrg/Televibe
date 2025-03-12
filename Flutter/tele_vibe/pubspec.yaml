@@ -37,7 +37,7 @@ dependencies:
   intl: ^0.18.0
   pointycastle: ^3.9.1
   asn1lib: ^1.5.3
-  #file_picker: ^8.1.7  # Update to the latest version
+  file_picker: ^8.1.7  # Update to the latest version
 
 dev_dependencies:
   flutter_test:
