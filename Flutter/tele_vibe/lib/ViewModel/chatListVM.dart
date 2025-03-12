@@ -113,7 +113,7 @@ class ChatListVM {
     return true;
   }
 
-  void sendMessage(String message){
+  Future<bool> sendMessage(String message) async {
     Subuser? subuser = Chats.getNowSubuser();
     if(subuser != null && subuser.publicKey != null){
       DateTime now = DateTime.now();
@@ -121,13 +121,13 @@ class ChatListVM {
           '${now.year}:${now.month.toString().padLeft(2, '0')}:${now.day.toString().padLeft(2, '0')}:${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
     
       NetServerController().sendMessage("+", '$formattedTime $message', Chats.nowChat, subuser.id, subuser.publicKey!);
-      return;
+      return true;
     }
     print("subuser is not available");
-    return;
+    return false;
   }
 
-  void changeMessage(String message, int id){
+  Future<void> changeMessage(String message, int id) async {
     Subuser? subuser = Chats.getNowSubuser();
     if(subuser != null && subuser.publicKey != null){
       NetServerController().sendMessage("* $id", message, Chats.nowChat, subuser.id, subuser.publicKey!);
@@ -137,7 +137,7 @@ class ChatListVM {
     return;
   }
 
-  void deleteMessage(int id){
+  Future<void> deleteMessage(int id) async {
     Subuser? subuser = Chats.getNowSubuser();
     if(subuser != null && subuser.publicKey != null){
       NetServerController().sendMessage("-", id.toString(), Chats.nowChat, subuser.id, subuser.publicKey!);

@@ -128,23 +128,20 @@ class _ChatListState extends State<ChatListPage> {
             children: <Widget>[
               Expanded(
                 child: NotificationListener<ScrollNotification>(
-                  onNotification: (ScrollNotification scrollInfo) {
-                    return true;
-                  },
+                  onNotification: (ScrollNotification scrollInfo) => true,
                   child: ListView.builder(
                     reverse: true,
                     itemCount: filteredEntries.length,
                     controller: _scrollController,
-                                      physics: const BouncingScrollPhysics(),
+                    physics: const BouncingScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
                       final messageIndex = filteredEntries.length - 1 - index;
                       final entry = filteredEntries[messageIndex];
-                      bool showAvatar = false;
 
-                      if (messageIndex == 0 || 
-                          entry['userName'] != filteredEntries[messageIndex - 1]['userName']) {
-                        showAvatar = !entry['isMe'];
-                      }
+                      // Определяем, является ли текущее сообщение последним от пользователя
+                      final bool isLastMessageFromUser = messageIndex == filteredEntries.length - 1 ||
+                          (messageIndex < filteredEntries.length - 1 &&
+                          filteredEntries[messageIndex]['userName'] != filteredEntries[messageIndex + 1]['userName']);
 
                       return GestureDetector(
                         onLongPress: () => _showParticipantOptions(context, messageIndex),
@@ -153,7 +150,7 @@ class _ChatListState extends State<ChatListPage> {
                           isMe: entry['isMe'],
                           userName: entry['userName'].toString(),
                           time: entry['time'],
-                          showAvatar: showAvatar,
+                          showAvatar: !entry['isMe'] && isLastMessageFromUser,
                           showUserName: !entry['isMe'],
                         ),
                       );
@@ -240,6 +237,7 @@ class _ChatListState extends State<ChatListPage> {
                   // Логика сохранения пути к изображению
                   // Например, добавьте поле _profileImagePath
                   _profileImagePath = pickedImage.path;
+
                 });
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -275,14 +273,16 @@ class _ChatListState extends State<ChatListPage> {
             onPressed: () async {
               String message = _textController.text;
               if (message.isNotEmpty) {
-                _chatListVM.sendMessage(message);
-                _textController.clear();
-                _focusNode.requestFocus();
-                _scrollToBottom();
+                bool buba = await _chatListVM.sendMessage(message);
+                if(buba){
+                  _textController.clear();
+                  _focusNode.requestFocus();
+                  _scrollToBottom();
 
-                await Future.delayed(const Duration(milliseconds: 200));
+                  //await Future.delayed(const Duration(milliseconds: 200));
 
-                await _refreshChat(queueId);
+                  await _refreshChat(queueId);
+                }
               }
             },
           ),
@@ -329,9 +329,9 @@ class _ChatListState extends State<ChatListPage> {
                   'Изменить',
                   style: TextStyle(color: Colors.white),
                 ),
-                onTap: () {
+                onTap: () async {
                   Navigator.pop(context);
-                  _showEditDialog(context, index);
+                  await _showEditDialog(context, index);
                 },
               ) : const SizedBox.shrink(),
               filteredEntries[index]['isMe'] ? ListTile(
@@ -340,13 +340,11 @@ class _ChatListState extends State<ChatListPage> {
                   'Удалить',
                   style: TextStyle(color: Colors.white), 
                 ),
-                onTap: () {
-                  setState(() {
-                    _chatListVM.deleteMessage(filteredEntries[index]['id']);
-                    //entries.removeAt(index);
-                    //_filterMessages();  // Обновляем результаты поиска после удаления сообщения
-                  });
+                onTap: () async {
                   Navigator.pop(context);
+  
+                  await _chatListVM.deleteMessage(filteredEntries[index]['id']);
+                  await _refreshChat(queueId);
                 },
               ) : const SizedBox.shrink(),
             ],
@@ -368,7 +366,7 @@ class _ChatListState extends State<ChatListPage> {
   }
 
 
-  void _showEditDialog(BuildContext context, int index) {
+  Future<void> _showEditDialog(BuildContext context, int index) async {
     TextEditingController editController = TextEditingController(text: filteredEntries[index]['text']);
 
     showDialog(
@@ -407,12 +405,15 @@ class _ChatListState extends State<ChatListPage> {
                 'Сохранить',
                 style: TextStyle(color: Colors.white),  
               ),
-              onPressed: () {
-                setState(() {
-                  _chatListVM.changeMessage(editController.text, index);
-                  //_filterMessages();  // Обновляем результаты поиска после изменения сообщения
-                });
-                Navigator.of(context).pop();
+              onPressed: () async {
+                await _chatListVM.changeMessage(editController.text, index);
+                await _refreshChat(queueId);
+
+                if (mounted) {
+                  setState(() {}); // Теперь setState() вызывается после await
+                }
+
+  Navigator.of(context).pop();
               },
             ),
           ],

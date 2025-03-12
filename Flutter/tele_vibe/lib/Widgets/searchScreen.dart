@@ -14,19 +14,25 @@ class _SearchScreenState extends State<SearchScreen> {
   List<ChatData> _filteredChats = [];
   ChatCollection chatsData = ChatCollection();
 
-
-// Массив данных, заполняется сразу из бд или из очереди
   @override
   void initState() {
     super.initState();
-    // Предзаполняем данные чатов, которые будут использоваться для поиска. Это временно, пока нет нормального сервера
-    _filteredChats = chatsData.chats; // Изначально показываем все чаты
+    _filteredChats = List.from(chatsData.chats);
+    _searchController.addListener(() {
+      _searchChats(_searchController.text);
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   void _searchChats(String query) {
     setState(() {
       if (query.isEmpty) {
-        _filteredChats = chatsData.chats; // Показываем все чаты
+        _filteredChats = chatsData.chats;
       } else {
         _filteredChats = chatsData.chats
             .where((chat) => chat.chatName.toLowerCase().contains(query.toLowerCase()))

@@ -286,7 +286,6 @@ class _AllChatsClassState extends State<AllChatsPage> {
                     icon: const Icon(Icons.search),
                     color: Colors.white,
                     onPressed: () {
-                      // Переход на новую активность
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const SearchScreen()),
