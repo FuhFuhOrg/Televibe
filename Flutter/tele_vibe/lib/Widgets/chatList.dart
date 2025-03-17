@@ -39,33 +39,28 @@ class _ChatListState extends State<ChatListPage> {
   Timer? _chatRefreshTimer;
   bool _isSearching = false;
   String? _profileImagePath;
-  late int queueId;
 
-  Future<void> _refreshChat(int queueId) async {
+  Future<void> _refreshChat() async {
+    int queueId = Chats.getValue()
+        .chats
+        .where((chat) => chat.chatId == Chats.nowChat)
+        .firstOrNull
+        ?.nowQueueId ?? -1;
     List<(String, int)> updatedQueue = await ChatUpdateService.fetchUpdatedQueue(queueId);
-    
-    List<Map<String, dynamic>> newEntries = await _chatListVM.queueToFiltred(updatedQueue, context);
-    
+    List<Map<String, dynamic>> newEntries = await Chats.queueToFiltred(updatedQueue, context);
     setState(() {
       filteredEntries = newEntries;
     });
   }
 
-
   @override
   void initState() {
     super.initState();
 
-    queueId = Chats.getValue()
-        .chats
-        .where((chat) => chat.chatId == Chats.nowChat)
-        .firstOrNull
-        ?.nowQueueId ?? -1;
-
-    _refreshChat(queueId);
+    _refreshChat();
 
     _chatRefreshTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      _refreshChat(queueId);
+      _refreshChat();
     });
     
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -74,7 +69,7 @@ class _ChatListState extends State<ChatListPage> {
   }
 
   void _updateFilteredEntries(List<(String, int)> queueChat, BuildContext context) async {
-    List<Map<String, dynamic>> newEntries = await _chatListVM.queueToFiltred(queueChat, context);
+    List<Map<String, dynamic>> newEntries = await Chats.queueToFiltred(queueChat, context);
     setState(() {
       filteredEntries = newEntries;
     });
@@ -84,6 +79,8 @@ class _ChatListState extends State<ChatListPage> {
   void dispose() {
     _chatRefreshTimer?.cancel();
     _searchController.dispose();
+    _textController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -281,7 +278,7 @@ class _ChatListState extends State<ChatListPage> {
 
                   //await Future.delayed(const Duration(milliseconds: 200));
 
-                  await _refreshChat(queueId);
+                  await _refreshChat();
                 }
               }
             },
@@ -344,7 +341,7 @@ class _ChatListState extends State<ChatListPage> {
                   Navigator.pop(context);
   
                   await _chatListVM.deleteMessage(filteredEntries[index]['id']);
-                  await _refreshChat(queueId);
+                  await _refreshChat();
                 },
               ) : const SizedBox.shrink(),
             ],
@@ -407,7 +404,7 @@ class _ChatListState extends State<ChatListPage> {
               ),
               onPressed: () async {
                 await _chatListVM.changeMessage(editController.text, index);
-                await _refreshChat(queueId);
+                await _refreshChat();
 
                 if (mounted) {
                   setState(() {}); // Теперь setState() вызывается после await

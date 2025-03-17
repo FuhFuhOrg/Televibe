@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:asn1lib/asn1lib.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:pointycastle/asymmetric/api.dart';
 import 'package:pointycastle/asymmetric/rsa.dart';
 import 'package:pointycastle/export.dart';
@@ -13,6 +13,10 @@ import 'package:pointycastle/asymmetric/api.dart';
 import 'package:pointycastle/export.dart' as crypto;
 import 'package:tele_vibe/GettedData/cryptController.dart';
 import 'dart:ui' as ui;
+import 'package:tele_vibe/Services/notification_service.dart';
+import 'package:tele_vibe/GettedData/netServerController.dart';
+import 'package:tele_vibe/GettedData/localDataSaveController.dart';
+import 'package:tele_vibe/GettedData/MessageHandler.dart';
 
 class Chats {
   // Это локальная переменная
@@ -24,6 +28,33 @@ class Chats {
   // Это Подписки
   static Stream<ChatCollection> get onValueChanged => _controller.stream;
   static String nowChat = "0";
+  static final NotificationService _notificationService = NotificationService();
+
+  static void _sendNotification(String chatName, String message, {bool isNewMessage = false}) {
+    String notificationMessage;
+    if (isNewMessage) {
+      // Получаем последнее сообщение из чата
+      ChatData cd = _chats.chats.firstWhere(
+        (chat) => chat.chatId == nowChat
+      );
+      if (cd.messages.isNotEmpty) {
+        var lastMessage = cd.messages.last;
+        String senderName = lastMessage['userName'].toString();
+        String messageText = lastMessage['text'].toString();
+        notificationMessage = '$senderName: $messageText';
+      } else {
+        notificationMessage = message;
+      }
+    } else {
+      notificationMessage = message;
+    }
+
+    _notificationService.showChatUpdateNotification(
+      chatName: chatName,
+      message: notificationMessage,
+      payload: 'chat:$nowChat',
+    );
+  }
 
   static void setValue(ChatCollection newValue) {
     _chats = newValue;
@@ -33,6 +64,7 @@ class Chats {
   static void addChat(ChatData newValue) {
     _chats.addChat(newValue);
     _controller.add(_chats);
+    _sendNotification(newValue.chatName, 'Новый чат создан');
   }
 
   static ChatCollection getValue() {
@@ -52,8 +84,8 @@ class Chats {
 
   static void removeChat(String chatId) {
     ChatData chat = _chats.chats.firstWhere((chat) => chat.chatId == chatId);
+    _sendNotification(chat.chatName, 'Чат удален');
     value.chats.remove(chat);
-    
   }
 
   static void addUserInChat(String chatId, Subuser newUser) {
@@ -61,6 +93,7 @@ class Chats {
     if(!chat.subusers.contains(newUser)){
       chat.subusers.add(newUser);
       _controller.add(_chats);
+      _sendNotification(chat.chatName, 'Новый пользователь ${newUser.userName} присоединился к чату');
     }
   }
 
@@ -69,7 +102,7 @@ class Chats {
     return chat.password;
   }
 
-  static void setNowChatQueue (List<(String, int)> newValue, int newQueue) {
+  static void setNowChatQueue(List<(String, int)> newValue, int newQueue) {
     if(newQueue == -1) return;
 
     var chat = _chats.chats.firstWhere(
@@ -79,9 +112,9 @@ class Chats {
     if (chat != null) {
       chat.queues = newValue;
       chat.nowQueueId = newQueue;
+      chat.lastChangeId = newQueue;
+      LocalDataSave.saveChatsData();
     }
-
-    return;
   }
 
   static Subuser? getNowSubuser(){
@@ -97,6 +130,120 @@ class Chats {
       return null;
     }
     return null;
+  }
+
+  static Future<List<Map<String, dynamic>>> queueToFiltred(List<(String, int)> queueChat, BuildContext context) async {
+    ChatData cd = _chats.chats.firstWhere(
+      (chat) => chat.chatId == nowChat
+    );
+
+    // Если у нас уже есть все сообщения, возвращаем их
+    if (cd.lastProcessedQueueIndex >= queueChat.length) {
+      return cd.messages;
+    }
+
+    // Обрабатываем только новые сообщения
+    for (int i = cd.lastProcessedQueueIndex; i < queueChat.length; i++) {
+      (String, int) commandUserCode = queueChat[i];
+      String command = "ERROR READ MESSAGE";
+      
+      try {
+        RSAPrivateKey privateKey = cd.subusers.firstWhere(
+          (subuser) => subuser.id == commandUserCode.$2
+        ).privateKey;
+        command = CryptController.decryptRSA(commandUserCode.$1, privateKey);
+      }
+      catch(e) {
+        try {
+          bool x = await _getAllUsersInChat(context);
+          RSAPrivateKey privateKey = cd.subusers.firstWhere(
+            (subuser) => subuser.id == commandUserCode.$2
+          ).privateKey;
+          command = CryptController.decryptRSA(commandUserCode.$1, privateKey);
+        }
+        catch(e) {
+          print(e);
+          continue;
+        }
+      }
+
+      if (command.startsWith('+')) {
+        command = command.substring(2).trim();
+        List<String> parts = command.split(' ');
+        String timePart = parts[0];
+        String messageText = command.substring(timePart.length).trim();
+
+        cd.messages.add({
+          'text': messageText,
+          'isMe': commandUserCode.$2 == cd.yourUserId,
+          'userName': commandUserCode.$2,
+          'time': timePart,
+          'id': i,
+        });
+
+        _sendNotification(cd.chatName, 'Новое сообщение', isNewMessage: true);
+      } else if (command.startsWith('*')) {
+        List<String> parts = command.substring(2).split(' ');
+        int index = int.tryParse(parts[0]) ?? -1;
+        if (index >= 0 && index < cd.messages.length) {
+          cd.messages[index]['text'] = parts.sublist(1).join(' ');
+        }
+      } else if (command.startsWith('-')) {
+        int messageId = int.tryParse(command.substring(2)) ?? -1;
+        cd.messages.removeWhere((message) => message['id'] == messageId);
+      }
+    }
+
+    // Обновляем индекс последнего обработанного сообщения
+    cd.lastProcessedQueueIndex = queueChat.length;
+    
+    return cd.messages;
+  }
+
+  static Future<bool> _getAllUsersInChat(BuildContext context) async {
+    List<String> goin = await NetServerController().getChatUser(nowChat);
+    
+    if (goin.isNotEmpty && goin != " ") {
+      for(String item in goin){
+        print('$item');
+      }
+      
+      if (goin[0] == "true") {
+        for (int i = 1; i < goin.length; i += 4) {
+          int uid = int.parse(goin[i]);
+          String item = CryptController.decryptPrivateKey(goin[i + 1], nowChat, getChatPassword(nowChat));
+          RSAPrivateKey privateKey = CryptController.decodePrivateKey(item);
+          String name = goin[i + 2];
+          Image image = Subuser.imageFromBase64(goin[i + 3]);
+
+          addUserInChat(
+            nowChat,
+            Subuser(
+              id: uid,
+              userName: name,
+              publicKey: null,
+              privateKey: privateKey,
+              image: image,
+            )
+          );
+        }
+        LocalDataSave.saveChatsData();
+      } else {
+        MessageHandler.showAlertDialog(context, '${goin.join(" ")}');
+      }
+    }
+
+    return true;
+  }
+
+  static ChatData? getNowChat() {
+    try {
+      return _chats.chats.firstWhere(
+        (chat) => chat.chatId == nowChat,
+      );
+    } catch (e) {
+      return null;
+    }
   }
 }
 
@@ -130,7 +277,10 @@ class ChatData {
   late int nowQueueId;
   int? yourUserId;
   List<(String, int)> queues;
-  List<Subuser> subusers; // Новый список подюзеров
+  List<Subuser> subusers;
+  List<Map<String, dynamic>> messages;
+  int lastProcessedQueueIndex;
+  int lastChangeId;
 
   ChatData({
     required this.chatName,
@@ -140,22 +290,31 @@ class ChatData {
     required this.chatIp,
     this.yourUserId,
     this.queues = const [],
-    this.subusers = const [], // Инициализация пустым списком
+    this.subusers = const [],
+    this.messages = const [],
+    this.lastProcessedQueueIndex = 0,
+    this.lastChangeId = -1,
   });
 
   // Преобразование в JSON
   Future<Map<String, dynamic>> toJson() async {
-    return {
+    Map<String, dynamic> json = {
       'chatName': chatName,
       'chatId': chatId,
       'password': password,
       'nowQueueId': nowQueueId,
       'chatIp': chatIp,
       'yourUserId': yourUserId,
-      'queues': await Future.wait(
-          queues.map((queue) async => {'name': queue.$1, 'id': queue.$2})),
-      'subusers': await Future.wait(subusers.map((subuser) => subuser.toJson())),
+      'queues': queues.map((queue) => {'name': queue.$1, 'id': queue.$2}).toList(),
+      'messages': messages,
+      'lastProcessedQueueIndex': lastProcessedQueueIndex,
+      'lastChangeId': lastChangeId,
     };
+
+    // Асинхронно обрабатываем subusers
+    json['subusers'] = await Future.wait(subusers.map((subuser) => subuser.toJson()));
+    
+    return json;
   }
 
   // Преобразование из JSON
@@ -173,6 +332,11 @@ class ChatData {
       subusers: (json['subusers'] as List<dynamic>? ?? [])
           .map((subuserJson) => Subuser.fromJson(subuserJson as Map<String, dynamic>))
           .toList(),
+      messages: (json['messages'] as List<dynamic>? ?? [])
+          .map((messageJson) => messageJson as Map<String, dynamic>)
+          .toList(),
+      lastProcessedQueueIndex: json['lastProcessedQueueIndex'] as int? ?? 0,
+      lastChangeId: json['lastChangeId'] as int? ?? -1,
     );
   }
 
