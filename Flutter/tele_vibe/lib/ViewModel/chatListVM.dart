@@ -50,9 +50,27 @@ class ChatListVM {
       DateTime now = DateTime.now();
       String formattedTime = 
           '${now.year}:${now.month.toString().padLeft(2, '0')}:${now.day.toString().padLeft(2, '0')}:${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
-    
-      NetServerController().sendMessage("+", '$formattedTime $message', Chats.nowChat, subuser.id, subuser.publicKey!);
-      return true;
+      
+      // Если это изображение
+      if (message.startsWith('<img>') && message.endsWith('</img>')) {
+        // Извлекаем base64 строку
+        String base64Str = message.substring(5, message.length - 6);
+        
+        // Шифруем маркеры начала и конца
+        String encryptedStart = CryptController.encryptRSA("START", subuser.publicKey!);
+        String encryptedEnd = CryptController.encryptRSA("END", subuser.publicKey!);
+        
+        // Формируем сообщение: зашифрованный старт | base64 изображения | зашифрованный конец
+        String fullMessage = '$encryptedStart|$base64Str|$encryptedEnd';
+        
+        // Отправляем сообщение
+        String result = await NetServerController().sendMessage("+", '$formattedTime <img>$fullMessage</img>', Chats.nowChat, subuser.id, subuser.publicKey!);
+        return result == "true";
+      } else {
+        // Обычное текстовое сообщение
+        String result = await NetServerController().sendMessage("+", '$formattedTime $message', Chats.nowChat, subuser.id, subuser.publicKey!);
+        return result == "true";
+      }
     }
     print("subuser is not available");
     return false;

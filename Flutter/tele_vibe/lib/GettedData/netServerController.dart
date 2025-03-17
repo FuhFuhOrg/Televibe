@@ -228,9 +228,9 @@ class NetServerController with WidgetsBindingObserver {
     });
 
     // Кодируем сообщение в base64
-    String encodedMsg = CryptController.encryptRSA("$preference $msg", publicKey);
+    String encodedMsg = base64Encode(utf8.encode(CryptController.encryptRSA("$preference $msg", publicKey)));
 
-    // Формируем запрос в нужном формате: данные + id пользователя
+    // Формируем запрос в нужном формате: requestId chatId idSender encodedMsg
     sendRequest(requestId, "SendMessage", "$chatId $idSender $encodedMsg");
 
     return completer.future;

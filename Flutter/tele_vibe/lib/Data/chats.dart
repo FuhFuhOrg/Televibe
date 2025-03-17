@@ -151,7 +151,10 @@ class Chats {
         RSAPrivateKey privateKey = cd.subusers.firstWhere(
           (subuser) => subuser.id == commandUserCode.$2
         ).privateKey;
-        command = CryptController.decryptRSA(commandUserCode.$1, privateKey);
+        // Декодируем base64 и UTF-8 перед RSA расшифровкой
+        Uint8List decodedBytes = base64Decode(commandUserCode.$1);
+        String decodedString = utf8.decode(decodedBytes);
+        command = CryptController.decryptRSA(decodedString, privateKey);
       }
       catch(e) {
         try {
@@ -159,7 +162,10 @@ class Chats {
           RSAPrivateKey privateKey = cd.subusers.firstWhere(
             (subuser) => subuser.id == commandUserCode.$2
           ).privateKey;
-          command = CryptController.decryptRSA(commandUserCode.$1, privateKey);
+          // Декодируем base64 и UTF-8 перед RSA расшифровкой
+          Uint8List decodedBytes = base64Decode(commandUserCode.$1);
+          String decodedString = utf8.decode(decodedBytes);
+          command = CryptController.decryptRSA(decodedString, privateKey);
         }
         catch(e) {
           print(e);
@@ -173,13 +179,59 @@ class Chats {
         String timePart = parts[0];
         String messageText = command.substring(timePart.length).trim();
 
-        cd.messages.add({
-          'text': messageText,
-          'isMe': commandUserCode.$2 == cd.yourUserId,
-          'userName': commandUserCode.$2,
-          'time': timePart,
-          'id': i,
-        });
+        // Проверяем, является ли сообщение изображением
+        if (messageText.startsWith('<img>') && messageText.endsWith('</img>')) {
+          // Извлекаем содержимое
+          String content = messageText.substring(5, messageText.length - 6);
+          
+          try {
+            // Разделяем на три части: зашифрованное начало, base64 изображения, зашифрованный конец
+            List<String> parts = content.split('|');
+            if (parts.length != 3) {
+              throw Exception('Неверный формат зашифрованного изображения');
+            }
+            
+            // Расшифровываем начало и конец
+            RSAPrivateKey privateKey = cd.subusers.firstWhere(
+              (subuser) => subuser.id == commandUserCode.$2
+            ).privateKey;
+            
+            String startMarker = CryptController.decryptRSA(parts[0], privateKey);
+            String endMarker = CryptController.decryptRSA(parts[2], privateKey);
+            
+            // Проверяем маркеры
+            if (startMarker != "START" || endMarker != "END") {
+              throw Exception('Некорректные маркеры изображения');
+            }
+            
+            // Центральная часть - само изображение в base64
+            String base64Image = parts[1];
+            
+            cd.messages ??= [];
+            cd.messages.add({
+              'text': '[Изображение]',
+              'isMe': commandUserCode.$2 == cd.yourUserId,
+              'userName': commandUserCode.$2,
+              'time': timePart,
+              'id': i,
+              'isImage': true,
+              'imageData': base64Image,
+            });
+          } catch (e) {
+            print('Ошибка при расшифровке изображения: $e');
+            continue;
+          }
+        } else {
+          cd.messages ??= [];
+          cd.messages.add({
+            'text': messageText,
+            'isMe': commandUserCode.$2 == cd.yourUserId,
+            'userName': commandUserCode.$2,
+            'time': timePart,
+            'id': i,
+            'isImage': false,
+          });
+        }
 
         _sendNotification(cd.chatName, 'Новое сообщение', isNewMessage: true);
       } else if (command.startsWith('*')) {
@@ -291,10 +343,10 @@ class ChatData {
     this.yourUserId,
     this.queues = const [],
     this.subusers = const [],
-    this.messages = const [],
+    List<Map<String, dynamic>>? messages,
     this.lastProcessedQueueIndex = 0,
     this.lastChangeId = -1,
-  });
+  }) : messages = messages ?? [];
 
   // Преобразование в JSON
   Future<Map<String, dynamic>> toJson() async {

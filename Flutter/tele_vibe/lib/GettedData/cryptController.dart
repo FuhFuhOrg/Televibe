@@ -80,17 +80,32 @@ class CryptController {
 
   // Шифрование текста с использованием RSA (подписывание приватным ключом)
   static String encryptRSA(String text, RSAPublicKey publicKey) {
-    final encrypter = encrypt.Encrypter(encrypt.RSA(publicKey: publicKey));
-    final encrypted = encrypter.encrypt(text);
-    return encrypted.base64;
+    final int maxSize = (publicKey.modulus!.bitLength / 8).floor() - 11;
+    final List<String> chunks = [];
+    
+    for (var i = 0; i < text.length; i += maxSize) {
+      final chunk = text.substring(i, i + maxSize > text.length ? text.length : i + maxSize);
+      final encrypter = encrypt.Encrypter(encrypt.RSA(publicKey: publicKey));
+      final encrypted = encrypter.encrypt(chunk);
+      chunks.add(encrypted.base64);
+    }
+    
+    return chunks.join('|');
   }
 
   // Расшифровка текста с использованием RSA (любой с публичным ключом может расшифровать)
   static String decryptRSA(String encrypted, RSAPrivateKey privateKey) {
-    final encryptedBytes = base64.decode(encrypted);
-    final encrypter = encrypt.Encrypter(encrypt.RSA(privateKey: privateKey));
-    final decrypted = encrypter.decrypt(encrypt.Encrypted(encryptedBytes));
-    return decrypted;
+    final chunks = encrypted.split('|');
+    final List<String> decryptedChunks = [];
+    
+    for (var chunk in chunks) {
+      final encryptedBytes = base64.decode(chunk);
+      final encrypter = encrypt.Encrypter(encrypt.RSA(privateKey: privateKey));
+      final decrypted = encrypter.decrypt(encrypt.Encrypted(encryptedBytes));
+      decryptedChunks.add(decrypted);
+    }
+    
+    return decryptedChunks.join();
   }
   
   static String xorEncryptWithExtendedKey(String text, String key) {

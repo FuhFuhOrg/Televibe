@@ -1,13 +1,15 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tele_vibe/Data/chats.dart';
 import 'package:tele_vibe/ViewModel/chatListVM.dart';
+import 'package:image/image.dart' as img;
 import 'chatInfo.dart';
 import 'UnderWidgets/messageBubble.dart';
 import 'UnderWidgets/fileUtils.dart';
 import 'searchMessagesScreen.dart';
 import 'package:tele_vibe/GettedData/netServerController.dart';
-import 'dart:convert';
 import 'dart:async';
 import 'package:tele_vibe/ViewModel/chatUpdateService.dart';
 
@@ -149,6 +151,8 @@ class _ChatListState extends State<ChatListPage> {
                           time: entry['time'],
                           showAvatar: !entry['isMe'] && isLastMessageFromUser,
                           showUserName: !entry['isMe'],
+                          isImage: entry['isImage'],
+                          imageData: entry['imageData'],
                         ),
                       );
                     },
@@ -230,12 +234,43 @@ class _ChatListState extends State<ChatListPage> {
               final pickedImage = await FileUtils.pickImage();
 
               if (pickedImage != null) {
-                setState(() {
-                  // Логика сохранения пути к изображению
-                  // Например, добавьте поле _profileImagePath
-                  _profileImagePath = pickedImage.path;
-
-                });
+                try {
+                  // Читаем файл как байты
+                  final bytes = await pickedImage.readAsBytes();
+                  
+                  // Декодируем изображение
+                  final image = img.decodeImage(bytes);
+                  if (image == null) throw Exception('Не удалось декодировать изображение');
+                  
+                  // Сжимаем изображение
+                  final resized = img.copyResize(image, width: 800); // уменьшаем ширину до 800px
+                  final compressed = img.encodeJpg(resized, quality: 10); // сжимаем с качеством 10%
+                  
+                  // Конвертируем в base64
+                  final base64Image = base64Encode(compressed);
+                  
+                  // Формируем сообщение с изображением
+                  final message = '<img>$base64Image</img>';
+                  
+                  // Отправляем сообщение
+                  bool success = await _chatListVM.sendMessage(message);
+                  if (success) {
+                    _textController.clear();
+                    _focusNode.requestFocus();
+                    _scrollToBottom();
+                    await _refreshChat();
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Ошибка при отправке изображения: $e',
+                        style: const TextStyle(color: Colors.white)
+                      ),
+                      backgroundColor: const Color(0xFF222222)
+                    ),
+                  );
+                }
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -244,7 +279,7 @@ class _ChatListState extends State<ChatListPage> {
                       style: TextStyle(color: Colors.white)
                     ),
                     backgroundColor: Color(0xFF222222)
-                  ), // Если изображение не выбрано
+                  ),
                 );
               }
             },
@@ -427,6 +462,8 @@ class MessageBubble extends StatelessWidget {
   final String time;
   final bool showAvatar;
   final bool showUserName;
+  final bool isImage;
+  final String? imageData;
 
   const MessageBubble({super.key, 
     required this.text,
@@ -435,6 +472,8 @@ class MessageBubble extends StatelessWidget {
     required this.time,
     required this.showAvatar,
     required this.showUserName,
+    this.isImage = false,
+    this.imageData,
   });
 
   @override
@@ -461,7 +500,7 @@ class MessageBubble extends StatelessWidget {
             margin: const EdgeInsets.symmetric(vertical: 5.0),
             padding: const EdgeInsets.all(10.0),
             decoration: BoxDecoration(
-              color: isMe ? const Color(0xFF222222) : const Color(0xFF222222), // Также изменить. 
+              color: isMe ? const Color(0xFF222222) : const Color(0xFF222222),
               borderRadius: BorderRadius.only(
                 topLeft: const Radius.circular(12.0),
                 topRight: const Radius.circular(12.0),
@@ -479,13 +518,24 @@ class MessageBubble extends StatelessWidget {
                       color: Colors.white70,
                       fontSize: 12.0),
                   ),
-                Text(
-                  text,
-                  style: TextStyle(
-                    color: isMe ? Colors.white : Colors.white, // Убрать позже
-                    fontSize: 16.0,
+                if (isImage && imageData != null)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Image.memory(
+                      base64.decode(imageData!),
+                      fit: BoxFit.cover,
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: MediaQuery.of(context).size.width * 0.5,
+                    ),
+                  )
+                else
+                  Text(
+                    text,
+                    style: TextStyle(
+                      color: isMe ? Colors.white : Colors.white,
+                      fontSize: 16.0,
+                    ),
                   ),
-                ),
                 const SizedBox(height: 5.0),
                 Align(
                   alignment: Alignment.bottomRight,
