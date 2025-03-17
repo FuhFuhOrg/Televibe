@@ -34,4 +34,41 @@ class LocalDataSave {
       return null;
     }
   }
+
+  // Сохранение учетных данных
+  static Future<void> saveCredentials(String login, String password) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('savedLogin', login);
+      await prefs.setString('savedPassword', password);
+      print('Учетные данные сохранены');
+    } catch (e) {
+      print('Ошибка при сохранении учетных данных: $e');
+    }
+  }
+
+  // Загрузка учетных данных
+  static Future<(String?, String?)> loadCredentials() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final String? login = prefs.getString('savedLogin');
+      final String? password = prefs.getString('savedPassword');
+      return (login, password);
+    } catch (e) {
+      print('Ошибка при загрузке учетных данных: $e');
+      return (null, null);
+    }
+  }
+
+  // Удаление учетных данных
+  static Future<void> clearCredentials() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('savedLogin');
+      await prefs.remove('savedPassword');
+      print('Учетные данные удалены');
+    } catch (e) {
+      print('Ошибка при удалении учетных данных: $e');
+    }
+  }
 }
