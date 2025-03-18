@@ -1,8 +1,9 @@
 // chat_update_service.dart
 import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:tele_vibe/Data/chats.dart';
 import 'package:tele_vibe/GettedData/netServerController.dart';
-import 'package:flutter/material.dart';
 import 'package:tele_vibe/Widgets/chatList.dart';
 
 class ChatUpdateService {
@@ -33,7 +34,7 @@ class ChatUpdateService {
             
             // Обрабатываем новые сообщения
             final updatedQueue = await Chats.queueToFiltred(chat.queues, context);
-            if (updatedQueue.isNotEmpty) {
+            if (updatedQueue.isNotEmpty && updatedQueue.length !=  ChatListPage.currentMessages.length) {
               // Обновляем UI через setState или другой механизм обновления
               if (context.mounted) {
                 Navigator.of(context).pushReplacement(

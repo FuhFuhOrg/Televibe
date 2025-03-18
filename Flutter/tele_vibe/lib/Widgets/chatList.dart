@@ -1,20 +1,20 @@
+import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image/image.dart' as img;
 import 'package:tele_vibe/Data/chats.dart';
 import 'package:tele_vibe/ViewModel/chatListVM.dart';
-import 'package:image/image.dart' as img;
-import 'chatInfo.dart';
-import 'UnderWidgets/messageBubble.dart';
-import 'UnderWidgets/fileUtils.dart';
-import 'searchMessagesScreen.dart';
-import 'package:tele_vibe/GettedData/netServerController.dart';
-import 'dart:async';
 import 'package:tele_vibe/ViewModel/chatUpdateService.dart';
+
+import 'UnderWidgets/fileUtils.dart';
+import 'chatInfo.dart';
+import 'searchMessagesScreen.dart';
 
 
 class ChatListPage extends StatefulWidget {
+  static List<Map<String, dynamic>> currentMessages = [];
   const ChatListPage({super.key});
 
   @override
@@ -52,6 +52,7 @@ class _ChatListState extends State<ChatListPage> {
     List<Map<String, dynamic>> newEntries = await Chats.queueToFiltred(updatedQueue, context);
     setState(() {
       filteredEntries = newEntries;
+      ChatListPage.currentMessages = newEntries;
     });
   }
 
@@ -243,8 +244,8 @@ class _ChatListState extends State<ChatListPage> {
                   if (image == null) throw Exception('Не удалось декодировать изображение');
                   
                   // Сжимаем изображение
-                  final resized = img.copyResize(image, width: 800); // уменьшаем ширину до 800px
-                  final compressed = img.encodeJpg(resized, quality: 10); // сжимаем с качеством 10%
+                  //final resized = img.copyResize(image, width: 800); // уменьшаем ширину до 800px
+                  final compressed = img.encodeJpg(image, quality: 100); // сжимаем с качеством 10%
                   
                   // Конвертируем в base64
                   final base64Image = base64Encode(compressed);
