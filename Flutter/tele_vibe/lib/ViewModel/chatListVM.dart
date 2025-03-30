@@ -44,7 +44,7 @@ class ChatListVM {
     return true;
   }
 
-  Future<bool> sendMessage(String message) async {
+  Future<bool> sendMessage(String message) async{
     Subuser? subuser = Chats.getNowSubuser();
     if(subuser != null && subuser.publicKey != null){
       DateTime now = DateTime.now();

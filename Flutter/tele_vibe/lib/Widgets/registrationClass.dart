@@ -101,7 +101,7 @@ class _RegisterClassState extends State<RegistrationPage> {
                     suffix: IconButton(
                       icon: Icon(
                         _obscureTextPassword ? Icons.visibility : Icons.visibility_off,
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                       onPressed: () {
                         setState(() {

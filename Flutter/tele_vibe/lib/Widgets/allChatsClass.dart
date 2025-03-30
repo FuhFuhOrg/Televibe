@@ -25,50 +25,9 @@ class _AllChatsClassState extends State<AllChatsPage> {
   late StreamSubscription subscriptionChats;
   ChatCollection chatsData = ChatCollection();
 
-
-
-
-
-
-  final List<ChatData> _initialChats = [
-    ChatData(
-      chatName: 'Chat 1',
-      chatId: '123abc',
-      password: 'password1',
-      nowQueueId: 1,
-      chatIp: '',
-      yourUserId: null,
-    ),
-    ChatData(
-      chatName: 'Chat 2',
-      chatId: '456def',
-      password: 'password2',
-      nowQueueId: 2,
-      chatIp: '',
-      yourUserId: null,
-    ),
-    ChatData(
-      chatName: 'Chat 3',
-      chatId: '789ghi',
-      password: 'password3',
-      nowQueueId: 3,
-      chatIp: '',
-      yourUserId: null,
-    ),
-    ChatData(
-      chatName: 'Chat 4',
-      chatId: '101jkl',
-      password: 'password4',
-      nowQueueId: 4,
-      chatIp: '',
-      yourUserId: null,
-    ),
-  ];
-
   void refresh_() {
     setState(() {
       if (Chats.getValue().chats.isEmpty) {
-        chatsData = ChatCollection(chats: _initialChats);
       } else {
         chatsData = Chats.getValue();
       }
@@ -172,13 +131,15 @@ class _AllChatsClassState extends State<AllChatsPage> {
         )
       : const Center(
           child: Text(
-            'You don\'t have chats(',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-            ),
+              'У вас пока нет чатов',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
           ),
-        );
+      );
   }
 
   void _showParticipantOptions(BuildContext context, int index) {
