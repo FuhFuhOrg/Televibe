@@ -29,10 +29,6 @@ class otherManVM {
     return Chats.getChatById(Chats.nowChat).subusers.firstWhere((user) => user.id == userID).image?? null; 
   }
 
-  String getTelephoneNumber(int? userID) { 
-    return "+7 777 777 77 77 типо телефон Nyaaaa";
-  }
-
   String getInfoAboutMe(int? userID) { 
     return "Nyaaaaaaaaaaa";
   }

@@ -199,7 +199,7 @@ class _ChatInfoState extends State<ChatInfo>{
                             style: const TextStyle(color: Colors.white),
                           ),
                           subtitle: const Text(
-                            'Чурка',
+                            'Anon',
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
