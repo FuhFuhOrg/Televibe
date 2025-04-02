@@ -155,6 +155,7 @@ class _AllChatsClassState extends State<AllChatsPage> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
+              /*
               ListTile(
                 leading: const Icon(Icons.copy, color: Colors.white),
                 title: const Text(
@@ -171,6 +172,8 @@ class _AllChatsClassState extends State<AllChatsPage> {
                   });
                 },
               ),
+              */
+              /*
               ListTile(
                 leading: const Icon(Icons.copy, color: Colors.white),
                 title: const Text(
@@ -187,6 +190,7 @@ class _AllChatsClassState extends State<AllChatsPage> {
                   });
                 },
               ),
+              */
               ListTile(
                 leading: const Icon(Icons.edit, color: Colors.white),
                 title: const Text(

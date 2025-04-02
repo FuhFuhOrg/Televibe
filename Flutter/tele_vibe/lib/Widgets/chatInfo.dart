@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tele_vibe/GettedData/MessageHandler.dart' as myHandler;
+
 import 'package:tele_vibe/ViewModel/ChatInfoVM.dart';
 
 import 'UnderWidgets/fileUtils.dart';
 import 'profileScreen.dart'; // Экран профиля
 import 'profileScreenOther.dart'; // Экран профиля
 import 'renameTextField.dart';
+import 'UnderWidgets/fileUtils.dart';
+import 'package:flutter/services.dart';
+import 'package:tele_vibe/Widgets/allChatsClass.dart';
+
 
 class ChatInfo extends StatefulWidget {
   const ChatInfo({super.key, required this.initialGroupName});
@@ -281,6 +286,7 @@ void _showProfileOptions(BuildContext context) {
     context: context,
     position: position,
     items: <PopupMenuEntry>[
+      /*
       PopupMenuItem(
         child: ListTile(
           leading: const Icon(Icons.photo_camera, color: Colors.white),
@@ -307,6 +313,7 @@ void _showProfileOptions(BuildContext context) {
           },
         ),
       ),
+      */
       PopupMenuItem(
         child: ListTile(
           leading: const Icon(Icons.delete, color: Colors.white),
@@ -326,6 +333,12 @@ void _showProfileOptions(BuildContext context) {
                   backgroundColor: Color(0xFF222222),
                 ),
               );
+
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const AllChatsPage()),
+                (route) => false,
+        );
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -341,6 +354,7 @@ void _showProfileOptions(BuildContext context) {
           },
         ),
       ),
+      /*
       PopupMenuItem(
         child: ListTile(
           leading: const Icon(Icons.mood_bad_rounded, color: Colors.white),
@@ -351,6 +365,7 @@ void _showProfileOptions(BuildContext context) {
           },
         ),
       ),
+      */
     ],
     color: Colors.black, // Фон меню
     shape: RoundedRectangleBorder(
