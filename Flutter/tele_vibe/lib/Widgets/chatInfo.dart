@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tele_vibe/GettedData/MessageHandler.dart' as myHandler;
-
 import 'package:tele_vibe/ViewModel/ChatInfoVM.dart';
+import 'package:tele_vibe/Widgets/allChatsClass.dart';
 
-import 'UnderWidgets/fileUtils.dart';
 import 'profileScreen.dart'; // Экран профиля
 import 'profileScreenOther.dart'; // Экран профиля
 import 'renameTextField.dart';
-import 'UnderWidgets/fileUtils.dart';
-import 'package:flutter/services.dart';
-import 'package:tele_vibe/Widgets/allChatsClass.dart';
 
 
 class ChatInfo extends StatefulWidget {
@@ -192,8 +188,8 @@ class _ChatInfoState extends State<ChatInfo>{
                         },
                         child: ListTile(
                           leading: CircleAvatar(
-                            backgroundImage: subuser.GetImage() is Image
-                                ? (subuser.GetImage() as Image).image // Получаем ImageProvider
+                            backgroundImage: subuser.image is Image
+                                ? (subuser.image as Image).image // Получаем ImageProvider
                                 : const NetworkImage(
                                     'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png',
                                   ),
