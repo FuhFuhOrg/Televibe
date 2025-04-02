@@ -115,7 +115,8 @@ class _SettingsState extends State<Settings> {
           ListTile(
             title: const Text('Выйти из приложения', style: TextStyle(color: Colors.white)),
             onTap: () {
-              _registrationVM.navigateToLoginPage(context); // просто вызываю метод navigateToLoginPage
+              Navigator.pop(context);
+              //_registrationVM.navigateToLoginPage(context); // просто вызываю метод navigateToLoginPage
             },
           ),
         ],

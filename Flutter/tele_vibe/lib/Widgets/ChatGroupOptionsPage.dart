@@ -208,6 +208,7 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
                 obscureText: true,
               ),
               // Текстовое поле для ввода пароля
+              /*
               TextField(
                 cursorColor: Colors.white,
                 controller: _chatPasswordController,
@@ -217,7 +218,7 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
                   });
                 },
                 decoration: const InputDecoration(
-                  labelText: "ИЛЮША БЛЯДЬ НЕ ТРОГАЙ",
+                  labelText: "пароль",
                   labelStyle: TextStyle(color: Colors.white),
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.white),  // Белая линия при фокусе
@@ -230,6 +231,7 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
                 style: const TextStyle(color: Colors.white),
                 obscureText: true,
               ),
+              */
             ]
           ],
         ),

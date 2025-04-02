@@ -62,7 +62,7 @@ class _ChatListState extends State<ChatListPage> {
 
     _refreshChat();
 
-    _chatRefreshTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    _chatRefreshTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _refreshChat();
     });
     
