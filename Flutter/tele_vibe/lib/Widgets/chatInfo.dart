@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:tele_vibe/ViewModel/ChatInfoVM.dart';
-import 'profileScreen.dart'; // Экран профиля
-import 'package:tele_vibe/ViewModel/chatListVM.dart';
+import 'package:flutter/services.dart';
 import 'package:tele_vibe/GettedData/MessageHandler.dart' as myHandler;
 import 'package:tele_vibe/ViewModel/ChatInfoVM.dart';
-import 'profileScreenOther.dart'; // Экран профиля
-import 'package:tele_vibe/Data/chats.dart';
-import 'addParticipantScreen.dart';
-import 'renameTextField.dart';
+
 import 'UnderWidgets/fileUtils.dart';
-import 'package:flutter/services.dart';
+import 'profileScreen.dart'; // Экран профиля
+import 'profileScreenOther.dart'; // Экран профиля
+import 'renameTextField.dart';
 
 class ChatInfo extends StatefulWidget {
   const ChatInfo({super.key, required this.initialGroupName});
@@ -181,7 +178,7 @@ class _ChatInfoState extends State<ChatInfo>{
                             MaterialPageRoute(
                               builder: (context) => subuser.userName == "YOU" // Ваще не надежно будто, но что поделать
                                 ? ProfileScreen(nickname: subuser.userName)
-                                : ProfileScreenOther(nickname: subuser.userName, userID: subuser.id,),
+                                : ProfileScreenOther(nickname: subuser.userName, userID: subuser.id, image: subuser.image,),
                             ),
                           );
                         },
@@ -189,11 +186,14 @@ class _ChatInfoState extends State<ChatInfo>{
                           _showParticipantOptions(context, index);
                         },
                         child: ListTile(
-                          leading: const CircleAvatar(
-                            backgroundImage: NetworkImage(
-                              'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png',
-                            ), // Укажите URL фотографии участника
+                          leading: CircleAvatar(
+                            backgroundImage: subuser.GetImage() is Image
+                                ? (subuser.GetImage() as Image).image // Получаем ImageProvider
+                                : const NetworkImage(
+                                    'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png',
+                                  ),
                           ),
+
                           title: Text(
                             subuser.userName, // Выводим никнейм
                             style: const TextStyle(color: Colors.white),
@@ -203,6 +203,7 @@ class _ChatInfoState extends State<ChatInfo>{
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
+
                       );
                     }
 

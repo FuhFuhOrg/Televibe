@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'renameTextField.dart';
 import 'package:flutter/services.dart';
-import 'UnderWidgets/fileUtils.dart';
-import 'package:tele_vibe/ViewModel/otherManVM.dart';
 import 'package:tele_vibe/GettedData/MessageHandler.dart' as myHandler;
+import 'package:tele_vibe/ViewModel/otherManVM.dart';
+
+import 'renameTextField.dart';
 
 class ProfileScreenOther extends StatefulWidget {
   final String nickname;
   final int userID;
+  final Image? image;
 
-  const ProfileScreenOther({super.key, required this.nickname, required this.userID});
+  const ProfileScreenOther({super.key, required this.nickname, required this.userID, required this.image});
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -22,6 +23,7 @@ class _ProfileScreenState extends State<ProfileScreenOther> {
   String _username = 'Введите имя пользователя';
   String _about = 'О себе';
   String? _profileImagePath;
+  Image? _image;
   final otherManVM _chatListVM = otherManVM();
   
   _ProfileScreenState() : _nickname = '';
@@ -31,6 +33,7 @@ class _ProfileScreenState extends State<ProfileScreenOther> {
     super.initState();
     _nickname = widget.nickname;
     _userID = widget.userID; // Инициализируем userID из widget
+    _image = widget.image;
   }
 
   // Метод для перехода на экран изменения текста
@@ -61,9 +64,13 @@ class _ProfileScreenState extends State<ProfileScreenOther> {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.network(
-                    'https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg',
-                    fit: BoxFit.cover,
+                  CircleAvatar(
+                    radius: 50, // Укажи нужный размер
+                    backgroundImage: _image is Image
+                        ? (_image as Image).image // Получаем ImageProvider
+                        : const NetworkImage(
+                            'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png',
+                          ),
                   ),
                   Align(
                     alignment: Alignment.bottomLeft,
@@ -80,6 +87,7 @@ class _ProfileScreenState extends State<ProfileScreenOther> {
                     ),
                   ),
                 ],
+
               ),
               collapseMode: CollapseMode.parallax,
             ),
