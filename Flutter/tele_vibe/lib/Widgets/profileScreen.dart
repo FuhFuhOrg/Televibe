@@ -1,12 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'renameTextField.dart';
 import 'package:flutter/services.dart';
-import 'UnderWidgets/fileUtils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tele_vibe/Data/user.dart';
 import 'package:tele_vibe/GettedData/MessageHandler.dart' as myHandler;
 import 'package:tele_vibe/ViewModel/changeVeluesInProfileScreenVM.dart';
-import 'package:tele_vibe/Data/user.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:io';
+
+import 'UnderWidgets/fileUtils.dart';
+import 'renameTextField.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String nickname;
@@ -38,6 +40,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _nickname = prefs.getString('nickname') ?? (Anon.anonIdGet?.toString() ?? 'Unknown');
     _username = prefs.getString('username') ?? Anon.username;
     _profileImagePath = prefs.getString('profileImagePath');
+    Anon.image = Image.file(
+        File(_profileImagePath!),
+        fit: BoxFit.cover,
+      );
   }
 
   // Сохраняем данные профиля
@@ -73,10 +79,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         fit: BoxFit.cover,
       );
     } else {
-      return Image.network(
-        'https://upload.wikimedia.org/wikipedia/commons/a/a8/Sample_Network.jpg',
-        fit: BoxFit.cover,
-      );
+      return Anon.image;
     }
   }
 
