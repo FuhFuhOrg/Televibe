@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:tele_vibe/GettedData/MessageHandler.dart' as myHandler;
 import 'package:tele_vibe/ViewModel/ChatInfoVM.dart';
-import 'profileScreen.dart'; // Экран профиля
-import 'package:tele_vibe/ViewModel/chatListVM.dart';
-import 'package:tele_vibe/ViewModel/ChatInfoVM.dart';
-import 'profileScreenOther.dart'; // Экран профиля
-import 'package:tele_vibe/Data/chats.dart';
-import 'addParticipantScreen.dart';
-import 'renameTextField.dart';
+
 import 'UnderWidgets/fileUtils.dart';
+import 'profileScreen.dart'; // Экран профиля
+import 'profileScreenOther.dart'; // Экран профиля
+import 'renameTextField.dart';
 
 class ChatInfo extends StatefulWidget {
   const ChatInfo({super.key, required this.initialGroupName});
@@ -22,6 +21,7 @@ class _ChatInfoState extends State<ChatInfo>{
   final ChatInfoVM _chatListVM = ChatInfoVM();
   late String _groupName;
   late int kUsers;
+  late String _chatId;
 
   @override
   void initState() {
@@ -29,6 +29,7 @@ class _ChatInfoState extends State<ChatInfo>{
     // Инициализация поля _groupName значением из конструктора
     _groupName = _chatListVM.getNameGroup();
     kUsers = _chatListVM.getCountUsers();
+    _chatId = _chatListVM.getChatId();
   }
 
   // Метод для перехода на экран изменения текста
@@ -128,6 +129,7 @@ class _ChatInfoState extends State<ChatInfo>{
             delegate: SliverChildListDelegate(
               <Widget>[
                 // Кнопка "Добавить участника"
+                /*
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ElevatedButton(
@@ -142,6 +144,21 @@ class _ChatInfoState extends State<ChatInfo>{
                       backgroundColor: const Color(0xFF222222),
                     ),
                     child: const Text('Добавить участников', style: TextStyle(color: Colors.white),),
+                  ),
+                ),
+                */
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 52.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: _chatId));
+                      myHandler.MessageHandler.showAlertDialog(context, 'Текст скопирован');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF222222),
+                    ),
+                    child: const Text("Скопировать ID чата", style: TextStyle(color: Colors.white)),
                   ),
                 ),
                 // Перечень участников группы
@@ -161,7 +178,7 @@ class _ChatInfoState extends State<ChatInfo>{
                             MaterialPageRoute(
                               builder: (context) => subuser.userName == "YOU" // Ваще не надежно будто, но что поделать
                                 ? ProfileScreen(nickname: subuser.userName)
-                                : ProfileScreenOther(nickname: subuser.userName),
+                                : ProfileScreenOther(nickname: subuser.userName, userID: subuser.id, image: subuser.image,),
                             ),
                           );
                         },
@@ -169,20 +186,24 @@ class _ChatInfoState extends State<ChatInfo>{
                           _showParticipantOptions(context, index);
                         },
                         child: ListTile(
-                          leading: const CircleAvatar(
-                            backgroundImage: NetworkImage(
-                              'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png',
-                            ), // Укажите URL фотографии участника
+                          leading: CircleAvatar(
+                            backgroundImage: subuser.GetImage() is Image
+                                ? (subuser.GetImage() as Image).image // Получаем ImageProvider
+                                : const NetworkImage(
+                                    'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png',
+                                  ),
                           ),
+
                           title: Text(
                             subuser.userName, // Выводим никнейм
                             style: const TextStyle(color: Colors.white),
                           ),
                           subtitle: const Text(
-                            'Чурка',
+                            'Anon',
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
+
                       );
                     }
 

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:tele_vibe/ViewModel/loginVM.dart';
 
@@ -18,6 +17,10 @@ class _LoginClassState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+    // Пытаемся выполнить автоматический вход
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loginVM.tryAutoLogin(context);
+    });
   }
 
   @override

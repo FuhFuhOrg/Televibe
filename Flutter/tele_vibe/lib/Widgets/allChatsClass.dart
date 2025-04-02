@@ -22,67 +22,30 @@ class _AllChatsClassState extends State<AllChatsPage> {
   bool _isSearching = false; // Флаг для отображения строки поиска
   final TextEditingController _searchController = TextEditingController(); // Контроллер для строки поиска
   final AllChatsVM _allChatsVM = AllChatsVM();
-  late final StreamSubscription subscriptionChats;
+  late StreamSubscription subscriptionChats;
   ChatCollection chatsData = ChatCollection();
 
+  void refresh_() {
+    setState(() {
+      if (Chats.getValue().chats.isEmpty) {
+      } else {
+        chatsData = Chats.getValue();
+      }
+    });
 
-
-
-
-
-  final List<ChatData> _initialChats = [
-    ChatData(
-      chatName: 'Chat 1',
-      chatId: '123abc',
-      password: 'password1',
-      nowQueueId: 1,
-      chatIp: '',
-      users: null,
-      yourUserId: null,
-    ),
-    ChatData(
-      chatName: 'Chat 2',
-      chatId: '456def',
-      password: 'password2',
-      nowQueueId: 2,
-      chatIp: '',
-      users: null,
-      yourUserId: null,
-    ),
-    ChatData(
-      chatName: 'Chat 3',
-      chatId: '789ghi',
-      password: 'password3',
-      nowQueueId: 3,
-      chatIp: '',
-      users: null,
-      yourUserId: null,
-    ),
-    ChatData(
-      chatName: 'Chat 4',
-      chatId: '101jkl',
-      password: 'password4',
-      nowQueueId: 4,
-      chatIp: '',
-      users: null,
-      yourUserId: null,
-    ),
-  ];
+    subscriptionChats = Chats.onValueChanged.listen((newValue) {
+      setState(() {
+        chatsData = newValue;
+      });
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     // Инициализируем chatsData начальными значениями
-    if(Chats.getValue().chats.isEmpty) {
-      chatsData = ChatCollection(chats: _initialChats);
-    }
-    else {
-      chatsData = Chats.getValue();
-    }
-    subscriptionChats = Chats.onValueChanged.listen((newValue) {
-      chatsData = newValue;
-      _getSelectedScreen();
-    });
+
+    refresh_();
   }
 
 
@@ -168,13 +131,15 @@ class _AllChatsClassState extends State<AllChatsPage> {
         )
       : const Center(
           child: Text(
-            'You don\'t have chats(',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-            ),
+              'У вас пока нет чатов',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
           ),
-        );
+      );
   }
 
   void _showParticipantOptions(BuildContext context, int index) {
@@ -193,11 +158,33 @@ class _AllChatsClassState extends State<AllChatsPage> {
               ListTile(
                 leading: const Icon(Icons.copy, color: Colors.white),
                 title: const Text(
-                  'Очистить историю',
+                  'Удалить чат',
                   style: TextStyle(color: Colors.white), 
                 ),
-                onTap: () {
+                onTap: () async {
+                  _allChatsVM.deleteChat(Chats.value.chats[index].chatId);
+
+                  await Future.delayed(const Duration(milliseconds: 200));
+                  
+                  setState(() {
+                    refresh_();
+                  });
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.copy, color: Colors.white),
+                title: const Text(
+                  'Удаление переписки',
+                  style: TextStyle(color: Colors.white), 
+                ),
+                onTap: () async {
                   _allChatsVM.clearChatHistory();
+
+                  await Future.delayed(const Duration(milliseconds: 200));
+                  
+                  setState(() {
+                    refresh_();
+                  });
                 },
               ),
               ListTile(
@@ -206,8 +193,14 @@ class _AllChatsClassState extends State<AllChatsPage> {
                   'Выйти из группы',
                   style: TextStyle(color: Colors.white),
                 ),
-                onTap: () {
-                  _allChatsVM.leaveGroup();
+                onTap: () async {
+                  _allChatsVM.leaveGroup(Chats.value.chats[index].chatId);
+
+                  await Future.delayed(const Duration(milliseconds: 200));
+                  
+                  setState(() {
+                    refresh_();
+                  });
                 },
               ),
             ],
@@ -254,7 +247,6 @@ class _AllChatsClassState extends State<AllChatsPage> {
                     icon: const Icon(Icons.search),
                     color: Colors.white,
                     onPressed: () {
-                      // Переход на новую активность
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const SearchScreen()),
@@ -292,11 +284,17 @@ class _AllChatsClassState extends State<AllChatsPage> {
         onTap: _onItemTapped,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const ChatGroupOptionsPage()),
           );
+
+          await Future.delayed(const Duration(milliseconds: 200));
+
+          setState(() {
+            refresh_();
+          });
         },
         backgroundColor: const Color(0xFF222222),
         child: const Icon(Icons.add, color: Colors.white,),

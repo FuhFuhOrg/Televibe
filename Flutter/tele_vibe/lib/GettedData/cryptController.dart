@@ -80,17 +80,32 @@ class CryptController {
 
   // Шифрование текста с использованием RSA (подписывание приватным ключом)
   static String encryptRSA(String text, RSAPublicKey publicKey) {
-    final encrypter = encrypt.Encrypter(encrypt.RSA(publicKey: publicKey));
-    final encrypted = encrypter.encrypt(text);
-    return encrypted.base64;
+    final int maxSize = (publicKey.modulus!.bitLength / 8).floor() - 11;
+    final List<String> chunks = [];
+    
+    for (var i = 0; i < text.length; i += maxSize) {
+      final chunk = text.substring(i, i + maxSize > text.length ? text.length : i + maxSize);
+      final encrypter = encrypt.Encrypter(encrypt.RSA(publicKey: publicKey));
+      final encrypted = encrypter.encrypt(chunk);
+      chunks.add(encrypted.base64);
+    }
+    
+    return chunks.join('|');
   }
 
   // Расшифровка текста с использованием RSA (любой с публичным ключом может расшифровать)
   static String decryptRSA(String encrypted, RSAPrivateKey privateKey) {
-    final encryptedBytes = base64.decode(encrypted);
-    final encrypter = encrypt.Encrypter(encrypt.RSA(privateKey: privateKey));
-    final decrypted = encrypter.decrypt(encrypt.Encrypted(encryptedBytes));
-    return decrypted;
+    final chunks = encrypted.split('|');
+    final List<String> decryptedChunks = [];
+    
+    for (var chunk in chunks) {
+      final encryptedBytes = base64.decode(chunk);
+      final encrypter = encrypt.Encrypter(encrypt.RSA(privateKey: privateKey));
+      final decrypted = encrypter.decrypt(encrypt.Encrypted(encryptedBytes));
+      decryptedChunks.add(decrypted);
+    }
+    
+    return decryptedChunks.join();
   }
   
   static String xorEncryptWithExtendedKey(String text, String key) {
@@ -132,7 +147,31 @@ class CryptController {
     BigInt? q = privateKey.q;
     BigInt? pubExp = privateKey.publicExponent;
     if(p != null && q != null && m != null && privExp != null && pubExp != null){
-      return ("${m.toString()} ${privExp.toString()} ${p.toString()} ${q.toString()} ${pubExp.toString()}");
+      List<BigInt> numbers = [
+        m,
+        privExp,
+        p,
+        q,
+        pubExp
+      ];
+
+      String result = "";
+      List<String> results = [];
+      //String result = numbers.map((e) => e.toString()).join('\n');  
+      for (BigInt kek in numbers){
+        results.add(kek.toString());
+      }
+
+      int suml = 0;
+      for (String res in results) {
+        suml += res.length;
+      }
+      print(suml);
+
+      result = results.join('\n');
+      print(result.length);
+
+      return result;
     }
     return "";
   }
@@ -152,7 +191,7 @@ class CryptController {
 
   // Декодирование приватного ключа из PEM
   static RSAPrivateKey decodePrivateKey(String pem) {
-    List<String> strBigInt = pem.split(" ");
+    List<String> strBigInt = pem.split("\n");
     List<BigInt> BigInts = [];
     for(String str in strBigInt){
       BigInts.add(BigInt.parse(str));

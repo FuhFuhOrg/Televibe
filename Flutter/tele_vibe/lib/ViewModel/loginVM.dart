@@ -16,6 +16,28 @@ class LoginVM {
     );
   }
 
+  // Проверка сохраненных учетных данных и автоматический вход
+  Future<bool> tryAutoLogin(BuildContext context) async {
+    var (login, password) = await LocalDataSave.loadCredentials();
+    if (login != null && password != null) {
+      print('Попытка автоматического входа: $login');
+      List<String> goin = await NetServerController().login(login, password);
+      
+      if (goin.isNotEmpty && goin[0] == "true") {
+        print('Автоматический вход успешен');
+        Anon.anonId = int.tryParse(goin[1]);
+        Anon.anonPassword = password;
+        _startChatsAddiction();
+        _navigateToAllChats(context);
+        return true;
+      } else {
+        print('Автоматический вход не удался');
+        await LocalDataSave.clearCredentials();
+      }
+    }
+    return false;
+  }
+
   void fakeLoginAccount(BuildContext context, 
   TextEditingController loginController, TextEditingController passwordController) {
     String login = loginController.text;
@@ -42,6 +64,9 @@ class LoginVM {
       if (goin != " " && goin != "") {
         print('Return Login ${goin}');
         if(goin[0] == "true") {
+          // Сохраняем учетные данные при успешном входе
+          LocalDataSave.saveCredentials(login, password);
+          
           Anon.anonId = int.tryParse(goin[1]);
           Anon.anonPassword = password;
           _startChatsAddiction();
@@ -61,7 +86,6 @@ class LoginVM {
         Chats.setValue(goin);
       }
     });
-
   }
 
   void _navigateToAllChats(BuildContext context){

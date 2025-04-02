@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.4.3 <4.0.0'
+  sdk: '>=3.4.3 <4.1.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -37,7 +37,10 @@ dependencies:
   intl: ^0.18.0
   pointycastle: ^3.9.1
   asn1lib: ^1.5.3
-  #file_picker: ^8.1.7  # Update to the latest version
+  flutter_local_notifications: ^19.0.0
+  timezone: ^0.10.0
+  file_picker: ^8.1.7  # Update to the latest version
+  image: ^4.1.7  # Добавляем пакет для обработки изображений
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +63,8 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/ppp.jpg
 
   # To add assets to your application, add an assets section, like this:
   # assets:
