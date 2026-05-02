@@ -1,30 +1,62 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:tele_vibe/main.dart';
+import 'package:flutter/material.dart';
+import 'package:tele_vibe/GettedData/pseudoChatApi.dart';
+import 'package:tele_vibe/Widgets/allChatsClass.dart';
+import 'package:tele_vibe/Widgets/loginClass.dart';
+import 'package:tele_vibe/l10n/generated/app_localizations.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('App opens login screen', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      _testApp(const LoginPage(enableAutoLogin: false)),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.byType(LoginPage), findsOneWidget);
+    expect(find.text('Televibe'), findsOneWidget);
+    expect(find.text('Open chats'), findsOneWidget);
   });
+
+  testWidgets('Conversation hub can open a chat without crashing',
+      (WidgetTester tester) async {
+    await PseudoChatApi.activate();
+
+    await tester.pumpWidget(
+      _testApp(const AllChatsPage()),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AllChatsPage), findsOneWidget);
+    expect(find.text('Conversation hub'), findsOneWidget);
+
+    await tester.tap(find.text('Anna Carter').last);
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Anna Carter'), findsOneWidget);
+    expect(find.text('Perfect, I will review it and leave notes in the file.'),
+        findsOneWidget);
+  });
+
+  testWidgets('Prepared chats open from login without crashing',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      _testApp(const LoginPage(enableAutoLogin: false)),
+    );
+
+    await tester.tap(find.text('Open chats'));
+    await tester.pump();
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(AllChatsPage), findsOneWidget);
+    expect(find.text('Conversation hub'), findsOneWidget);
+  });
+}
+
+Widget _testApp(Widget home) {
+  return MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    home: home,
+  );
 }

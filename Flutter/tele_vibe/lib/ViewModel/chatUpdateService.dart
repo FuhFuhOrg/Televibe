@@ -4,23 +4,32 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:tele_vibe/Data/chats.dart';
 import 'package:tele_vibe/GettedData/netServerController.dart';
+import 'package:tele_vibe/GettedData/pseudoChatApi.dart';
 import 'package:tele_vibe/Widgets/chatList.dart';
 
 class ChatUpdateService {
   final BuildContext context;
   final NetServerController _netServerController;
 
-  ChatUpdateService(this.context) : _netServerController = NetServerController();
+  ChatUpdateService(this.context)
+      : _netServerController = NetServerController();
 
   Future<void> updateQueue() async {
+    if (PseudoChatApi.isEnabled) return;
+
     try {
       final chat = Chats.getNowChat();
       if (chat == null) return;
 
       final lastChangeId = chat.lastChangeId;
-      final response = await _netServerController.getMessages(chat.chatId, lastChangeId);
-      
-      if (response != null && response.isNotEmpty) {
+      final response = await _netServerController
+          .getMessages(chat.chatId, lastChangeId)
+          .timeout(const Duration(seconds: 4), onTimeout: () {
+        debugPrint('Chat update request timed out');
+        return <String>[];
+      });
+
+      if (response.isNotEmpty) {
         final jsonString = response.join(' ');
         final jsonData = jsonDecode(jsonString);
         if (jsonData['status'] == 'success') {
@@ -28,43 +37,50 @@ class ChatUpdateService {
           if (messages.isNotEmpty) {
             final lastMessage = messages.last;
             final newLastChangeId = lastMessage['change_id'] as int;
-            
+
             // Обновляем очередь и сохраняем lastChangeId
             Chats.setNowChatQueue(chat.queues, newLastChangeId);
-            
+
             // Обрабатываем новые сообщения
-            final updatedQueue = await Chats.queueToFiltred(chat.queues, context);
-            if (updatedQueue.isNotEmpty && updatedQueue.length !=  ChatListPage.currentMessages.length) {
-              // Обновляем UI через setState или другой механизм обновления
-              if (context.mounted) {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (context) => const ChatListPage(),
-                  ),
-                );
-              }
-            }
+            if (!context.mounted) return;
+            await Chats.queueToFiltred(chat.queues, context)
+                .timeout(const Duration(seconds: 4), onTimeout: () {
+              debugPrint('Chat update processing timed out');
+              return ChatListPage.currentMessages;
+            });
+            Chats.setValue(Chats.getValue());
           }
         }
       }
     } catch (e) {
-      print('Error fetching updated queue: $e');
+      debugPrint('Error fetching updated queue: $e');
     }
   }
 
   static Future<List<(String, int)>> fetchUpdatedQueue(int queueId) async {
+    if (PseudoChatApi.isEnabled) return Chats.getNowChatQueue();
+
     List<(String, int)> queueChatNewMessages = [];
 
-    List<String>? newMessages = await NetServerController().getMessages(Chats.nowChat, queueId);
-    if (newMessages != null && newMessages.isNotEmpty) {
+    final newMessages = await NetServerController()
+        .getMessages(Chats.nowChat, queueId)
+        .timeout(const Duration(seconds: 4), onTimeout: () {
+      debugPrint('Message queue request timed out');
+      return <String>[];
+    });
+    if (newMessages.isNotEmpty) {
       List<(String, int)> newMessagesFix = [];
       for (int i = 0; i < newMessages.length; i++) {
         if (newMessages[i] == "[]") {
         } else if (newMessages[i][0] == "[") {
           newMessagesFix.add((newMessages[i], -1));
+        } else if (newMessagesFix.isNotEmpty) {
+          newMessagesFix[newMessagesFix.length - 1] = (
+            "${newMessagesFix[newMessagesFix.length - 1].$1} ${newMessages[i]}",
+            -1
+          );
         } else {
-          newMessagesFix[newMessagesFix.length - 1] =
-              (newMessagesFix[newMessagesFix.length - 1].$1 + " " + newMessages[i], -1);
+          debugPrint('Skipping malformed queue chunk: ${newMessages[i]}');
         }
       }
       queueChatNewMessages.addAll(newMessagesFix);
@@ -75,7 +91,8 @@ class ChatUpdateService {
         try {
           List<dynamic> decodedList = jsonDecode(jsonString.$1);
           List<Map<String, dynamic>> queueMap = [];
-          if (decodedList.isNotEmpty && decodedList[0] is Map<String, dynamic>) {
+          if (decodedList.isNotEmpty &&
+              decodedList[0] is Map<String, dynamic>) {
             queueMap.addAll(List<Map<String, dynamic>>.from(decodedList));
           }
           for (int i = 0; i < queueMap.length; i++) {
@@ -92,16 +109,14 @@ class ChatUpdateService {
             }
           }
         } catch (e) {
-          print("Ошибка парсинга JSON: $e");
+          debugPrint('JSON parsing error: $e');
         }
       }
 
       List<(String, int)> queueChat = Chats.getNowChatQueue();
-      if (queueChat.isEmpty) {
-        queueChat = [];
-      }
       for (var newMsg in queues) {
-        bool exists = queueChat.any((msg) => msg.$1 == newMsg.$1 && msg.$2 == newMsg.$2);
+        bool exists =
+            queueChat.any((msg) => msg.$1 == newMsg.$1 && msg.$2 == newMsg.$2);
         if (!exists) {
           queueChat.add(newMsg);
         }

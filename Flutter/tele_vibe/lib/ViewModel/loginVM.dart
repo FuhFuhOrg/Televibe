@@ -4,11 +4,11 @@ import 'package:tele_vibe/Data/user.dart';
 import 'package:tele_vibe/GettedData/MessageHandler.dart';
 import 'package:tele_vibe/GettedData/localDataSaveController.dart';
 import 'package:tele_vibe/GettedData/netServerController.dart';
+import 'package:tele_vibe/GettedData/pseudoChatApi.dart';
 import 'package:tele_vibe/Widgets/allChatsClass.dart';
 import 'package:tele_vibe/Widgets/registrationClass.dart';
 
 class LoginVM {
-
   void navigateToRegisterPage(BuildContext context) {
     Navigator.push(
       context,
@@ -20,75 +20,108 @@ class LoginVM {
   Future<bool> tryAutoLogin(BuildContext context) async {
     var (login, password) = await LocalDataSave.loadCredentials();
     if (login != null && password != null) {
-      print('Попытка автоматического входа: $login');
-      List<String> goin = await NetServerController().login(login, password);
-      
+      debugPrint('Attempting auto sign-in: $login');
+      List<String> goin = await NetServerController().login(
+        login,
+        password,
+        timeout: const Duration(milliseconds: 1800),
+      );
+
       if (goin.isNotEmpty && goin[0] == "true") {
-        print('Автоматический вход успешен');
+        debugPrint('Auto sign-in succeeded');
         Anon.anonId = int.tryParse(goin[1]);
         Anon.anonPassword = password;
         _startChatsAddiction();
+        if (!context.mounted) return false;
         _navigateToAllChats(context);
         return true;
       } else {
-        print('Автоматический вход не удался');
+        debugPrint('Auto sign-in failed');
         await LocalDataSave.clearCredentials();
       }
     }
+    if (!context.mounted) return false;
+    await openPreparedChatsIfApiUnavailable(context);
     return false;
   }
 
-  void fakeLoginAccount(BuildContext context, 
-  TextEditingController loginController, TextEditingController passwordController) {
+  Future<void> openPreparedChatsIfApiUnavailable(BuildContext context) async {
+    final isApiAvailable = await NetServerController().isApiAvailable();
+    if (isApiAvailable || !context.mounted) return;
+    await openPreparedChats(context);
+  }
+
+  Future<void> openPreparedChats(BuildContext context) async {
+    await PseudoChatApi.activate();
+    if (!context.mounted) return;
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const AllChatsPage()),
+    );
+  }
+
+  void fakeLoginAccount(
+      BuildContext context,
+      TextEditingController loginController,
+      TextEditingController passwordController) {
     String login = loginController.text;
-    String password = passwordController.text;
 
-    print('Login: $login');
-    print('Password: $password');
+    debugPrint('Login: $login');
+    debugPrint('Return Login');
 
-    print('Return Login');
-    
     _startChatsAddiction();
     _navigateToAllChats(context);
   }
 
-  void loginAccount(BuildContext context, 
-  TextEditingController loginController, TextEditingController passwordController) {
+  Future<void> loginAccount(
+      BuildContext context,
+      TextEditingController loginController,
+      TextEditingController passwordController) async {
     String login = loginController.text;
     String password = passwordController.text;
 
-    print('Login: $login');
-    print('Password: $password');
+    debugPrint('Login: $login');
 
-    NetServerController().login(login, password).then((goin) {
-      if (goin != " " && goin != "") {
-        print('Return Login ${goin}');
-        if(goin[0] == "true") {
-          // Сохраняем учетные данные при успешном входе
-          LocalDataSave.saveCredentials(login, password);
-          
-          Anon.anonId = int.tryParse(goin[1]);
-          Anon.anonPassword = password;
-          _startChatsAddiction();
-          _navigateToAllChats(context);
-        }
-        else{
-          MessageHandler.showAlertDialog(context, '${goin.join(" ")}');
-        }
+    List<String> goin = await NetServerController().login(
+      login,
+      password,
+      timeout: const Duration(milliseconds: 2200),
+    );
+
+    if (goin.isEmpty) {
+      if (!context.mounted) return;
+      await openPreparedChats(context);
+      return;
+    }
+
+    if (goin.any((item) => item.trim().isNotEmpty)) {
+      debugPrint('Return Login $goin');
+      if (goin[0] == "true") {
+        // Сохраняем учетные данные при успешном входе
+        LocalDataSave.saveCredentials(login, password);
+
+        Anon.anonId = int.tryParse(goin[1]);
+        Anon.anonPassword = password;
+        _startChatsAddiction();
+        if (!context.mounted) return;
+        _navigateToAllChats(context);
+      } else {
+        if (!context.mounted) return;
+        MessageHandler.showAlertDialog(context, goin.join(" "));
       }
-    });
+    }
   }
 
-  void _startChatsAddiction(){
+  void _startChatsAddiction() {
     // Код вызывающий подгрузку Json и WS чатов
     LocalDataSave.loadChatsData().then((goin) {
-      if (goin != null){
+      if (goin != null) {
         Chats.setValue(goin);
       }
     });
   }
 
-  void _navigateToAllChats(BuildContext context){
+  void _navigateToAllChats(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const AllChatsPage()),

@@ -1,0 +1,240 @@
+{
+  "appName": "Televibe",
+  "signIn": "Sign in",
+  "readyForLiveSync": "Ready for live sync",
+  "loginIntro": "Sign in to restore chats and media instantly. If the API is unavailable, you can still open the prepared conversation space.",
+  "loginLabel": "Login",
+  "passwordLabel": "Password",
+  "openChats": "Open chats",
+  "newToTelevibe": "New to Televibe?",
+  "createAccount": "Create account",
+  "createAccountHeading": "Create account",
+  "registrationSubtitle": "Set up your identity and continue to your conversations.",
+  "registrationIntro": "Your account keeps chats, profile details, and media in one place. Choose a strong password so you can move between devices without friction.",
+  "repeatPasswordLabel": "Repeat password",
+  "alreadyHaveAccount": "Already have an account?",
+  "backToSignIn": "Back to sign in",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "settingsTitle": "Settings",
+  "controlYourExperienceTitle": "Control your experience",
+  "controlYourExperienceDescription": "Tune notifications, sound behavior, and interface preferences so the app feels ready for daily use.",
+  "notificationsAndSound": "Notifications and sound",
+  "messageNotificationsTitle": "Message notifications",
+  "messageNotificationsDescription": "Show alerts for new chats and incoming messages.",
+  "soundTitle": "Sound",
+  "soundDescription": "Play audio cues for message activity and updates.",
+  "interfaceTitle": "Interface",
+  "languageTitle": "Language",
+  "reviewLanguageOptions": "Review the available UI language options.",
+  "navigationTitle": "Navigation",
+  "backToChats": "Back to chats",
+  "backToChatsDescription": "Return to the conversation list.",
+  "languageSettingsDescription": "Choose the interface language for the entire app. Chat content, names, and prepared conversations stay in English.",
+  "selectedLanguageDescription": "Current app language",
+  "tapToSwitchLanguageDescription": "Tap to switch the UI language instantly",
+  "newConversationTitle": "New conversation",
+  "createConversationDescription": "Create a new space for direct messages or group updates.",
+  "joinConversationDescription": "Join an existing chat with its ID and access code.",
+  "createTabLabel": "Create",
+  "joinTabLabel": "Join",
+  "conversationDetailsSection": "Conversation details",
+  "conversationNameLabel": "Conversation name",
+  "conversationNameHint": "Product sync, Family, Alex...",
+  "accessCodeLabel": "Access code",
+  "optionalHint": "Optional",
+  "createAsGroupTitle": "Create as group",
+  "createAsGroupDescription": "Turn this on if multiple participants should join the same conversation.",
+  "joinWithCredentialsSection": "Join with credentials",
+  "displayNameLabel": "Display name",
+  "displayNameHint": "Optional label for this chat",
+  "chatIdLabel": "Chat ID",
+  "pasteConversationIdHint": "Paste the conversation ID",
+  "accessCodeRequiredHint": "Required if the host set one",
+  "createConversationCta": "Create conversation",
+  "joinChatCta": "Join chat",
+  "addParticipantTitle": "Add participant",
+  "inviteByIdTitle": "Invite by ID",
+  "inviteByIdDescription": "Paste the participant ID below to keep this conversation organized and ready for collaboration.",
+  "participantIdLabel": "Participant ID",
+  "inviteParticipantCta": "Invite participant",
+  "searchChatsHint": "Search chats...",
+  "noChatsFound": "No chats found",
+  "startTypingToBrowseConversations": "Start typing to browse your conversations.",
+  "tryAnotherNameOrCreateChat": "Try another name or create a new chat from the main screen.",
+  "searchMessagesHint": "Search messages...",
+  "noMessagesFound": "No messages found",
+  "searchCurrentConversationPrompt": "Search within the current conversation.",
+  "tryAnotherKeywordOrChat": "Try another keyword or open a different chat.",
+  "fromUserAt": "From {userName} at {time}",
+  "@fromUserAt": {
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "nothingHereYet": "Nothing here yet",
+  "noDirectChatsYet": "No direct chats match this filter yet.",
+  "noGroupsYet": "No group conversations are visible here right now.",
+  "noUnreadChatsYet": "You are fully caught up. No unread chats in this folder.",
+  "archiveFolderEmpty": "Archive a chat from the main list and it will appear here.",
+  "startDirectChatPrompt": "Start a direct chat or create a group to see your conversations here.",
+  "memberCount": "{count} members",
+  "@memberCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "directChat": "Direct chat",
+  "pinChat": "Pin chat",
+  "unpinChat": "Unpin chat",
+  "archiveChat": "Archive chat",
+  "unarchiveChat": "Unarchive chat",
+  "leaveGroup": "Leave group",
+  "deleteChat": "Delete chat",
+  "conversationHubTitle": "Conversation hub",
+  "conversationHubDescription": "Everything important stays one tap away: recent chats, pinned threads, and unread updates.",
+  "directStatLabel": "Direct",
+  "groupsStatLabel": "Groups",
+  "unreadStatLabel": "Unread",
+  "allFilterLabel": "All",
+  "directFilterLabel": "Direct",
+  "groupsFilterLabel": "Groups",
+  "unreadFilterLabel": "Unread",
+  "archiveFilterLabel": "Archive",
+  "personalAccount": "Personal account",
+  "chatsReadyToOpen": "{count} chats ready to open",
+  "@chatsReadyToOpen": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileTitle": "Profile",
+  "archivedChatsTitle": "Archived chats",
+  "callsTitle": "Calls",
+  "contactsTitle": "Contacts",
+  "archivedChatsDescription": "{count} chats are currently hidden from the main list. This is a local portfolio archive, so unarchive is instant.",
+  "@archivedChatsDescription": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveIsEmpty": "Archive is empty",
+  "archiveEmptyDescription": "Archive a chat from the main list to move it here while keeping the conversation intact.",
+  "callHistoryTitle": "Call history",
+  "callsMvpDescription": "This screen is local-only for the MVP, but it looks and behaves like a real messenger call log.",
+  "recentStatLabel": "Recent",
+  "missedStatLabel": "Missed",
+  "videoStatLabel": "Video",
+  "allCallsFilter": "All calls",
+  "missedCallsFilter": "Missed",
+  "callTypeVideo": "Video",
+  "callTypeVoice": "Voice",
+  "pseudoVideoCallScreen": "Pseudo video call screen",
+  "pseudoVoiceCallScreen": "Pseudo voice call screen",
+  "noCallsInFilter": "No calls in this filter",
+  "switchBackToAllCalls": "Switch back to all calls to review the full mock history.",
+  "peopleAndTeamsTitle": "People and teams",
+  "contactsSummary": "{total} contacts available, {online} online right now. This is a local demo directory for the portfolio flow.",
+  "@contactsSummary": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "online": {
+        "type": "int"
+      }
+    }
+  },
+  "searchByNameOrUsername": "Search by name or username",
+  "noContactsFound": "No contacts found",
+  "tryAnotherContactQuery": "Try another query to filter the local demo address book.",
+  "accountSectionTitle": "Account",
+  "aboutSectionTitle": "About",
+  "statusSectionTitle": "Status",
+  "userIdLabel": "User ID",
+  "usernameLabel": "Username",
+  "userIdCopied": "User ID copied",
+  "profileStatusDescription": "Ready to sync chats, profile details, and shared media across your sessions.",
+  "addPhoto": "Add photo",
+  "removePhoto": "Remove photo",
+  "imageNotSelected": "Image was not selected",
+  "editValueTitle": "Edit value",
+  "editValueDescription": "Update the value and save it when you are done.",
+  "editValueHint": "Enter a new value",
+  "displayNameField": "Display name",
+  "usernameField": "Username",
+  "chatNameField": "Chat name",
+  "directConversation": "Direct conversation",
+  "addParticipants": "Add participants",
+  "chatIdCopied": "Chat ID copied",
+  "copyChatId": "Copy chat ID",
+  "sharedContentTitle": "Shared content",
+  "sharedContentDescription": "Local portfolio tabs that imitate the real messenger media browser.",
+  "mediaTab": "Media",
+  "filesTab": "Files",
+  "linksTab": "Links",
+  "membersSectionTitle": "Members",
+  "peopleSectionTitle": "People",
+  "memberRole": "Member",
+  "participantRole": "Participant",
+  "noSharedMedia": "No shared media yet",
+  "noSharedFiles": "No shared files yet",
+  "noSharedLinks": "No shared links yet",
+  "memberOptions": "Member options",
+  "removeMember": "Remove",
+  "chatRemoved": "Chat removed",
+  "unableToDeleteChat": "Unable to delete chat",
+  "chatCreated": "Chat created",
+  "chatCreatedWithId": "Chat created: {chatId}",
+  "@chatCreatedWithId": {
+    "placeholders": {
+      "chatId": {
+        "type": "String"
+      }
+    }
+  },
+  "chatAdded": "Chat added",
+  "addedUserToChat": "Added user to chat: {userId}",
+  "@addedUserToChat": {
+    "placeholders": {
+      "userId": {
+        "type": "String"
+      }
+    }
+  },
+  "chatDetailsTitle": "Chat details",
+  "messageSearchHint": "Search...",
+  "lastSeenRecently": "last seen recently",
+  "imageSendFailed": "Image send failed: {error}",
+  "@imageSendFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "messageInputHint": "Message",
+  "messageActionsTitle": "Message",
+  "copyAction": "Copy",
+  "editAction": "Edit",
+  "deleteAction": "Delete",
+  "cancelAction": "Cancel",
+  "viewDetailsAction": "View details",
+  "jumpToLatest": "Jump to latest",
+  "editMessageTitle": "Edit message",
+  "enterMessageTextHint": "Enter message text",
+  "saveAction": "Save",
+  "editedLabel": "edited",
+  "storyPreviewDescription": "Portfolio story preview. Taps switch between stories just like a live messenger, while the content stays local and mock-driven.",
+  "replyAction": "Reply"
+}

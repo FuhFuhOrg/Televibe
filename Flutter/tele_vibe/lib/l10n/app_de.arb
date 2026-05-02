@@ -1,0 +1,240 @@
+{
+  "appName": "Televibe",
+  "signIn": "Anmelden",
+  "readyForLiveSync": "Bereit für Live-Synchronisierung",
+  "loginIntro": "Melden Sie sich an, um Chats und Medien sofort wiederherzustellen. Wenn die API nicht verfügbar ist, können Sie trotzdem den vorbereiteten Gesprächsbereich öffnen.",
+  "loginLabel": "Login",
+  "passwordLabel": "Passwort",
+  "openChats": "Chats öffnen",
+  "newToTelevibe": "Neu bei Televibe?",
+  "createAccount": "Konto erstellen",
+  "createAccountHeading": "Konto erstellen",
+  "registrationSubtitle": "Richten Sie Ihre Identität ein und wechseln Sie dann zu Ihren Unterhaltungen.",
+  "registrationIntro": "Ihr Konto hält Chats, Profildaten und Medien an einem Ort. Wählen Sie ein starkes Passwort, damit Sie problemlos zwischen Geräten wechseln können.",
+  "repeatPasswordLabel": "Passwort wiederholen",
+  "alreadyHaveAccount": "Haben Sie bereits ein Konto?",
+  "backToSignIn": "Zurück zur Anmeldung",
+  "passwordsDoNotMatch": "Die Passwörter stimmen nicht überein",
+  "settingsTitle": "Einstellungen",
+  "controlYourExperienceTitle": "Erlebnis steuern",
+  "controlYourExperienceDescription": "Passen Sie Benachrichtigungen, Tonverhalten und Oberflächeneinstellungen so an, dass sich die App im Alltag gut anfühlt.",
+  "notificationsAndSound": "Benachrichtigungen und Ton",
+  "messageNotificationsTitle": "Nachrichtenbenachrichtigungen",
+  "messageNotificationsDescription": "Hinweise für neue Chats und eingehende Nachrichten anzeigen.",
+  "soundTitle": "Ton",
+  "soundDescription": "Audiosignale für Nachrichtenaktivität und Updates abspielen.",
+  "interfaceTitle": "Oberfläche",
+  "languageTitle": "Sprache",
+  "reviewLanguageOptions": "Verfügbare UI-Sprachen anzeigen.",
+  "navigationTitle": "Navigation",
+  "backToChats": "Zurück zu den Chats",
+  "backToChatsDescription": "Zur Unterhaltungsliste zurückkehren.",
+  "languageSettingsDescription": "Wählen Sie die Oberflächensprache für die gesamte App. Chat-Inhalte, Namen und vorbereitete Gespräche bleiben auf Englisch.",
+  "selectedLanguageDescription": "Aktuelle App-Sprache",
+  "tapToSwitchLanguageDescription": "Tippen Sie, um die UI-Sprache sofort zu wechseln",
+  "newConversationTitle": "Neue Unterhaltung",
+  "createConversationDescription": "Erstellen Sie einen neuen Bereich für Direktnachrichten oder Gruppenupdates.",
+  "joinConversationDescription": "Treten Sie einem vorhandenen Chat mit seiner ID und dem Zugangscode bei.",
+  "createTabLabel": "Erstellen",
+  "joinTabLabel": "Beitreten",
+  "conversationDetailsSection": "Unterhaltungsdetails",
+  "conversationNameLabel": "Name der Unterhaltung",
+  "conversationNameHint": "Product sync, Family, Alex...",
+  "accessCodeLabel": "Zugangscode",
+  "optionalHint": "Optional",
+  "createAsGroupTitle": "Als Gruppe erstellen",
+  "createAsGroupDescription": "Aktivieren Sie dies, wenn mehrere Teilnehmende derselben Unterhaltung beitreten sollen.",
+  "joinWithCredentialsSection": "Mit Zugangsdaten beitreten",
+  "displayNameLabel": "Anzeigename",
+  "displayNameHint": "Optionales Label für diesen Chat",
+  "chatIdLabel": "Chat-ID",
+  "pasteConversationIdHint": "Unterhaltungs-ID einfügen",
+  "accessCodeRequiredHint": "Erforderlich, wenn der Host einen Code gesetzt hat",
+  "createConversationCta": "Unterhaltung erstellen",
+  "joinChatCta": "Chat beitreten",
+  "addParticipantTitle": "Teilnehmer hinzufügen",
+  "inviteByIdTitle": "Per ID einladen",
+  "inviteByIdDescription": "Fügen Sie unten die Teilnehmer-ID ein, um diese Unterhaltung geordnet und kollaborationsbereit zu halten.",
+  "participantIdLabel": "Teilnehmer-ID",
+  "inviteParticipantCta": "Teilnehmer einladen",
+  "searchChatsHint": "Chats durchsuchen...",
+  "noChatsFound": "Keine Chats gefunden",
+  "startTypingToBrowseConversations": "Beginnen Sie zu tippen, um Ihre Unterhaltungen zu durchsuchen.",
+  "tryAnotherNameOrCreateChat": "Versuchen Sie einen anderen Namen oder erstellen Sie einen neuen Chat vom Hauptbildschirm aus.",
+  "searchMessagesHint": "Nachrichten durchsuchen...",
+  "noMessagesFound": "Keine Nachrichten gefunden",
+  "searchCurrentConversationPrompt": "Innerhalb der aktuellen Unterhaltung suchen.",
+  "tryAnotherKeywordOrChat": "Versuchen Sie ein anderes Stichwort oder öffnen Sie einen anderen Chat.",
+  "fromUserAt": "Von {userName} um {time}",
+  "@fromUserAt": {
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "nothingHereYet": "Hier ist noch nichts",
+  "noDirectChatsYet": "Noch keine Direktchats für diesen Filter.",
+  "noGroupsYet": "Derzeit sind hier keine Gruppengespräche sichtbar.",
+  "noUnreadChatsYet": "Sie sind vollständig auf dem Laufenden. In diesem Ordner gibt es keine ungelesenen Chats.",
+  "archiveFolderEmpty": "Archivieren Sie einen Chat aus der Hauptliste, dann erscheint er hier.",
+  "startDirectChatPrompt": "Starten Sie einen Direktchat oder erstellen Sie eine Gruppe, um Ihre Unterhaltungen hier zu sehen.",
+  "memberCount": "{count} Mitglieder",
+  "@memberCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "directChat": "Direktchat",
+  "pinChat": "Chat anheften",
+  "unpinChat": "Chat lösen",
+  "archiveChat": "Chat archivieren",
+  "unarchiveChat": "Chat aus Archiv holen",
+  "leaveGroup": "Gruppe verlassen",
+  "deleteChat": "Chat löschen",
+  "conversationHubTitle": "Unterhaltungszentrale",
+  "conversationHubDescription": "Alles Wichtige bleibt einen Tipp entfernt: letzte Chats, angeheftete Threads und ungelesene Updates.",
+  "directStatLabel": "Direkt",
+  "groupsStatLabel": "Gruppen",
+  "unreadStatLabel": "Ungelesen",
+  "allFilterLabel": "Alle",
+  "directFilterLabel": "Direkt",
+  "groupsFilterLabel": "Gruppen",
+  "unreadFilterLabel": "Ungelesen",
+  "archiveFilterLabel": "Archiv",
+  "personalAccount": "Persönliches Konto",
+  "chatsReadyToOpen": "{count} Chats bereit zum Öffnen",
+  "@chatsReadyToOpen": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileTitle": "Profil",
+  "archivedChatsTitle": "Archivierte Chats",
+  "callsTitle": "Anrufe",
+  "contactsTitle": "Kontakte",
+  "archivedChatsDescription": "{count} Chats sind derzeit in der Hauptliste ausgeblendet. Dies ist ein lokales Portfolio-Archiv, daher erfolgt das Wiederherstellen sofort.",
+  "@archivedChatsDescription": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveIsEmpty": "Archiv ist leer",
+  "archiveEmptyDescription": "Archivieren Sie einen Chat aus der Hauptliste, um ihn hierhin zu verschieben und die Unterhaltung beizubehalten.",
+  "callHistoryTitle": "Anrufverlauf",
+  "callsMvpDescription": "Dieser Bildschirm ist lokal für das MVP, wirkt aber wie ein echtes Anrufprotokoll eines Messengers.",
+  "recentStatLabel": "Zuletzt",
+  "missedStatLabel": "Verpasst",
+  "videoStatLabel": "Video",
+  "allCallsFilter": "Alle Anrufe",
+  "missedCallsFilter": "Verpasste",
+  "callTypeVideo": "Video",
+  "callTypeVoice": "Sprache",
+  "pseudoVideoCallScreen": "Pseudo-Videoanrufbildschirm",
+  "pseudoVoiceCallScreen": "Pseudo-Sprachanrufbildschirm",
+  "noCallsInFilter": "Keine Anrufe in diesem Filter",
+  "switchBackToAllCalls": "Wechseln Sie zurück zu allen Anrufen, um den vollständigen Mock-Verlauf zu sehen.",
+  "peopleAndTeamsTitle": "Personen und Teams",
+  "contactsSummary": "{total} Kontakte verfügbar, {online} gerade online. Dies ist ein lokales Demo-Verzeichnis für den Portfolio-Ablauf.",
+  "@contactsSummary": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "online": {
+        "type": "int"
+      }
+    }
+  },
+  "searchByNameOrUsername": "Nach Name oder Benutzernamen suchen",
+  "noContactsFound": "Keine Kontakte gefunden",
+  "tryAnotherContactQuery": "Versuchen Sie eine andere Suchanfrage, um das lokale Demo-Adressbuch zu filtern.",
+  "accountSectionTitle": "Konto",
+  "aboutSectionTitle": "Info",
+  "statusSectionTitle": "Status",
+  "userIdLabel": "Benutzer-ID",
+  "usernameLabel": "Benutzername",
+  "userIdCopied": "Benutzer-ID kopiert",
+  "profileStatusDescription": "Bereit, Chats, Profildetails und geteilte Medien über Ihre Sitzungen hinweg zu synchronisieren.",
+  "addPhoto": "Foto hinzufügen",
+  "removePhoto": "Foto entfernen",
+  "imageNotSelected": "Kein Bild ausgewählt",
+  "editValueTitle": "Wert bearbeiten",
+  "editValueDescription": "Aktualisieren Sie den Wert und speichern Sie ihn, wenn Sie fertig sind.",
+  "editValueHint": "Neuen Wert eingeben",
+  "displayNameField": "Anzeigename",
+  "usernameField": "Benutzername",
+  "chatNameField": "Chatname",
+  "directConversation": "Direkte Unterhaltung",
+  "addParticipants": "Teilnehmer hinzufügen",
+  "chatIdCopied": "Chat-ID kopiert",
+  "copyChatId": "Chat-ID kopieren",
+  "sharedContentTitle": "Geteilte Inhalte",
+  "sharedContentDescription": "Lokale Portfolio-Tabs, die den echten Medienbrowser eines Messengers nachahmen.",
+  "mediaTab": "Medien",
+  "filesTab": "Dateien",
+  "linksTab": "Links",
+  "membersSectionTitle": "Mitglieder",
+  "peopleSectionTitle": "Personen",
+  "memberRole": "Mitglied",
+  "participantRole": "Teilnehmer",
+  "noSharedMedia": "Noch keine geteilten Medien",
+  "noSharedFiles": "Noch keine geteilten Dateien",
+  "noSharedLinks": "Noch keine geteilten Links",
+  "memberOptions": "Mitgliedsoptionen",
+  "removeMember": "Entfernen",
+  "chatRemoved": "Chat entfernt",
+  "unableToDeleteChat": "Chat konnte nicht gelöscht werden",
+  "chatCreated": "Chat erstellt",
+  "chatCreatedWithId": "Chat erstellt: {chatId}",
+  "@chatCreatedWithId": {
+    "placeholders": {
+      "chatId": {
+        "type": "String"
+      }
+    }
+  },
+  "chatAdded": "Chat hinzugefügt",
+  "addedUserToChat": "Benutzer zum Chat hinzugefügt: {userId}",
+  "@addedUserToChat": {
+    "placeholders": {
+      "userId": {
+        "type": "String"
+      }
+    }
+  },
+  "chatDetailsTitle": "Chatdetails",
+  "messageSearchHint": "Suchen...",
+  "lastSeenRecently": "zuletzt kürzlich online",
+  "imageSendFailed": "Bild konnte nicht gesendet werden: {error}",
+  "@imageSendFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "messageInputHint": "Nachricht",
+  "messageActionsTitle": "Nachricht",
+  "copyAction": "Kopieren",
+  "editAction": "Bearbeiten",
+  "deleteAction": "Löschen",
+  "cancelAction": "Abbrechen",
+  "viewDetailsAction": "Details anzeigen",
+  "jumpToLatest": "Zum neuesten springen",
+  "editMessageTitle": "Nachricht bearbeiten",
+  "enterMessageTextHint": "Nachrichtentext eingeben",
+  "saveAction": "Speichern",
+  "editedLabel": "bearbeitet",
+  "storyPreviewDescription": "Portfolio-Story-Vorschau. Tippen schaltet zwischen Stories wie in einem Live-Messenger um, während der Inhalt lokal und mock-basiert bleibt.",
+  "replyAction": "Antworten"
+}

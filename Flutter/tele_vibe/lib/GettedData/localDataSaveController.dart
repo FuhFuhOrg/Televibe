@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as developer;
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tele_vibe/Data/chats.dart';
@@ -12,9 +13,9 @@ class LocalDataSave {
       final Map<String, dynamic> jsonData = await chatsData.toJson();
       final String jsonString = jsonEncode(jsonData);
       await prefs.setString('chatsData', jsonString);
-      print('Данные успешно сохранены');
+      developer.log('Chat data saved successfully');
     } catch (e) {
-      print('Ошибка при сохранении данных: $e');
+      developer.log('Failed to save chat data', error: e);
     }
   }
 
@@ -27,10 +28,10 @@ class LocalDataSave {
         final Map<String, dynamic> jsonData = jsonDecode(jsonString);
         return ChatCollection.fromJson(jsonData);
       }
-      print('Нет сохраненных данных');
+      developer.log('No saved chat data found');
       return null;
     } catch (e) {
-      print('Ошибка при загрузке данных: $e');
+      developer.log('Failed to load chat data', error: e);
       return null;
     }
   }
@@ -41,9 +42,9 @@ class LocalDataSave {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('savedLogin', login);
       await prefs.setString('savedPassword', password);
-      print('Учетные данные сохранены');
+      developer.log('Credentials saved');
     } catch (e) {
-      print('Ошибка при сохранении учетных данных: $e');
+      developer.log('Failed to save credentials', error: e);
     }
   }
 
@@ -55,7 +56,7 @@ class LocalDataSave {
       final String? password = prefs.getString('savedPassword');
       return (login, password);
     } catch (e) {
-      print('Ошибка при загрузке учетных данных: $e');
+      developer.log('Failed to load credentials', error: e);
       return (null, null);
     }
   }
@@ -66,9 +67,9 @@ class LocalDataSave {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('savedLogin');
       await prefs.remove('savedPassword');
-      print('Учетные данные удалены');
+      developer.log('Credentials cleared');
     } catch (e) {
-      print('Ошибка при удалении учетных данных: $e');
+      developer.log('Failed to clear credentials', error: e);
     }
   }
 }

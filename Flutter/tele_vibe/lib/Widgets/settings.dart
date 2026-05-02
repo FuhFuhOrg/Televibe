@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tele_vibe/ViewModel/registrationVM.dart';
+import 'package:tele_vibe/Localization/context_extensions.dart';
 import 'package:tele_vibe/ViewModel/SettingsVM.dart';
 import 'package:tele_vibe/Widgets/LanguageSettings.dart';
 
@@ -8,13 +7,12 @@ class Settings extends StatefulWidget {
   const Settings({super.key});
 
   @override
-  _SettingsState createState() => _SettingsState();
+  State<Settings> createState() => _SettingsState();
 }
 
 class _SettingsState extends State<Settings> {
   late bool _notifications;
   late bool _sound;
-  final RegistrationVM _registrationVM = RegistrationVM();
   final SettingsVM _settingsVM = SettingsVM();
 
   @override
@@ -26,99 +24,186 @@ class _SettingsState extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF141414),
+      backgroundColor: const Color(0xFF0E1621),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF17212B),
+        title: Text(
+          l10n.settingsTitle,
+          style: const TextStyle(color: Colors.white),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
       body: ListView(
+        padding: const EdgeInsets.all(16),
         children: [
-          /*
-          ExpansionTile(
-            title: const Text('Конфиденциальность', style: TextStyle(color: Colors.white)),
-            iconColor: Colors.white,
-            initiallyExpanded: true,
-            children: <Widget>[
-              SwitchListTile(
-                title: const Text('Показывать данные при входе', style: TextStyle(color: Colors.white)),
-                value: _showDataOnLogin,
-                onChanged: (bool value) {
-                  setState(() {
-                    _showDataOnLogin = value;
-                  });
-                  _saveSetting('showDataOnLogin', value); // Сохраняем настройку
-                },
-                activeColor: Colors.black,
-                activeTrackColor: Colors.white,
-                inactiveThumbColor: Colors.black,
-                inactiveTrackColor: Colors.white
-              ),
-              SwitchListTile(
-                title: const Text('Номер телефона', style: TextStyle(color: Colors.white)),
-                value: _showPhoneNumber,
-                onChanged: (bool value) {
-                  setState(() {
-                    _showPhoneNumber = value;
-                  });
-                  _saveSetting('showPhoneNumber', value); // Сохраняем настройку
-                },
-                activeColor: Colors.black,
-                activeTrackColor: Colors.white,
-                inactiveThumbColor: Colors.black,
-                inactiveTrackColor: Colors.white
-              ),
-            ],
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: const Color(0xFF17212B),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: const Color(0xFF243447)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.controlYourExperienceTitle,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.controlYourExperienceDescription,
+                  style: const TextStyle(
+                    color: Color(0xFF7F91A4),
+                    height: 1.35,
+                  ),
+                ),
+              ],
+            ),
           ),
-          */
-          ExpansionTile(
-            title: const Text('Уведомления и звуки', style: TextStyle(color: Colors.white)),
-            iconColor: Colors.white,
-            initiallyExpanded: true,
-            children: <Widget>[
-              SwitchListTile(
-                title: const Text('Уведомления', style: TextStyle(color: Colors.white)),
-                value: _notifications,
-                onChanged: (bool value) {
-                  setState(() {
-                    // сначала изменяем
-                    _settingsVM.changeNotifications(value);
-                    _notifications = value;
-                  });
-                },
-                activeColor: Colors.black,
-                activeTrackColor: Colors.white,
-                inactiveThumbColor: Colors.black,
-                inactiveTrackColor: Colors.white
+          const SizedBox(height: 18),
+          _SettingsCard(
+            title: l10n.notificationsAndSound,
+            child: Column(
+              children: [
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  activeThumbColor: const Color(0xFF2AABEE),
+                  title: Text(
+                    l10n.messageNotificationsTitle,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  subtitle: Text(
+                    l10n.messageNotificationsDescription,
+                    style: const TextStyle(color: Color(0xFF7F91A4)),
+                  ),
+                  value: _notifications,
+                  onChanged: (bool value) {
+                    setState(() {
+                      _settingsVM.changeNotifications(value);
+                      _notifications = value;
+                    });
+                  },
+                ),
+                const Divider(color: Color(0xFF243447), height: 1),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  activeThumbColor: const Color(0xFF2AABEE),
+                  title: Text(
+                    l10n.soundTitle,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  subtitle: Text(
+                    l10n.soundDescription,
+                    style: const TextStyle(color: Color(0xFF7F91A4)),
+                  ),
+                  value: _sound,
+                  onChanged: (bool value) {
+                    setState(() {
+                      _settingsVM.changeVolume(value);
+                      _sound = value;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+          _SettingsCard(
+            title: l10n.interfaceTitle,
+            child: ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading:
+                  const Icon(Icons.language_rounded, color: Color(0xFF2AABEE)),
+              title: Text(
+                l10n.languageTitle,
+                style: const TextStyle(color: Colors.white),
               ),
-              SwitchListTile(
-                title: const Text('Звук', style: TextStyle(color: Colors.white)),
-                value: _sound,
-                onChanged: (bool value) {
-                  setState(() {
-                    _settingsVM.changeVolume(value);
-                    _sound = value;
-                  });
-                },
-                activeColor: Colors.black,
-                activeTrackColor: Colors.white,
-                inactiveThumbColor: Colors.black,
-                inactiveTrackColor: Colors.white
+              subtitle: Text(
+                l10n.reviewLanguageOptions,
+                style: const TextStyle(color: Color(0xFF7F91A4)),
               ),
-            ],
+              trailing: const Icon(
+                Icons.chevron_right_rounded,
+                color: Color(0xFF7F91A4),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LanguageSettings(),
+                  ),
+                );
+              },
+            ),
           ),
-          ListTile(
-            title: const Text('Язык', style: TextStyle(color: Colors.white)),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const LanguageSettings()),
-              );
-            },
+          const SizedBox(height: 14),
+          _SettingsCard(
+            title: l10n.navigationTitle,
+            child: ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(
+                Icons.arrow_back_rounded,
+                color: Color(0xFF2AABEE),
+              ),
+              title: Text(
+                l10n.backToChats,
+                style: const TextStyle(color: Colors.white),
+              ),
+              subtitle: Text(
+                l10n.backToChatsDescription,
+                style: const TextStyle(color: Color(0xFF7F91A4)),
+              ),
+              trailing: const Icon(
+                Icons.chevron_right_rounded,
+                color: Color(0xFF7F91A4),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
           ),
-          ListTile(
-            title: const Text('Выйти из приложения', style: TextStyle(color: Colors.white)),
-            onTap: () {
-              Navigator.pop(context);
-              //_registrationVM.navigateToLoginPage(context); // просто вызываю метод navigateToLoginPage
-            },
+        ],
+      ),
+    );
+  }
+}
+
+class _SettingsCard extends StatelessWidget {
+  final String title;
+  final Widget child;
+
+  const _SettingsCard({required this.title, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF17212B),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFF243447)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+            ),
           ),
+          const SizedBox(height: 8),
+          child,
         ],
       ),
     );

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:pointycastle/asymmetric/api.dart';
@@ -15,7 +14,11 @@ class NetServerController with WidgetsBindingObserver {
   static int k = 0;
   static Map<int, Function(List<String>)> listeners = {};
   bool _isReconnecting = false;
+  bool _isStarted = false;
+  bool _isConnecting = false;
+  StreamSubscription<dynamic>? _webSocketSubscription;
   static const int reconnectDelaySeconds = 5;
+  static bool reconnectEnabled = true;
 
   static final NetServerController _instance = NetServerController._internal();
 
@@ -26,80 +29,131 @@ class NetServerController with WidgetsBindingObserver {
   NetServerController._internal();
 
   void start() {
-    WidgetsBinding.instance.addObserver(this);
-    _connect();
+    if (!_isStarted) {
+      WidgetsBinding.instance.addObserver(this);
+      _isStarted = true;
+    }
+
+    if (webSocketChannel == null || webSocketChannel!.closeCode != null) {
+      _connect();
+    }
   }
 
   void _connect() {
-    final uri = Uri.parse("ws://$s:17825/");
-    try {
-      webSocketChannel = WebSocketChannel.connect(uri);
+    if (_isConnecting) return;
 
-      webSocketChannel!.stream.listen((message) {
+    final uri = Uri.parse("ws://$s:17825/");
+    _isConnecting = true;
+    try {
+      _webSocketSubscription?.cancel();
+      final channel = WebSocketChannel.connect(uri);
+      webSocketChannel = channel;
+
+      _webSocketSubscription = channel.stream.listen((message) {
         onTextReceived(message);
       }, onDone: () {
-        print('WebSocket closed');
+        debugPrint('WebSocket closed');
+        if (identical(webSocketChannel, channel)) {
+          webSocketChannel = null;
+        }
         _attemptReconnect();
       }, onError: (error) {
-        print('WebSocket error: $error');
+        debugPrint('WebSocket error: $error');
+        if (identical(webSocketChannel, channel)) {
+          webSocketChannel = null;
+        }
         _attemptReconnect();
       });
+      // Suppress unhandled-exception from the ready future; errors are
+      // already handled by the stream's onError / onDone callbacks above.
+      channel.ready.catchError((e) {
+        debugPrint('WebSocket ready error (suppressed): $e');
+      });
     } catch (e) {
-      print('Error connecting to WebSocket: $e');
+      debugPrint('Error connecting to WebSocket: $e');
       _attemptReconnect();
+    } finally {
+      _isConnecting = false;
     }
   }
 
   // Функция для попытки переподключения
   void _attemptReconnect() {
-    if (_isReconnecting) return; // Проверяем, уже ли идет попытка переподключения
+    if (_isReconnecting || !reconnectEnabled) {
+      return; // Проверяем, уже ли идет попытка переподключения или reconnect отключён
+    }
     _isReconnecting = true;
 
     Future.delayed(const Duration(seconds: reconnectDelaySeconds), () {
-      print('Attempting to reconnect...');
+      debugPrint('Attempting to reconnect...');
       _connect();
       _isReconnecting = false; // Сбрасываем флаг после попытки
     });
   }
 
   void onTextReceived(String message) {
-  List<String> parts = message.split(" ");
-  if (parts.isEmpty || int.tryParse(parts[0]) == null) {
-    print('Invalid message format: $message');
-    return;
-  }
-  try {
-    int id = int.parse(parts[0]);
-    var listener = listeners[id];
-    if (listener != null) {
-      listener(parts.sublist(1));
-      listeners.remove(id);
+    List<String> parts = message.split(" ");
+    if (parts.isEmpty || int.tryParse(parts[0]) == null) {
+      debugPrint('Invalid message format: $message');
+      return;
     }
-  } catch (e) {
-    print('Error: $e');
+    try {
+      int id = int.parse(parts[0]);
+      var listener = listeners[id];
+      if (listener != null) {
+        listener(parts.sublist(1));
+        listeners.remove(id);
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+    }
   }
-}
 
   void setOnMessageReceivedListener(int id, Function(List<String>) listener) {
     listeners[id] = listener;
   }
 
   void sendRequest(int id, String requestWord, String message) {
-    if (webSocketChannel != null && webSocketChannel!.closeCode == null) {
-      webSocketChannel!.sink.add("/sql $requestWord $id $message");
-    } else {
-      print("WebSocket is not connected. Reconnecting...");
-      _connect();
+    final channel = webSocketChannel;
+    if (channel != null && channel.closeCode == null) {
+      try {
+        channel.sink.add("/sql $requestWord $id $message");
+        return;
+      } catch (error) {
+        debugPrint("WebSocket send failed: $error");
+      }
     }
+
+    debugPrint("WebSocket is not connected. Reconnecting...");
+    _connect();
   }
 
   void sendUnregistredRequest(String message) {
-    if (webSocketChannel != null && webSocketChannel!.closeCode == null) {
-      webSocketChannel!.sink.add(message);
-    } else {
-      print("WebSocket is not connected. Reconnecting...");
-      _connect();
+    final channel = webSocketChannel;
+    if (channel != null && channel.closeCode == null) {
+      try {
+        channel.sink.add(message);
+        return;
+      } catch (error) {
+        debugPrint("WebSocket send failed: $error");
+      }
     }
+
+    debugPrint("WebSocket is not connected. Reconnecting...");
+    _connect();
+  }
+
+  Future<T> _withRequestTimeout<T>(
+    int requestId,
+    Future<T> future,
+    T fallback,
+    Duration timeout,
+  ) {
+    return future.timeout(timeout, onTimeout: () {
+      listeners.remove(requestId);
+      debugPrint('Request $requestId timed out');
+      return fallback;
+    });
   }
 
   int getK() {
@@ -112,9 +166,20 @@ class NetServerController with WidgetsBindingObserver {
 
   // Requests to the server
 
+  Future<bool> isApiAvailable({
+    Duration timeout = const Duration(milliseconds: 1400),
+  }) async {
+    final response = await login(
+      '__televibe_probe__',
+      '__televibe_probe__',
+      timeout: timeout,
+    );
+    return response.isNotEmpty;
+  }
 
 //OK
-  Future<List<String>> createNewChat(String chatPassword, bool isPrivacy) async {
+  Future<List<String>> createNewChat(
+      String chatPassword, bool isPrivacy) async {
     Completer<List<String>> completer = Completer<List<String>>();
     int requestId = getK();
 
@@ -124,41 +189,66 @@ class NetServerController with WidgetsBindingObserver {
       }
     });
 
-    print("${CryptController.encryptAES(chatPassword, chatPassword)} $isPrivacy");
-    sendRequest(requestId, "ChatCreate", "${CryptController.encryptAES(chatPassword, chatPassword)} $isPrivacy");
-    return completer.future;
+    final encryptedPassword =
+        CryptController.encryptAES(chatPassword, chatPassword);
+    debugPrint("$encryptedPassword $isPrivacy");
+    sendRequest(requestId, "ChatCreate", "$encryptedPassword $isPrivacy");
+    return _withRequestTimeout(
+      requestId,
+      completer.future,
+      <String>[],
+      const Duration(seconds: 5),
+    );
   }
 
-
 //OK
-  Future<List<String>> addUserToChat(RSAPublicKey publicKey, RSAPrivateKey privateKey, 
-    String idChat, String chatPassword, int? anonId, String? password, String? username, Image? img) async 
-  {
+  Future<List<String>> addUserToChat(
+      RSAPublicKey publicKey,
+      RSAPrivateKey privateKey,
+      String idChat,
+      String chatPassword,
+      int? anonId,
+      String? password,
+      String? username,
+      Image? img) async {
+    if (anonId == null || password == null) {
+      return [];
+    }
+
     Completer<List<String>> completer = Completer<List<String>>();
     int requestId = getK();
 
     // Шифруем ключи через CryptController
-    String encryptedPublicKey = CryptController.encryptPublicKey(CryptController.encodePublicKey(publicKey), idChat, chatPassword, anonId!, password!);
-    String encryptedPrivateKey = CryptController.encryptPrivateKey(CryptController.encodePrivateKey(privateKey), idChat, chatPassword);
-    String encryptedAnonId = CryptController.encryptAnonId(anonId.toString(), idChat, chatPassword, password!);
+    String encryptedPublicKey = CryptController.encryptPublicKey(
+        CryptController.encodePublicKey(publicKey),
+        idChat,
+        chatPassword,
+        anonId,
+        password);
+    String encryptedPrivateKey = CryptController.encryptPrivateKey(
+        CryptController.encodePrivateKey(privateKey), idChat, chatPassword);
+    String encryptedAnonId = CryptController.encryptAnonId(
+        anonId.toString(), idChat, chatPassword, password);
 
     setOnMessageReceivedListener(requestId, (parts) {
       if (parts.isNotEmpty) {
         completer.complete(parts);
       } else {
-        completer.complete(null);
+        completer.complete([]);
       }
     });
 
-    if(img != null){
-      String image = await Subuser.imageToBase64(img);
-      sendRequest(requestId, "AddUserToChat", 
-      "$encryptedPublicKey $encryptedPrivateKey $idChat $encryptedAnonId $username $image");
-    }
+    String image = img != null ? await Subuser.imageToBase64(img) : "";
+    sendRequest(requestId, "AddUserToChat",
+        "$encryptedPublicKey $encryptedPrivateKey $idChat $encryptedAnonId $username $image");
 
-    return completer.future;
+    return _withRequestTimeout(
+      requestId,
+      completer.future,
+      <String>[],
+      const Duration(seconds: 6),
+    );
   }
-
 
 //OK
   Future<bool> deleteGroup(String chatId) async {
@@ -173,13 +263,17 @@ class NetServerController with WidgetsBindingObserver {
       }
     });
 
-    sendRequest(requestId, "DeleteChat", "$chatId");
-    return completer.future;
+    sendRequest(requestId, "DeleteChat", chatId);
+    return _withRequestTimeout(
+      requestId,
+      completer.future,
+      false,
+      const Duration(seconds: 5),
+    );
   }
 
 //OK
   Future<List<String>> getChatUser(String chatId) async {
-    
     Completer<List<String>> completer = Completer<List<String>>();
     int requestId = getK();
 
@@ -187,19 +281,18 @@ class NetServerController with WidgetsBindingObserver {
       if (parts.isNotEmpty) {
         completer.complete(parts);
       } else {
-        completer.complete(null);
+        completer.complete([]);
       }
     });
 
-    sendRequest(requestId, "SendChatUsers", 
-    "$chatId");
-    return completer.future;
+    sendRequest(requestId, "SendChatUsers", chatId);
+    return _withRequestTimeout(
+      requestId,
+      completer.future,
+      <String>[],
+      const Duration(seconds: 5),
+    );
   }
-
-
-
-
-
 
   String xorEncrypt(String data, String key) {
     List<int> dataBytes = utf8.encode(data);
@@ -213,29 +306,34 @@ class NetServerController with WidgetsBindingObserver {
     return base64Encode(encryptedBytes);
   }
 
-
 //OK
-  Future<String> sendMessage(String preference, String msg, String chatId, int idSender, RSAPublicKey publicKey) async {
+  Future<String> sendMessage(String preference, String msg, String chatId,
+      int idSender, RSAPublicKey publicKey) async {
     Completer<String> completer = Completer<String>();
     int requestId = getK();
-    
+
     setOnMessageReceivedListener(requestId, (parts) {
       if (parts.isNotEmpty) {
         completer.complete(parts[0]);
       } else {
-        completer.complete(null);
+        completer.complete("");
       }
     });
 
     // Кодируем сообщение в base64
-    String encodedMsg = base64Encode(utf8.encode(CryptController.encryptRSA("$preference $msg", publicKey)));
+    String encodedMsg = base64Encode(
+        utf8.encode(CryptController.encryptRSA("$preference $msg", publicKey)));
 
     // Формируем запрос в нужном формате: requestId chatId idSender encodedMsg
     sendRequest(requestId, "SendMessage", "$chatId $idSender $encodedMsg");
 
-    return completer.future;
+    return _withRequestTimeout(
+      requestId,
+      completer.future,
+      "",
+      const Duration(seconds: 6),
+    );
   }
-
 
 //RW
   Future<List<String>> getMessages(String chatId, int lastQueueId) async {
@@ -246,15 +344,18 @@ class NetServerController with WidgetsBindingObserver {
       if (parts.isNotEmpty) {
         completer.complete(parts);
       } else {
-        completer.complete(null);
+        completer.complete([]);
       }
     });
 
-    sendRequest(requestId, "GetQueueMessages", 
-    "${chatId} ${lastQueueId}");
-    return completer.future;
+    sendRequest(requestId, "GetQueueMessages", "$chatId $lastQueueId");
+    return _withRequestTimeout(
+      requestId,
+      completer.future,
+      <String>[],
+      const Duration(seconds: 4),
+    );
   }
-
 
 //ERROR
   Future<String> deleteMessage(int idSender, int idMsg) async {
@@ -265,14 +366,18 @@ class NetServerController with WidgetsBindingObserver {
       if (parts.length > 1) {
         completer.complete(parts[1]);
       } else {
-        completer.complete(null);
+        completer.complete("");
       }
     });
 
     sendRequest(requestId, "DeleteMessages", "$idSender $idMsg");
-    return completer.future;
+    return _withRequestTimeout(
+      requestId,
+      completer.future,
+      "",
+      const Duration(seconds: 5),
+    );
   }
-
 
 //ERROR
   Future<String> refactorMessage(int idMsg, int idSender, List<int> msg) async {
@@ -283,17 +388,26 @@ class NetServerController with WidgetsBindingObserver {
       if (parts.isNotEmpty) {
         completer.complete(parts[0]);
       } else {
-        completer.complete(null);
+        completer.complete("");
       }
     });
 
-    sendRequest(requestId, "RefactorMessage", "$idMsg $idSender ${base64Encode(msg)}");
-    return completer.future;
+    sendRequest(
+        requestId, "RefactorMessage", "$idMsg $idSender ${base64Encode(msg)}");
+    return _withRequestTimeout(
+      requestId,
+      completer.future,
+      "",
+      const Duration(seconds: 5),
+    );
   }
 
-
 //OK
-  Future<List<String>> login(String log, String pass) async {
+  Future<List<String>> login(
+    String log,
+    String pass, {
+    Duration timeout = const Duration(seconds: 5),
+  }) async {
     Completer<List<String>> completer = Completer<List<String>>();
     int requestId = getK();
 
@@ -301,15 +415,17 @@ class NetServerController with WidgetsBindingObserver {
       if (parts.isNotEmpty) {
         completer.complete(parts);
       } else {
-        completer.complete(null);
+        completer.complete([]);
       }
     });
 
-    sendRequest(requestId, "Login", 
-    "${CryptController.encryptAES(log, log)} ${CryptController.encryptAES(pass, pass)}");
-    return completer.future;
+    sendRequest(requestId, "Login",
+        "${CryptController.encryptAES(log, log)} ${CryptController.encryptAES(pass, pass)}");
+    return completer.future.timeout(timeout, onTimeout: () {
+      listeners.remove(requestId);
+      return [];
+    });
   }
-
 
 //OK
   Future<List<String>> register(String log, String pass) async {
@@ -320,16 +436,20 @@ class NetServerController with WidgetsBindingObserver {
       if (parts.isNotEmpty) {
         completer.complete(parts);
       } else {
-        completer.complete(null);
+        completer.complete([]);
       }
     });
     String regdata = "  ";
 
-    sendRequest(requestId, "AltRegister", 
-    "${CryptController.encryptAES(log, log)} ${CryptController.encryptAES(pass, pass)} ${CryptController.encryptAES(regdata, "")}");
-    return completer.future;
+    sendRequest(requestId, "AltRegister",
+        "${CryptController.encryptAES(log, log)} ${CryptController.encryptAES(pass, pass)} ${CryptController.encryptAES(regdata, "")}");
+    return _withRequestTimeout(
+      requestId,
+      completer.future,
+      <String>[],
+      const Duration(seconds: 5),
+    );
   }
-
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -340,7 +460,13 @@ class NetServerController with WidgetsBindingObserver {
   }
 
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    if (_isStarted) {
+      WidgetsBinding.instance.removeObserver(this);
+      _isStarted = false;
+    }
+    _webSocketSubscription?.cancel();
+    _webSocketSubscription = null;
     webSocketChannel?.sink.close(status.goingAway);
+    webSocketChannel = null;
   }
 }

@@ -1,35 +1,29 @@
-import 'dart:ffi';
-
-import 'package:tele_vibe/Data/chats.dart';
-import 'package:tele_vibe/GettedData/cryptController.dart';
-import 'package:tele_vibe/GettedData/netServerController.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
-import 'package:pointycastle/api.dart'; // Импорт необходимых классов и интерфейсов
-import 'package:pointycastle/asymmetric/api.dart';
-import 'package:pointycastle/key_generators/api.dart' as keygen;
-import 'package:pointycastle/key_generators/rsa_key_generator.dart';
-import 'package:pointycastle/random/fortuna_random.dart';
 import 'package:flutter/material.dart';
-import 'package:pointycastle/asymmetric/api.dart';
 import 'package:tele_vibe/Data/chats.dart';
-import 'package:tele_vibe/Data/user.dart';
-import 'package:tele_vibe/GettedData/MessageHandler.dart';
-import 'package:tele_vibe/GettedData/cryptController.dart';
-import 'package:tele_vibe/GettedData/localDataSaveController.dart';
-import 'package:tele_vibe/GettedData/netServerController.dart';
 
 // Вот здесь поменяй, где ты держишь этот чертов юзер айди, потому что я в душе не чаю, какой из них именно этого пользователя
-class otherManVM {
+class OtherManVM {
+  String getUsername(int? userID) {
+    final chat = Chats.getNowChat();
+    if (chat == null || userID == null) return 'Unknown user';
 
-  String getUsername(int? userID) { 
-    return Chats.getChatById(Chats.nowChat).subusers.firstWhere((user) => user.id == userID).userName; 
+    for (final user in chat.subusers) {
+      if (user.id == userID) return user.userName;
+    }
+    return 'Unknown user';
   }
 
-  Image? getImage(int? userID) { 
-    return Chats.getChatById(Chats.nowChat).subusers.firstWhere((user) => user.id == userID).image?? null; 
+  Image? getImage(int? userID) {
+    final chat = Chats.getNowChat();
+    if (chat == null || userID == null) return null;
+
+    for (final user in chat.subusers) {
+      if (user.id == userID) return user.image;
+    }
+    return null;
   }
 
-  String getInfoAboutMe(int? userID) { 
+  String getInfoAboutMe(int? userID) {
     return "Nyaaaaaaaaaaa";
   }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 
 class NotificationService {
@@ -7,18 +6,20 @@ class NotificationService {
   factory NotificationService() => _instance;
   NotificationService._internal();
 
-  final FlutterLocalNotificationsPlugin _notifications = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _notifications =
+      FlutterLocalNotificationsPlugin();
 
   Future<void> init() async {
     tz.initializeTimeZones();
-    
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    const androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
     );
-    
+
     const initSettings = InitializationSettings(
       android: androidSettings,
       iOS: iosSettings,
@@ -34,8 +35,8 @@ class NotificationService {
   }) async {
     const androidDetails = AndroidNotificationDetails(
       'messages_channel',
-      'Сообщения',
-      channelDescription: 'Уведомления о новых сообщениях',
+      'Messages',
+      channelDescription: 'Notifications about new messages',
       importance: Importance.high,
       priority: Priority.high,
       showWhen: true,
@@ -67,9 +68,9 @@ class NotificationService {
     String? payload,
   }) async {
     await showMessageNotification(
-      title: 'Новое сообщение в чате $chatName',
+      title: 'New message in $chatName',
       body: message,
       payload: payload,
     );
   }
-} 
+}

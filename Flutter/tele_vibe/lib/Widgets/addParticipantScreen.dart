@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:tele_vibe/Localization/context_extensions.dart';
 
 class AddParticipantScreen extends StatefulWidget {
+  const AddParticipantScreen({super.key});
+
   @override
-  _AddParticipantScreenState createState() => _AddParticipantScreenState();
+  State<AddParticipantScreen> createState() => _AddParticipantScreenState();
 }
 
 class _AddParticipantScreenState extends State<AddParticipantScreen> {
@@ -18,58 +21,92 @@ class _AddParticipantScreenState extends State<AddParticipantScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF141414),
+      backgroundColor: const Color(0xFF0E1621),
       appBar: AppBar(
-        title: const Text('Добавить участника', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFF222222),
+        title: Text(l10n.addParticipantTitle,
+            style: const TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xFF17212B),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            TextField(
-              cursorColor: Colors.white,
-              controller: _idController,
-              focusNode: _focusNode,
-              decoration: const InputDecoration(
-                fillColor: Colors.white,
-                labelText: 'Введите ID участника',
-                labelStyle: TextStyle(color: Colors.white),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
-                ),
-              ),
-              keyboardType: TextInputType.number,
-              style: const TextStyle(color: Colors.white),
-              onEditingComplete: () {
-                // Закрываем клавиатуру при завершении ввода
-                _focusNode.unfocus();
-              },
+        child: Center(
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: const Color(0xFF17212B),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: const Color(0xFF243447)),
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                String participantId = _idController.text;
-                // Логика для обработки ID участника
-                print("Введенный ID участника: $participantId");
-
-                Navigator.pop(context); // Возвращаемся на предыдущий экран
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF222222),
-              ),
-              child: const Text('OK', style: TextStyle(color: Colors.white)),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Text(
+                  l10n.inviteByIdTitle,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.inviteByIdDescription,
+                  style: TextStyle(
+                    color: Color(0xFF7F91A4),
+                    height: 1.35,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                TextField(
+                  cursorColor: const Color(0xFF2AABEE),
+                  controller: _idController,
+                  focusNode: _focusNode,
+                  decoration: InputDecoration(
+                    labelText: l10n.participantIdLabel,
+                    labelStyle: const TextStyle(color: Color(0xFF7F91A4)),
+                    filled: true,
+                    fillColor: const Color(0xFF0E1621),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: const BorderSide(color: Color(0xFF243447)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: const BorderSide(color: Color(0xFF2AABEE)),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: const BorderSide(color: Color(0xFF243447)),
+                    ),
+                  ),
+                  keyboardType: TextInputType.number,
+                  style: const TextStyle(color: Colors.white),
+                  onEditingComplete: () {
+                    _focusNode.unfocus();
+                  },
+                ),
+                const SizedBox(height: 18),
+                FilledButton(
+                  onPressed: () {
+                    final participantId = _idController.text;
+                    debugPrint('Entered participant ID: $participantId');
+                    Navigator.pop(context);
+                  },
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF2AABEE),
+                    minimumSize: const Size(double.infinity, 48),
+                  ),
+                  child: Text(l10n.inviteParticipantCta,
+                      style: TextStyle(color: Colors.white)),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

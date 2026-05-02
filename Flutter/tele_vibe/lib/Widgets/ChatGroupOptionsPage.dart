@@ -1,239 +1,173 @@
 import 'package:flutter/material.dart';
+import 'package:tele_vibe/Localization/context_extensions.dart';
 import 'package:tele_vibe/ViewModel/chatGroupOptionVM.dart';
 
 class ChatGroupOptionsPage extends StatefulWidget {
   const ChatGroupOptionsPage({super.key});
 
   @override
-  _ChatGroupOptionsPageState createState() => _ChatGroupOptionsPageState();
+  State<ChatGroupOptionsPage> createState() => _ChatGroupOptionsPageState();
 }
 
 class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
-  bool _isCreatingGroup = false;
+  bool _isCreatingGroup = true;
   bool _isAddingChat = false;
+  bool _createAsGroup = true;
 
-  // Переменные для хранения данных
-  String _groupName = '';
-  String _groupPassword = '';
-  String _textField = "";
-  String _chatPassword = '', _chatId = '';
-
-  // Контроллеры для текстовых полей
-  final TextEditingController _groupNameController = TextEditingController();
-  final TextEditingController _groupPasswordController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _createPasswordController =
+      TextEditingController();
+  final TextEditingController _chatIdController = TextEditingController();
   final TextEditingController _chatPasswordController = TextEditingController();
-  final TextEditingController  _groupHostController = TextEditingController();
-  final TextEditingController  _chatIdController = TextEditingController();
   final ChatGroupOptionVM _chatGroupOptionVM = ChatGroupOptionVM();
-  bool _isPasswordRequired = false;
-  
+  final String _groupHost = '';
 
-  // Переменные для хранения данных
-  String _groupHost = '';
-  String _addChatPassword = '';
-
-  // ПРОШУ ИЛЬЯ ПИШИ ЭТО ПРОЩУ
-  @override
-  void initState() {
-    super.initState();
-  }
-  // ПРОШУ ИЛЬЯ ПИШИ ЭТО ПРОЩУ, ЭТО ТОЖЕ
   @override
   void dispose() {
     _chatGroupOptionVM.dispose();
-    _groupNameController.dispose();
-    _groupPasswordController.dispose();
+    _nameController.dispose();
+    _createPasswordController.dispose();
+    _chatIdController.dispose();
     _chatPasswordController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF141414),
+      backgroundColor: const Color(0xFF0E1621),
       appBar: AppBar(
-        title: const Text(
-          "Создание/Добавление чата",
+        title: Text(
+          l10n.newConversationTitle,
           style: TextStyle(
             color: Colors.white,
           ),
         ),
-        backgroundColor: const Color(0xFF141414),
+        backgroundColor: const Color(0xFF17212B),
         iconTheme: const IconThemeData(
           color: Colors.white,
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center, // Центрирование по ширине
-          mainAxisAlignment: MainAxisAlignment.start, // Прижимаем все к верху
-          children: [
-            Center( // Центрируем первую кнопку
-              child: ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _isCreatingGroup = true;
-                    _isAddingChat = false;
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF17212B),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: const Color(0xFF243447)),
                 ),
-                child: const Text(
-                  "Создать чат/группу",
-                  style: TextStyle(color: Colors.black)),
-              ),
-            ),
-            const SizedBox(height: 16), // Отступ между кнопками
-            Center( // Центрируем вторую кнопку
-              child: ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _isAddingChat = true;
-                    _isCreatingGroup = false;
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
+                child: Text(
+                  _isCreatingGroup
+                      ? l10n.createConversationDescription
+                      : l10n.joinConversationDescription,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.75),
+                    height: 1.4,
+                  ),
                 ),
-                child: const Text("Добавить чат/группу",
-                  style: TextStyle(color: Colors.black)),
               ),
-            ),
-            const SizedBox(height: 32), // Отступ перед полями ввода
-            if (_isCreatingGroup) ...[
-              TextField(
-                cursorColor: Colors.white,
-                controller: _groupNameController,
-                onChanged: (value) {
-                  setState(() {
-                    _groupName = value; // Сохранение названия группы
-                  });
-                },
-                decoration: const InputDecoration(
-                  labelText: "Название группы",
-                  labelStyle: TextStyle(color: Colors.white),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Expanded(
+                    child: _ModeButton(
+                      label: l10n.createTabLabel,
+                      selected: _isCreatingGroup,
+                      onTap: () {
+                        setState(() {
+                          _isCreatingGroup = true;
+                          _isAddingChat = false;
+                        });
+                      },
+                    ),
                   ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white), 
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _ModeButton(
+                      label: l10n.joinTabLabel,
+                      selected: _isAddingChat,
+                      onTap: () {
+                        setState(() {
+                          _isAddingChat = true;
+                          _isCreatingGroup = false;
+                        });
+                      },
+                    ),
                   ),
-                  hintStyle: TextStyle(color: Colors.white),
+                ],
+              ),
+              const SizedBox(height: 22),
+              if (_isCreatingGroup) ...[
+                _buildSectionTitle(l10n.conversationDetailsSection),
+                _buildTextField(
+                  controller: _nameController,
+                  label: l10n.conversationNameLabel,
+                  hint: l10n.conversationNameHint,
                 ),
-                style: const TextStyle(color: Colors.white)
-              ),
-              TextField(
-                cursorColor: Colors.white,
-                controller: _groupPasswordController,
-                onChanged: (value) {
-                  setState(() {
-                    _groupPassword = value; // Сохранение пароля группы
-                  });
-                },
-                decoration: const InputDecoration(
-                  labelText: "Пароль (если нужен)",
-                  labelStyle: TextStyle(color: Colors.white),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white), 
-                  ),
-                  hintStyle: TextStyle(color: Colors.white),
+                const SizedBox(height: 14),
+                _buildTextField(
+                  controller: _createPasswordController,
+                  label: l10n.accessCodeLabel,
+                  hint: l10n.optionalHint,
+                  obscureText: true,
                 ),
-                style: const TextStyle(color: Colors.white),
-                obscureText: true,
-              ),
-
-              SwitchListTile(
-                title: const Text("Чат/группа?", style: TextStyle(color: Colors.white)),
-                value: _isPasswordRequired,
-                onChanged: (value) {
-                  setState(() {
-                    _isPasswordRequired = value;
-                  });
-                },
-                activeColor: Colors.black,
-                activeTrackColor: Colors.white,
-                inactiveThumbColor: Colors.black,
-                inactiveTrackColor: Colors.white
-              ),
+                const SizedBox(height: 14),
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF17212B),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xFF243447)),
+                  ),
+                  child: SwitchListTile(
+                    value: _createAsGroup,
+                    onChanged: (value) {
+                      setState(() {
+                        _createAsGroup = value;
+                      });
+                    },
+                    activeThumbColor: const Color(0xFF2AABEE),
+                    title: Text(
+                      l10n.createAsGroupTitle,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    subtitle: Text(
+                      l10n.createAsGroupDescription,
+                      style: TextStyle(color: Color(0xFF7F91A4)),
+                    ),
+                  ),
+                ),
+              ],
+              if (_isAddingChat) ...[
+                _buildSectionTitle(l10n.joinWithCredentialsSection),
+                _buildTextField(
+                  controller: _nameController,
+                  label: l10n.displayNameLabel,
+                  hint: l10n.displayNameHint,
+                ),
+                const SizedBox(height: 14),
+                _buildTextField(
+                  controller: _chatIdController,
+                  label: l10n.chatIdLabel,
+                  hint: l10n.pasteConversationIdHint,
+                ),
+                const SizedBox(height: 14),
+                _buildTextField(
+                  controller: _chatPasswordController,
+                  label: l10n.accessCodeLabel,
+                  hint: l10n.accessCodeRequiredHint,
+                  obscureText: true,
+                ),
+              ],
             ],
-            if (_isAddingChat) ...[
-              // Текстовое поле для ввода ID чата
-              TextField(
-                cursorColor: Colors.white,
-                controller: _chatIdController,
-                onChanged: (value) {
-                  setState(() {
-                    _chatId = value; // Сохранение ID чата
-                  });
-                },
-                decoration: const InputDecoration(
-                  labelText: "ID чата",
-                  labelStyle: TextStyle(color: Colors.white),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white), 
-                  ),
-                  hintStyle: TextStyle(color: Colors.white),
-                ),
-                style: const TextStyle(color: Colors.white),
-              ),
-              // Текстовое поле для ввода пароля
-              TextField(
-                cursorColor: Colors.white,
-                controller: _chatPasswordController,
-                onChanged: (value) {
-                  setState(() {
-                    _chatPassword = value; // Сохранение пароля чата
-                  });
-                },
-                decoration: const InputDecoration(
-                  labelText: "Пароль",
-                  labelStyle: TextStyle(color: Colors.white),
-                  focusedBorder:  UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white), 
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white), 
-                  ),
-                  hintStyle: TextStyle(color: Colors.white),
-                ),
-                style: const TextStyle(color: Colors.white),
-                obscureText: true,
-              ),
-              // Текстовое поле для ввода пароля
-              /*
-              TextField(
-                cursorColor: Colors.white,
-                controller: _chatPasswordController,
-                onChanged: (value) {
-                  setState(() {
-                    _chatPassword = value; // Сохранение пароля чата
-                  });
-                },
-                decoration: const InputDecoration(
-                  labelText: "пароль",
-                  labelStyle: TextStyle(color: Colors.white),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),  // Белая линия при фокусе
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),  // Белая линия по умолчанию
-                  ),
-                  hintStyle: TextStyle(color: Colors.white),
-                ),
-                style: const TextStyle(color: Colors.white),
-                obscureText: true,
-              ),
-              */
-            ]
-          ],
+          ),
         ),
       ),
       bottomNavigationBar: _isCreatingGroup || _isAddingChat
@@ -242,26 +176,112 @@ class _ChatGroupOptionsPageState extends State<ChatGroupOptionsPage> {
               child: ElevatedButton(
                 onPressed: () {
                   if (_isCreatingGroup) {
-                    _chatGroupOptionVM.createChat(context, _groupName, _groupPassword, _groupHost, true);
-                    // Логика создания группы с сохраненными данными
-                    print("Создание группы: $_groupName с паролем: $_groupPassword");
+                    _chatGroupOptionVM.createChat(
+                      context,
+                      _nameController.text,
+                      _createPasswordController.text,
+                      _groupHost,
+                      _createAsGroup,
+                    );
                   } else if (_isAddingChat) {
-                    _chatGroupOptionVM.enterInChat(context, _groupName, _chatId, _chatPassword, _groupHost);
-                    // Логика добавления чата с сохраненными данными
-                    print("Добавление чата с паролем: $_addChatPassword");
+                    _chatGroupOptionVM.enterInChat(
+                      context,
+                      _nameController.text,
+                      _chatIdController.text,
+                      _chatPasswordController.text,
+                      _groupHost,
+                    );
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  minimumSize: const Size(double.infinity, 50), // Кнопка по ширине экрана
+                  backgroundColor: const Color(0xFF2AABEE),
+                  minimumSize: const Size(
+                      double.infinity, 50), // Кнопка по ширине экрана
                 ),
                 child: Text(
-                  _isCreatingGroup ? "Создать" : "Добавить",
-                  style: const TextStyle(color: Colors.black)
-                  ),
+                    _isCreatingGroup
+                        ? l10n.createConversationCta
+                        : l10n.joinChatCta,
+                    style: const TextStyle(color: Colors.white)),
               ),
             )
           : null,
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Text(
+        title,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    bool obscureText = false,
+  }) {
+    return TextField(
+      controller: controller,
+      cursorColor: const Color(0xFF2AABEE),
+      obscureText: obscureText,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        labelStyle: const TextStyle(color: Color(0xFF7F91A4)),
+        hintStyle: const TextStyle(color: Color(0xFF56697C)),
+        filled: true,
+        fillColor: const Color(0xFF17212B),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Color(0xFF243447)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Color(0xFF2AABEE)),
+        ),
+      ),
+    );
+  }
+}
+
+class _ModeButton extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _ModeButton({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 46,
+      child: ElevatedButton(
+        onPressed: onTap,
+        style: ElevatedButton.styleFrom(
+          elevation: 0,
+          backgroundColor:
+              selected ? const Color(0xFF2AABEE) : const Color(0xFF243447),
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+        child: Text(label),
+      ),
     );
   }
 }

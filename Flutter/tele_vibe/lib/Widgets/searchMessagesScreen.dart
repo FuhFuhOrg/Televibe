@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:tele_vibe/Localization/context_extensions.dart';
 
 class SearchMessagesScreen extends StatefulWidget {
   final List<Map<String, dynamic>> messages;
@@ -7,7 +7,7 @@ class SearchMessagesScreen extends StatefulWidget {
   const SearchMessagesScreen({super.key, required this.messages});
 
   @override
-  _SearchMessagesScreenState createState() => _SearchMessagesScreenState();
+  State<SearchMessagesScreen> createState() => _SearchMessagesScreenState();
 }
 
 class _SearchMessagesScreenState extends State<SearchMessagesScreen> {
@@ -46,43 +46,83 @@ class _SearchMessagesScreenState extends State<SearchMessagesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF222222),
+        backgroundColor: const Color(0xFF17212B),
         iconTheme: const IconThemeData(color: Colors.white),
         title: TextField(
           cursorColor: Colors.white,
           controller: _searchController,
           decoration: InputDecoration(
-            hintText: 'Search messages...',
-            hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+            hintText: l10n.searchMessagesHint,
+            hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
             border: InputBorder.none,
           ),
           style: const TextStyle(color: Colors.white),
         ),
       ),
-      backgroundColor: const Color(0xFF141414),
+      backgroundColor: const Color(0xFF0E1621),
       body: _filteredMessages.isNotEmpty
           ? ListView.builder(
+              padding: const EdgeInsets.all(12),
               itemCount: _filteredMessages.length,
               itemBuilder: (BuildContext context, int index) {
                 final message = _filteredMessages[index];
-                return ListTile(
-                  title: Text(
-                    message['text'],
-                    style: const TextStyle(color: Colors.white),
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF17212B),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xFF243447)),
                   ),
-                  subtitle: Text(
-                    'By ${message['userName']} - ${message['time']}',
-                    style: const TextStyle(color: Colors.white70),
+                  child: ListTile(
+                    title: Text(
+                      message['text'],
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    subtitle: Text(
+                      l10n.fromUserAt(
+                        userName: message['userName'].toString(),
+                        time: message['time'].toString(),
+                      ),
+                      style: const TextStyle(color: Color(0xFF7F91A4)),
+                    ),
                   ),
                 );
               },
             )
-          : const Center(
-              child: Text(
-                'No messages found.',
-                style: TextStyle(color: Colors.white),
+          : Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 28),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.message_outlined,
+                        color: Color(0xFF7F91A4), size: 42),
+                    const SizedBox(height: 12),
+                    Text(
+                      l10n.noMessagesFound,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      _searchController.text.isEmpty
+                          ? l10n.searchCurrentConversationPrompt
+                          : l10n.tryAnotherKeywordOrChat,
+                      style: const TextStyle(
+                        color: Color(0xFF7F91A4),
+                        height: 1.35,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
             ),
     );

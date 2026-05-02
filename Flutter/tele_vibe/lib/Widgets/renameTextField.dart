@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:tele_vibe/Localization/context_extensions.dart';
 
 class RenameTextField extends StatefulWidget {
   final String title;
   final String currentText;
 
-  const RenameTextField({super.key, required this.title, required this.currentText});
+  const RenameTextField(
+      {super.key, required this.title, required this.currentText});
 
   @override
-  _RenameTextFieldState createState() => _RenameTextFieldState();
+  State<RenameTextField> createState() => _RenameTextFieldState();
 }
 
 class _RenameTextFieldState extends State<RenameTextField> {
@@ -16,18 +18,20 @@ class _RenameTextFieldState extends State<RenameTextField> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: "");
+    _controller = TextEditingController(text: widget.currentText);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF141414),
+      backgroundColor: const Color(0xFF0E1621),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF141414),
+        backgroundColor: const Color(0xFF17212B),
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
-          'Изменить ${widget.title}',
+          widget.title,
           style: const TextStyle(color: Colors.white),
         ),
         actions: [
@@ -41,20 +45,38 @@ class _RenameTextFieldState extends State<RenameTextField> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: TextField(
-          cursorColor: Colors.white,
-          controller: _controller,
-          style: const TextStyle(color: Colors.white),
-          decoration: InputDecoration(
-            hintText: 'Введите ${widget.title}',
-            hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-            enabledBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.white),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.editValueDescription,
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.7),
+                height: 1.35,
+              ),
             ),
-            focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.white),
+            const SizedBox(height: 16),
+            TextField(
+              cursorColor: const Color(0xFF2AABEE),
+              controller: _controller,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: l10n.editValueHint,
+                hintStyle:
+                    TextStyle(color: Colors.white.withValues(alpha: 0.5)),
+                filled: true,
+                fillColor: const Color(0xFF17212B),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: Color(0xFF243447)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: Color(0xFF2AABEE)),
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

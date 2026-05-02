@@ -1,0 +1,240 @@
+{
+  "appName": "Televibe",
+  "signIn": "Вход",
+  "readyForLiveSync": "Готово к живой синхронизации",
+  "loginIntro": "Войдите, чтобы сразу восстановить чаты и медиа. Если API недоступен, можно открыть подготовленное пространство переписки.",
+  "loginLabel": "Логин",
+  "passwordLabel": "Пароль",
+  "openChats": "Открыть чаты",
+  "newToTelevibe": "Впервые в Televibe?",
+  "createAccount": "Создать аккаунт",
+  "createAccountHeading": "Создать аккаунт",
+  "registrationSubtitle": "Настройте свой профиль и переходите к перепискам.",
+  "registrationIntro": "Аккаунт хранит чаты, данные профиля и медиа в одном месте. Выберите надёжный пароль, чтобы удобно переключаться между устройствами.",
+  "repeatPasswordLabel": "Повторите пароль",
+  "alreadyHaveAccount": "Уже есть аккаунт?",
+  "backToSignIn": "Вернуться ко входу",
+  "passwordsDoNotMatch": "Пароли не совпадают",
+  "settingsTitle": "Настройки",
+  "controlYourExperienceTitle": "Управляйте своим опытом",
+  "controlYourExperienceDescription": "Настройте уведомления, звук и параметры интерфейса так, чтобы приложением было удобно пользоваться каждый день.",
+  "notificationsAndSound": "Уведомления и звук",
+  "messageNotificationsTitle": "Уведомления о сообщениях",
+  "messageNotificationsDescription": "Показывать оповещения о новых чатах и входящих сообщениях.",
+  "soundTitle": "Звук",
+  "soundDescription": "Воспроизводить звуковые сигналы для сообщений и обновлений.",
+  "interfaceTitle": "Интерфейс",
+  "languageTitle": "Язык",
+  "reviewLanguageOptions": "Просмотреть доступные языки интерфейса.",
+  "navigationTitle": "Навигация",
+  "backToChats": "Назад к чатам",
+  "backToChatsDescription": "Вернуться к списку переписок.",
+  "languageSettingsDescription": "Выберите язык интерфейса для всего приложения. Содержимое чатов, имена и подготовленные переписки остаются на английском.",
+  "selectedLanguageDescription": "Текущий язык приложения",
+  "tapToSwitchLanguageDescription": "Нажмите, чтобы мгновенно сменить язык интерфейса",
+  "newConversationTitle": "Новый чат",
+  "createConversationDescription": "Создайте новое пространство для личных сообщений или групповых обновлений.",
+  "joinConversationDescription": "Подключитесь к существующему чату по его ID и коду доступа.",
+  "createTabLabel": "Создать",
+  "joinTabLabel": "Войти",
+  "conversationDetailsSection": "Параметры чата",
+  "conversationNameLabel": "Название чата",
+  "conversationNameHint": "Product sync, Family, Alex...",
+  "accessCodeLabel": "Код доступа",
+  "optionalHint": "Необязательно",
+  "createAsGroupTitle": "Создать как группу",
+  "createAsGroupDescription": "Включите это, если к одной переписке должно подключаться несколько участников.",
+  "joinWithCredentialsSection": "Подключение по данным",
+  "displayNameLabel": "Отображаемое имя",
+  "displayNameHint": "Необязательная подпись для этого чата",
+  "chatIdLabel": "ID чата",
+  "pasteConversationIdHint": "Вставьте ID переписки",
+  "accessCodeRequiredHint": "Нужно, если владелец установил код",
+  "createConversationCta": "Создать чат",
+  "joinChatCta": "Войти в чат",
+  "addParticipantTitle": "Добавить участника",
+  "inviteByIdTitle": "Пригласить по ID",
+  "inviteByIdDescription": "Вставьте ID участника ниже, чтобы сохранить порядок в этой переписке и быстро пригласить человека.",
+  "participantIdLabel": "ID участника",
+  "inviteParticipantCta": "Пригласить участника",
+  "searchChatsHint": "Поиск чатов...",
+  "noChatsFound": "Чаты не найдены",
+  "startTypingToBrowseConversations": "Начните вводить запрос, чтобы просматривать свои переписки.",
+  "tryAnotherNameOrCreateChat": "Попробуйте другое имя или создайте новый чат с главного экрана.",
+  "searchMessagesHint": "Поиск сообщений...",
+  "noMessagesFound": "Сообщения не найдены",
+  "searchCurrentConversationPrompt": "Ищите внутри текущей переписки.",
+  "tryAnotherKeywordOrChat": "Попробуйте другое слово или откройте другой чат.",
+  "fromUserAt": "От {userName} в {time}",
+  "@fromUserAt": {
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "nothingHereYet": "Здесь пока пусто",
+  "noDirectChatsYet": "Личных чатов по этому фильтру пока нет.",
+  "noGroupsYet": "Групповые переписки сейчас не отображаются в этой вкладке.",
+  "noUnreadChatsYet": "Вы всё прочитали. В этой папке нет непрочитанных чатов.",
+  "archiveFolderEmpty": "Архивируйте чат из основного списка, и он появится здесь.",
+  "startDirectChatPrompt": "Начните личный чат или создайте группу, чтобы увидеть переписки здесь.",
+  "memberCount": "{count} участников",
+  "@memberCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "directChat": "Личный чат",
+  "pinChat": "Закрепить чат",
+  "unpinChat": "Открепить чат",
+  "archiveChat": "Архивировать чат",
+  "unarchiveChat": "Вернуть из архива",
+  "leaveGroup": "Покинуть группу",
+  "deleteChat": "Удалить чат",
+  "conversationHubTitle": "Центр переписок",
+  "conversationHubDescription": "Всё важное остаётся в одном касании: недавние чаты, закреплённые ветки и непрочитанные обновления.",
+  "directStatLabel": "Личные",
+  "groupsStatLabel": "Группы",
+  "unreadStatLabel": "Непрочитанные",
+  "allFilterLabel": "Все",
+  "directFilterLabel": "Личные",
+  "groupsFilterLabel": "Группы",
+  "unreadFilterLabel": "Непрочитанные",
+  "archiveFilterLabel": "Архив",
+  "personalAccount": "Личный аккаунт",
+  "chatsReadyToOpen": "Готово к открытию: {count} чатов",
+  "@chatsReadyToOpen": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileTitle": "Профиль",
+  "archivedChatsTitle": "Архив чатов",
+  "callsTitle": "Звонки",
+  "contactsTitle": "Контакты",
+  "archivedChatsDescription": "Сейчас {count} чатов скрыто из основного списка. Это локальный архив для портфолио, поэтому восстановление происходит мгновенно.",
+  "@archivedChatsDescription": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveIsEmpty": "Архив пуст",
+  "archiveEmptyDescription": "Архивируйте чат из основного списка, чтобы переместить его сюда и сохранить переписку.",
+  "callHistoryTitle": "История звонков",
+  "callsMvpDescription": "Этот экран локальный для MVP, но выглядит и работает как настоящий журнал звонков мессенджера.",
+  "recentStatLabel": "Недавние",
+  "missedStatLabel": "Пропущенные",
+  "videoStatLabel": "Видео",
+  "allCallsFilter": "Все звонки",
+  "missedCallsFilter": "Пропущенные",
+  "callTypeVideo": "Видео",
+  "callTypeVoice": "Голос",
+  "pseudoVideoCallScreen": "Псевдоэкран видеозвонка",
+  "pseudoVoiceCallScreen": "Псевдоэкран голосового звонка",
+  "noCallsInFilter": "В этом фильтре нет звонков",
+  "switchBackToAllCalls": "Переключитесь обратно на все звонки, чтобы увидеть полную тестовую историю.",
+  "peopleAndTeamsTitle": "Люди и команды",
+  "contactsSummary": "Доступно контактов: {total}, сейчас онлайн: {online}. Это локальный демонстрационный каталог для портфолио-сценария.",
+  "@contactsSummary": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "online": {
+        "type": "int"
+      }
+    }
+  },
+  "searchByNameOrUsername": "Поиск по имени или юзернейму",
+  "noContactsFound": "Контакты не найдены",
+  "tryAnotherContactQuery": "Попробуйте другой запрос, чтобы отфильтровать локальную демонстрационную адресную книгу.",
+  "accountSectionTitle": "Аккаунт",
+  "aboutSectionTitle": "О пользователе",
+  "statusSectionTitle": "Статус",
+  "userIdLabel": "ID пользователя",
+  "usernameLabel": "Имя пользователя",
+  "userIdCopied": "ID пользователя скопирован",
+  "profileStatusDescription": "Готово к синхронизации чатов, данных профиля и общих медиа между вашими сессиями.",
+  "addPhoto": "Добавить фото",
+  "removePhoto": "Удалить фото",
+  "imageNotSelected": "Изображение не выбрано",
+  "editValueTitle": "Изменить значение",
+  "editValueDescription": "Обновите значение и сохраните его, когда закончите.",
+  "editValueHint": "Введите новое значение",
+  "displayNameField": "Отображаемое имя",
+  "usernameField": "Имя пользователя",
+  "chatNameField": "Название чата",
+  "directConversation": "Личная переписка",
+  "addParticipants": "Добавить участников",
+  "chatIdCopied": "ID чата скопирован",
+  "copyChatId": "Скопировать ID чата",
+  "sharedContentTitle": "Общий контент",
+  "sharedContentDescription": "Локальные вкладки портфолио, имитирующие настоящий браузер медиа внутри мессенджера.",
+  "mediaTab": "Медиа",
+  "filesTab": "Файлы",
+  "linksTab": "Ссылки",
+  "membersSectionTitle": "Участники",
+  "peopleSectionTitle": "Люди",
+  "memberRole": "Участник",
+  "participantRole": "Собеседник",
+  "noSharedMedia": "Пока нет общих медиа",
+  "noSharedFiles": "Пока нет общих файлов",
+  "noSharedLinks": "Пока нет общих ссылок",
+  "memberOptions": "Действия с участником",
+  "removeMember": "Удалить",
+  "chatRemoved": "Чат удалён",
+  "unableToDeleteChat": "Не удалось удалить чат",
+  "chatCreated": "Чат создан",
+  "chatCreatedWithId": "Чат создан: {chatId}",
+  "@chatCreatedWithId": {
+    "placeholders": {
+      "chatId": {
+        "type": "String"
+      }
+    }
+  },
+  "chatAdded": "Чат добавлен",
+  "addedUserToChat": "Пользователь добавлен в чат: {userId}",
+  "@addedUserToChat": {
+    "placeholders": {
+      "userId": {
+        "type": "String"
+      }
+    }
+  },
+  "chatDetailsTitle": "Информация о чате",
+  "messageSearchHint": "Поиск...",
+  "lastSeenRecently": "недавно был(а) в сети",
+  "imageSendFailed": "Не удалось отправить изображение: {error}",
+  "@imageSendFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "messageInputHint": "Сообщение",
+  "messageActionsTitle": "Сообщение",
+  "copyAction": "Копировать",
+  "editAction": "Изменить",
+  "deleteAction": "Удалить",
+  "cancelAction": "Отмена",
+  "viewDetailsAction": "Открыть детали",
+  "jumpToLatest": "К последнему сообщению",
+  "editMessageTitle": "Изменить сообщение",
+  "enterMessageTextHint": "Введите текст сообщения",
+  "saveAction": "Сохранить",
+  "editedLabel": "изменено",
+  "storyPreviewDescription": "Предпросмотр сторис для портфолио. Тапы переключают истории так же, как в живом мессенджере, а контент остаётся локальным и тестовым.",
+  "replyAction": "Ответить"
+}

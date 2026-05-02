@@ -1,4 +1,3 @@
-
 import 'package:flutter/widgets.dart';
 
 class Anon {
@@ -13,6 +12,7 @@ class Anon {
   static set anonId(int? value) {
     _anonId = value;
   }
+
   static set anonPassword(String? value) {
     _anonPassword = value;
   }

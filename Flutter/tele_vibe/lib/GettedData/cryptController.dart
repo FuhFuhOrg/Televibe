@@ -11,8 +11,9 @@ import 'package:pointycastle/random/fortuna_random.dart';
 
 class CryptController {
   // Функция для создания AES шифратора
-  static (encrypt.IV, encrypt.Encrypter) GenCrypter(String aesEncryptionKey) {
-    final String paddedKey = aesEncryptionKey.padRight(32, '0').substring(0, 32);
+  static (encrypt.IV, encrypt.Encrypter) genCrypter(String aesEncryptionKey) {
+    final String paddedKey =
+        aesEncryptionKey.padRight(32, '0').substring(0, 32);
     final key = encrypt.Key.fromUtf8(paddedKey);
     String ivString = aesEncryptionKey.padRight(16, '0').substring(0, 16);
     final iv = encrypt.IV.fromUtf8(ivString);
@@ -20,28 +21,24 @@ class CryptController {
     return (
       iv,
       encrypt.Encrypter(
-        encrypt.AES(
-          key, 
-          mode: encrypt.AESMode.ctr, 
-          padding: null
-        )
-      )
+          encrypt.AES(key, mode: encrypt.AESMode.ctr, padding: null))
     );
   }
-    
+
   static String generateRandomString(int len) {
     var r = Random();
-    const chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+    const chars =
+        'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
     return List.generate(len, (index) => chars[r.nextInt(chars.length)]).join();
   }
 
-  static (String, String) getRandomKeys(){
+  static (String, String) getRandomKeys() {
     return (generateRandomString(128), generateRandomString(128));
   }
 
   // Функция для шифрования текста (AES)
   static String encryptAES(String text, String key) {
-    final (iv, encrypter) = GenCrypter(key);
+    final (iv, encrypter) = genCrypter(key);
     final encrypted = encrypter.encrypt(text, iv: iv);
     return encrypted.base64;
   }
@@ -49,7 +46,7 @@ class CryptController {
   // Функция для расшифровки текста (AES)
   static String decryptAES(String encrypted, String key) {
     final encryptedBytes = base64.decode(encrypted);
-    final (iv, encrypter) = GenCrypter(key);
+    final (iv, encrypter) = genCrypter(key);
     final decrypted = encrypter.decrypt(
       encrypt.Encrypted(encryptedBytes),
       iv: iv,
@@ -58,8 +55,12 @@ class CryptController {
   }
 
   // Функция для генерации пары RSA-ключей
-  static (RSAPublicKey, RSAPrivateKey) generateRSAKeyPair() {
-    final keyParams = keygen.RSAKeyGeneratorParameters(BigInt.parse('65537'), 2048, 12);
+  static (RSAPublicKey, RSAPrivateKey) generateRSAKeyPair({
+    int bitLength = 2048,
+    int certainty = 12,
+  }) {
+    final keyParams = keygen.RSAKeyGeneratorParameters(
+        BigInt.parse('65537'), bitLength, certainty);
     final secureRandom = _getSecureRandom();
     final generator = RSAKeyGenerator()
       ..init(ParametersWithRandom(keyParams, secureRandom));
@@ -73,7 +74,8 @@ class CryptController {
   // Генерация криптостойкого случайного генератора
   static FortunaRandom _getSecureRandom() {
     final secureRandom = FortunaRandom();
-    final seedSource = List<int>.generate(32, (_) => Random.secure().nextInt(256));
+    final seedSource =
+        List<int>.generate(32, (_) => Random.secure().nextInt(256));
     secureRandom.seed(KeyParameter(Uint8List.fromList(seedSource)));
     return secureRandom;
   }
@@ -82,14 +84,15 @@ class CryptController {
   static String encryptRSA(String text, RSAPublicKey publicKey) {
     final int maxSize = (publicKey.modulus!.bitLength / 8).floor() - 11;
     final List<String> chunks = [];
-    
+
     for (var i = 0; i < text.length; i += maxSize) {
-      final chunk = text.substring(i, i + maxSize > text.length ? text.length : i + maxSize);
+      final chunk = text.substring(
+          i, i + maxSize > text.length ? text.length : i + maxSize);
       final encrypter = encrypt.Encrypter(encrypt.RSA(publicKey: publicKey));
       final encrypted = encrypter.encrypt(chunk);
       chunks.add(encrypted.base64);
     }
-    
+
     return chunks.join('|');
   }
 
@@ -97,21 +100,21 @@ class CryptController {
   static String decryptRSA(String encrypted, RSAPrivateKey privateKey) {
     final chunks = encrypted.split('|');
     final List<String> decryptedChunks = [];
-    
+
     for (var chunk in chunks) {
       final encryptedBytes = base64.decode(chunk);
       final encrypter = encrypt.Encrypter(encrypt.RSA(privateKey: privateKey));
       final decrypted = encrypter.decrypt(encrypt.Encrypted(encryptedBytes));
       decryptedChunks.add(decrypted);
     }
-    
+
     return decryptedChunks.join();
   }
-  
+
   static String xorEncryptWithExtendedKey(String text, String key) {
     // Расширение ключа до длины текста
     String extendedKey = _extendKey(key, text.length);
-    
+
     // Шифрование с использованием XOR
     List<int> encryptedChars = List<int>.generate(text.length, (i) {
       return text.codeUnitAt(i) ^ extendedKey.codeUnitAt(i);
@@ -133,7 +136,7 @@ class CryptController {
   static String encodePublicKey(RSAPublicKey publicKey) {
     BigInt? m = publicKey.modulus;
     BigInt? e = publicKey.exponent;
-    if(e != null && m != null){
+    if (e != null && m != null) {
       return ("${m.toString()} ${e.toString()}");
     }
     return "";
@@ -145,33 +148,21 @@ class CryptController {
     BigInt? privExp = privateKey.privateExponent;
     BigInt? p = privateKey.p;
     BigInt? q = privateKey.q;
-    BigInt? pubExp = privateKey.publicExponent;
-    if(p != null && q != null && m != null && privExp != null && pubExp != null){
+    if (p != null && q != null && m != null && privExp != null) {
       List<BigInt> numbers = [
         m,
         privExp,
         p,
         q,
-        pubExp
       ];
 
-      String result = "";
       List<String> results = [];
-      //String result = numbers.map((e) => e.toString()).join('\n');  
-      for (BigInt kek in numbers){
+      //String result = numbers.map((e) => e.toString()).join('\n');
+      for (BigInt kek in numbers) {
         results.add(kek.toString());
       }
 
-      int suml = 0;
-      for (String res in results) {
-        suml += res.length;
-      }
-      print(suml);
-
-      result = results.join('\n');
-      print(result.length);
-
-      return result;
+      return results.join('\n');
     }
     return "";
   }
@@ -179,58 +170,63 @@ class CryptController {
   // Декодирование публичного ключа из PEM
   static RSAPublicKey decodePublicKey(String pem) {
     List<String> strBigInt = pem.split(" ");
-    List<BigInt> BigInts = [];
-    for(String str in strBigInt){
-      BigInts.add(BigInt.parse(str));
+    List<BigInt> bigInts = [];
+    for (String str in strBigInt) {
+      bigInts.add(BigInt.parse(str));
     }
-    BigInt? m = BigInts[0];
-    BigInt? e = BigInts[1];
-    RSAPublicKey RSAPK = RSAPublicKey(m, e);
-    return RSAPK;
+    BigInt? m = bigInts[0];
+    BigInt? e = bigInts[1];
+    RSAPublicKey rsaPk = RSAPublicKey(m, e);
+    return rsaPk;
   }
 
   // Декодирование приватного ключа из PEM
   static RSAPrivateKey decodePrivateKey(String pem) {
     List<String> strBigInt = pem.split("\n");
-    List<BigInt> BigInts = [];
-    for(String str in strBigInt){
-      BigInts.add(BigInt.parse(str));
+    List<BigInt> bigInts = [];
+    for (String str in strBigInt) {
+      bigInts.add(BigInt.parse(str));
     }
-    BigInt? m = BigInts[0];
-    BigInt? privExp = BigInts[1];
-    BigInt? p = BigInts[2];
-    BigInt? q = BigInts[3];
-    BigInt? pubExp = BigInts[4];
-    RSAPrivateKey RSAPK = RSAPrivateKey(m, privExp, p, q, pubExp);
-    return RSAPK;
+    BigInt? m = bigInts[0];
+    BigInt? privExp = bigInts[1];
+    BigInt? p = bigInts[2];
+    BigInt? q = bigInts[3];
+    RSAPrivateKey rsaPk = RSAPrivateKey(m, privExp, p, q);
+    return rsaPk;
   }
 
-  static String encryptPublicKey(String publicKey, String chatId, String chatPassword, int login, String password) {
+  static String encryptPublicKey(String publicKey, String chatId,
+      String chatPassword, int login, String password) {
     String combinedKey = chatId + chatPassword + login.toString() + password;
     return xorEncryptWithExtendedKey(publicKey, combinedKey);
   }
 
-  static String encryptPrivateKey(String privateKey, String chatId, String chatPassword) {
+  static String encryptPrivateKey(
+      String privateKey, String chatId, String chatPassword) {
     String combinedKey = chatId + chatPassword;
     return xorEncryptWithExtendedKey(privateKey, combinedKey);
   }
 
-  static String decryptPublicKey(String encryptedPublicKey, String chatId, String chatPassword, int login, String password) {
+  static String decryptPublicKey(String encryptedPublicKey, String chatId,
+      String chatPassword, int login, String password) {
     String combinedKey = chatId + chatPassword + login.toString() + password;
     return xorEncryptWithExtendedKey(encryptedPublicKey, combinedKey);
   }
 
-  static String decryptPrivateKey(String encryptedPrivateKey, String chatId, String chatPassword) {
+  static String decryptPrivateKey(
+      String encryptedPrivateKey, String chatId, String chatPassword) {
     String combinedKey = chatId + chatPassword;
     return xorEncryptWithExtendedKey(encryptedPrivateKey, combinedKey);
   }
 
-  static String encryptAnonId(String anonId, String chatId, String chatPassword, String password) {
+  static String encryptAnonId(
+      String anonId, String chatId, String chatPassword, String password) {
     String combinedKey = chatId + chatPassword + password;
     return xorEncryptWithExtendedKey(anonId, combinedKey);
   }
 
-  static String decryptAnonId(String encryptedAnonId, String chatId, String chatPassword, String password) {
+  static String decryptAnonId(String encryptedAnonId, String chatId,
+      String chatPassword, String password) {
     String combinedKey = chatId + chatPassword + password;
     return xorEncryptWithExtendedKey(encryptedAnonId, combinedKey);
   }
